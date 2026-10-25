@@ -50,6 +50,12 @@ export function Ofertas() {
           <button className="rounded bg-slate-900 px-3 py-1 text-sm text-white">
             Crear oferta
           </button>
+          <Link
+            to="/importar"
+            className="rounded border border-slate-300 px-3 py-1 text-sm hover:bg-slate-50"
+          >
+            Importar libro de Excel
+          </Link>
         </form>
       )}
       {aviso && (

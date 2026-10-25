@@ -11,6 +11,7 @@ import { Inicio } from './pantallas/Inicio';
 import { Equipos, ManoObra, Materiales, Transporte } from './pantallas/Listas';
 import { Apus } from './pantallas/Apus';
 import { PantallaApu } from './pantallas/PantallaApu';
+import { Importar } from './pantallas/Importar';
 import { Ofertas } from './pantallas/Ofertas';
 import { Presupuesto } from './pantallas/Presupuesto';
 import { Login } from './pantallas/Login';
@@ -73,6 +74,11 @@ export function crearRouter(cliente: QueryClient) {
     path: '/ofertas',
     component: Ofertas,
   });
+  const importar = createRoute({
+    getParentRoute: () => protegida,
+    path: '/importar',
+    component: Importar,
+  });
   const oferta = createRoute({
     getParentRoute: () => protegida,
     path: '/ofertas/$id',
@@ -91,6 +97,7 @@ export function crearRouter(cliente: QueryClient) {
         apus,
         apu,
         ofertas,
+        importar,
         oferta,
       ]),
     ]),

@@ -5,6 +5,7 @@ import { instalarAuth } from './modulos/auth/rutas';
 import { rutasInsumos } from './modulos/insumos/rutas';
 import { rutasApus } from './modulos/apus/rutas';
 import { rutasOfertas } from './modulos/ofertas/rutas';
+import { rutasImportacion } from './modulos/importacion/rutas';
 import { rutasSalud } from './modulos/salud/rutas';
 
 export function crearApp(db: Bd) {
@@ -15,5 +16,6 @@ export function crearApp(db: Bd) {
   app.register(rutasInsumos, { db });
   app.register(rutasApus, { db });
   app.register(rutasOfertas, { db });
+  app.register(rutasImportacion, { db });
   return app;
 }

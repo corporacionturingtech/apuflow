@@ -105,10 +105,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ `exportarLibro` (`packages/excel`) escribe 7 hojas fijas + una `APU <código>` por APU usado; 3 pruebas de excel (incluye recálculo con `soffice` sin valores en caché: subtotal, costo directo y total iguales al motor al centavo), 1 de API (`GET /api/ofertas/:id/exportar`, cualquier rol, sin licencia), e2e `exportar` verde. Botón «Exportar a Excel» en la cabecera del presupuesto.
   _Decisión:_ en ofertas públicas, CPC/origen/VAE viven por rubro (no por material): van en `Presupuesto` (CPC en la col. C, «P / ND / I» y «VAE» en T y U), no en `Materiales`. «Precio referencial» queda vacío (no hay dato). F1-06 debe leer esa forma.
 
-- [ ] **F1-06** · Importar libro completo · M · F1-05
+- [x] **F1-06** · Importar libro completo · M · F1-05
   **Leer:** producto/excel.md (importar), INDICE (2153–2262). Subir → Revisar → Confirmar,
   detección por encabezados, reporte de problemas por hoja y fila.
   **Hecho cuando:** importar el Excel exportado en F1-05 reproduce la oferta idéntica (ida y vuelta).
+  _Medido:_ `leerLibro` (`packages/excel/src/importar`) lee por encabezados y devuelve `LibroEntrada` + caché + problemas por hoja y fila; ida y vuelta con el fixture (público y privado) da el mismo total al centavo (3 pruebas de excel). API: `POST /api/importar/revisar` y `/confirmar` (cuerpo binario, sin dependencia nueva; 4 pruebas, incluye exportar la oferta importada y comparar total); pantalla `/importar` en 3 pasos; e2e `importar` verde.
+  _Decisión:_ los insumos existentes (mismo tipo y descripción) se reutilizan y su precio **no** se pisa (se avisa; actualizar precios es F2-05); los APU se crean siempre nuevos; factor/IVA/herramienta menor del libro no cambian la configuración de la empresa (se avisa si difieren). El export no trae códigos de insumo: se generan (`MAT-0001`…). F1-07 usa `cache` de `LibroLeido`.
 
 - [ ] **F1-07** · Comprobación "Cuadra con su Excel" · S · F1-06
   Compara total en caché del libro vs motor; si difiere, lista rubros con diferencia.
