@@ -98,10 +98,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 3 pruebas de API nuevas (40 en total), 18 de web, e2e `presupuesto-rubros` verde (13 e2e en total): añadir rubro desde la biblioteca sube la barra a $ 10,00, plegar la conserva, Supr la deja en $ 0,00. Semilla propia: `pnpm --filter api db:seed-rubros` (`RUB-E2E*`, ofertas `OFE-RUB*`). Quitar rubro/capítulo es borrado físico con bitácora (ux.md regla 10 pide poder deshacer: queda para F2-03).
   _Pendiente (partido a propósito):_ numeración editable (hoy es `capítulo.rubro` calculada; requiere columna y migración) y «Guardar como bloque» (F2-01).
 
-- [ ] **F1-05** · Exportar Excel · M · F1-04
+- [x] **F1-05** · Exportar Excel · M · F1-04
   **Leer:** producto/excel.md, INDICE (1855–2069). `packages/excel` con ExcelJS, hojas y
   fórmulas entre hojas con valor en caché.
   **Hecho cuando:** LibreOffice recalcula el archivo exportado y da el mismo total que el motor.
+  _Medido:_ `exportarLibro` (`packages/excel`) escribe 7 hojas fijas + una `APU <código>` por APU usado; 3 pruebas de excel (incluye recálculo con `soffice` sin valores en caché: subtotal, costo directo y total iguales al motor al centavo), 1 de API (`GET /api/ofertas/:id/exportar`, cualquier rol, sin licencia), e2e `exportar` verde. Botón «Exportar a Excel» en la cabecera del presupuesto.
+  _Decisión:_ en ofertas públicas, CPC/origen/VAE viven por rubro (no por material): van en `Presupuesto` (CPC en la col. C, «P / ND / I» y «VAE» en T y U), no en `Materiales`. «Precio referencial» queda vacío (no hay dato). F1-06 debe leer esa forma.
 
 - [ ] **F1-06** · Importar libro completo · M · F1-05
   **Leer:** producto/excel.md (importar), INDICE (2153–2262). Subir → Revisar → Confirmar,

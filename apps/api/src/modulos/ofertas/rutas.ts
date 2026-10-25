@@ -7,7 +7,9 @@ import {
   esquemaRubroCrear,
   type OfertaDetalle,
 } from 'tipos';
+import { exportarLibro } from 'excel';
 import type { Bd } from '../../db/conexion';
+import { armarLibro } from './exportar';
 import * as repo from './repo';
 import {
   ConflictoVersion,
@@ -124,6 +126,21 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       return (
         (await detalle(req.params.id)) ?? res.code(404).send({ mensaje: 'Esa oferta ya no existe' })
       );
+    },
+  );
+
+  // Sin chequeo de licencia ni de rol de escritura: exportar siempre funciona.
+  app.get<{ Params: { id: string } }>(
+    '/api/ofertas/:id/exportar',
+    { preHandler: app.autenticar },
+    async (req, res) => {
+      const libro = esUuid(req.params.id) ? await armarLibro(db, req.params.id) : null;
+      if (!libro) return res.code(404).send({ mensaje: 'Esa oferta ya no existe' });
+      const archivo = libro.datos.proyecto.replace(/[^\w.-]+/g, '_').slice(0, 60) || 'oferta';
+      return res
+        .header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        .header('Content-Disposition', `attachment; filename="${archivo}.xlsx"`)
+        .send(Buffer.from(await exportarLibro(libro)));
     },
   );
 

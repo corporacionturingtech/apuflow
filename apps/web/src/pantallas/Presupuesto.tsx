@@ -8,6 +8,7 @@ import { api } from '../lib/api';
 import { money } from '../lib/formato';
 import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
+import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
 import { useCambiosOferta } from './presupuesto/mutaciones';
@@ -153,7 +154,8 @@ export function Presupuesto() {
           {data.cliente ?? 'Sin cliente'} · {publico ? 'Oferta pública (SERCOP)' : 'Oferta privada'}{' '}
           · {data.rubros.length} rubros
         </span>
-        <div role="group" aria-label="Qué columnas ver" className="ml-auto flex gap-1 text-sm">
+        <BotonExportar ofertaId={data.id} nombre={data.nombre} />
+        <div role="group" aria-label="Qué columnas ver" className="flex gap-1 text-sm">
           {[
             [false, 'Costo directo'],
             [true, 'Ofertado'],

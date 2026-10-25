@@ -44,7 +44,7 @@ Este equipo **no trae `node`** instalado: se instala en F0-01 con `fnm` (Node 22
 `corepack enable pnpm`. En sesiones de Claude, el hook `scripts/claude-env.sh` (SessionStart,
 en `.claude/settings.json`) agrega node/pnpm al PATH aunque el `HOME` de la cuenta sea otro.
 En una terminal propia, si `pnpm` no aparece: `eval "$(fnm env)"`.
-e2e: `pnpm e2e` levanta api+web solo (necesita Postgres dev arriba). Si Playwright no halla Chromium (HOME distinto): `PLAYWRIGHT_BROWSERS_PATH=/home/leonel/.cache/ms-playwright`.
+e2e (con `--` corre todos los specs, no pasarlo): `pnpm e2e` levanta api+web solo (necesita Postgres dev arriba). Si Playwright no halla Chromium (HOME distinto): `PLAYWRIGHT_BROWSERS_PATH=/home/leonel/.cache/ms-playwright`.
 TypeScript va fijado en 6.x: typescript-eslint aún no soporta TS 7.
 No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. Formatear solo los archivos tocados (`pnpm prettier --write <archivos>`).
 

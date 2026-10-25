@@ -14,7 +14,7 @@ tendrán variantes: el importador trabaja por **encabezados**, no por posiciones
 | Datos generales | Pares clave/valor: proyecto, cliente, ubicación, fecha, plazo, tipo | |
 | Equipos | ITEM · DESCRIPCIÓN · TARIFA/HORA | Debajo: "Herramienta menor (% de la mano de obra)" |
 | Mano Obra | ITEM · DESCRIPCIÓN · JORNAL/HR | |
-| Materiales | ITEM · DESCRIPCIÓN · UNIDAD · PRECIO REFERENCIAL · PRECIO UNITARIO · PRECIO [· CPC · P / ND / I · VAE] | Celda FACTOR arriba (E1/F1). Filas de sección por disciplina. Las 3 últimas columnas solo en ofertas públicas. `PRECIO = ROUND(PU × FACTOR; 2)` |
+| Materiales | ITEM · DESCRIPCIÓN · UNIDAD · PRECIO REFERENCIAL · PRECIO UNITARIO · PRECIO [· CPC · P / ND / I · VAE] | Celda FACTOR arriba (E1/F1). Filas de sección por disciplina. Las 3 últimas columnas solo en ofertas públicas (APUflow las guarda por rubro y las exporta en `Presupuesto`, ver abajo). `PRECIO = ROUND(PU × FACTOR; 2)` |
 | Transporte | ITEM · DESCRIPCIÓN · UNIDAD · TARIFA | |
 | Indirectos | CONCEPTO · PORCENTAJE | Total y luego IVA |
 | Presupuesto | NUMERO · DESCRIPCIÓN DEL RUBRO · DESCRIPCIÓN CPC · UNIDAD · CANTIDAD · EQ · CT EQ · MO · CT MO · MA · CT MA · TRA · CT TRA · CU · CU TOTAL · PESO · RENDIMIENTO · P.U. OFERTADO · TOTAL OFERTADO | Fila de total arriba. Capítulos como filas de título |
@@ -27,10 +27,10 @@ Referencia exacta de filas, estilos y fórmulas: `buildXlsx` en el prototipo (l�
 - Librería **ExcelJS** en `packages/excel` (el prototipo armaba el zip a mano; no se copia).
 - Fórmulas reales entre hojas (Presupuesto → `APU xx` → Materiales/Equipos/…) **y** el valor
   calculado en caché, para que el archivo muestre cifras aunque no se recalcule.
+- Ofertas públicas: `Presupuesto` agrega «P / ND / I» (col. T) y «VAE» (col. U); CPC va en la col. C.
 - Celdas de entrada (precios, cantidades, %) con el estilo amarillo de su libro.
 - Test: exportar el fixture, abrirlo con LibreOffice en modo headless forzando recálculo y
-  comparar el total con el del motor (procedimiento en `turingtech-docs/CLAUDE.md`, sección
-  prototipos de presupuestos: quitar los `<v>` de las celdas con fórmula antes de convertir).
+  comparar el total con el del motor (quitar el valor en caché de las celdas con fórmula y `soffice --headless --convert-to xlsx`; ver `packages/excel/test/exportar.test.ts`).
 
 ## Importar
 

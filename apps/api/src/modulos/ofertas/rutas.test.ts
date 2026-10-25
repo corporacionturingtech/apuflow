@@ -188,3 +188,19 @@ test('quitar rubro y capítulo respeta la versión y deja bitácora', async () =
     (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json().capitulos,
   ).toHaveLength(0);
 });
+
+test('exportar entrega un .xlsx a cualquier rol y 404 si la oferta no existe', async () => {
+  const ok = await pedir('GET', `/api/ofertas/${ofertaId}/exportar`, galletaLector);
+  expect(ok.statusCode).toBe(200);
+  expect(ok.headers['content-type']).toContain('spreadsheetml.sheet');
+  expect(ok.headers['content-disposition']).toContain('TOFE-1.xlsx');
+  expect(ok.rawPayload.subarray(0, 2).toString()).toBe('PK');
+  const sin = await app.inject({ method: 'GET', url: `/api/ofertas/${ofertaId}/exportar` });
+  expect(sin.statusCode).toBe(401);
+  const no = await pedir(
+    'GET',
+    '/api/ofertas/00000000-0000-0000-0000-000000000000/exportar',
+    galletaLector,
+  );
+  expect(no.statusCode).toBe(404);
+});

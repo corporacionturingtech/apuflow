@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "motor": "workspace:*"
   }
 }

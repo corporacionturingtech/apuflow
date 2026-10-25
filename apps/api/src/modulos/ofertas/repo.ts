@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray, max } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, max } from 'drizzle-orm';
 import type { Bd } from '../../db/conexion';
 import { apu, capitulo, indirecto, insumo, lineaApu, oferta, rubro } from '../../db/esquema';
 
@@ -121,3 +121,10 @@ export const siguienteOrdenCapitulo = async (tx: Tx, ofertaId: string) =>
       .from(capitulo)
       .where(eq(capitulo.ofertaId, ofertaId))
   )[0]?.m ?? 0) + 1;
+
+export const insumosActivos = (db: Bd | Tx) =>
+  db
+    .select()
+    .from(insumo)
+    .where(isNull(insumo.eliminadoEn))
+    .orderBy(asc(insumo.tipo), asc(insumo.orden), asc(insumo.codigo));
