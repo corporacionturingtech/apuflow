@@ -43,9 +43,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** `pnpm --filter api test` levanta la BD, migra y pasa.
   _Medido:_ 15 tablas, migración `0000`, 6 pruebas de la API verdes. Postgres de desarrollo en el puerto 5433 (el 5432 suele estar ocupado).
 
-- [ ] **F0-06** · Login y sesión · S · F0-05
+- [x] **F0-06** · Login y sesión · S · F0-05
   Usuario/clave (argon2), cookie httpOnly, seed de un admin, middleware de rol.
   **Hecho cuando:** tests de login correcto, incorrecto y ruta protegida.
+  _Medido:_ 9 pruebas nuevas de auth (login ok/incorrecto/inexistente/inactivo, 401/403, logout, expiración, seed idempotente); 15 pruebas de la API verdes. Migración `0001` (tabla `sesion`).
 
 - [ ] **F0-07** · Web base · M · F0-06
   **Leer:** producto/ux.md (estilo, pantallas). Vite, React, TanStack Router/Query, Tailwind,

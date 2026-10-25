@@ -61,6 +61,7 @@ Regla de dependencias: `web → tipos, motor` · `api → tipos, motor, excel` �
   sin internet debe funcionar).
 - Roles: `admin` (usuarios, licencia, configuración), `precios` (edita listas y APUs),
   `cotizador` (edita ofertas, solo rubros de sus disciplinas si así se configura), `lector`.
+- Sesiones en la tabla `sesion` (guarda el sha256 del token, 8 h); desactivar un usuario las invalida. Primer admin: `ADMIN_USUARIO=… ADMIN_CLAVE=… pnpm --filter api db:seed`.
 - Límite de usuarios activos según la licencia.
 
 ## Licencias

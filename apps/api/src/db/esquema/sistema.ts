@@ -42,3 +42,13 @@ export const bitacora = pgTable('bitacora', {
   despues: jsonb('despues'),
   fecha: timestamp('fecha', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// `id` guarda el sha256 del token de la cookie: un volcado de la BD no sirve para suplantar sesiones.
+export const sesion = pgTable('sesion', {
+  id: text('id').primaryKey(),
+  usuarioId: uuid('usuario_id')
+    .notNull()
+    .references(() => usuario.id, { onDelete: 'cascade' }),
+  expira: timestamp('expira', { withTimezone: true }).notNull(),
+  creada: timestamp('creada', { withTimezone: true }).notNull().defaultNow(),
+});
