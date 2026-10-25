@@ -55,7 +55,7 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** e2e `login.spec.ts` entra y ve el layout.
   _Medido:_ 3 e2e verdes (redirige sin sesión, clave incorrecta, entra y ve nav + barra de totales a 1366×768); 5 pruebas de web (formato, BarraTotales). shadcn/ui no se instaló aún: los componentes de F0-07 son Tailwind simple; agregar shadcn al primer ticket que necesite tablas/diálogos (F1-01).
 
-- [ ] **F0-08** · CI · S · F0-07
+- [~] **F0-08** · CI · S · F0-07
   GitHub Actions: typecheck, lint, test, e2e. **Hecho cuando:** pipeline verde.
 
 ## F1 · Su Excel adentro (momento: "cuadra")

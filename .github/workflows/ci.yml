@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: apuflow
+          POSTGRES_PASSWORD: apuflow
+          POSTGRES_DB: apuflow
+        # Puerto 5433 como en desarrollo: las URLs por defecto de apps/api/src/db/url.ts sirven tal cual.
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U apuflow"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+    env:
+      PGPASSWORD: apuflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Crear BD de pruebas
+        run: psql -h localhost -p 5433 -U apuflow -d apuflow -f scripts/crear-bd-pruebas.sql
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
