@@ -70,3 +70,26 @@ export const esquemaListaInsumos = z.object({
   herramientaMenor: esquemaHerramientaMenor,
 });
 export type ListaInsumos = z.infer<typeof esquemaListaInsumos>;
+
+// Efecto de un cambio de precio sobre las ofertas (panel de impacto). Dinero como texto.
+export const esquemaImpactoPrecio = z.object({
+  insumoId: z.string().uuid(),
+  puAnterior: z.string(),
+  puNuevo: z.string(),
+  apus: z.number().int(),
+  rubros: z.number().int(),
+  diferencia: z.string(),
+  ofertas: z.array(
+    z.object({
+      id: z.string().uuid(),
+      nombre: z.string(),
+      apus: z.number().int(),
+      rubros: z.number().int(),
+      antes: z.string(),
+      despues: z.string(),
+    }),
+  ),
+});
+export type ImpactoPrecio = z.infer<typeof esquemaImpactoPrecio>;
+
+export const esquemaConsultaImpacto = z.object({ puAnterior: dinero });

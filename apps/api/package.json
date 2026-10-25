@@ -15,7 +15,8 @@
     "db:seed-apu": "tsx src/db/seed-apu.ts",
     "db:seed-oferta": "tsx src/db/seed-oferta.ts",
     "db:seed-rubros": "tsx src/db/seed-rubros.ts",
-    "db:seed-bloques": "tsx src/db/seed-bloques.ts"
+    "db:seed-bloques": "tsx src/db/seed-bloques.ts",
+    "db:seed-impacto": "tsx src/db/seed-impacto.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.3",

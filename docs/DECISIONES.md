@@ -29,3 +29,7 @@ usa como argumento de venta.
 **D7 · 2026-10-25 · El prototipo v2 es la especificación de referencia.**
 Está en `referencia/` con un índice de líneas. Si el prototipo y un doc se contradicen, manda
 el doc (es más nuevo); el prototipo manda solo en el cálculo.
+
+**D8 · 2026-10-25 · El impacto de un precio se calcula en el servidor, sobre todas las ofertas.**
+Los precios son de la empresa, no de una oferta. `GET /api/insumos/:id/impacto?puAnterior=` arma cada oferta con el
+motor (`impacto()`), suma APUs, rubros y diferencia, y devuelve el desglose por oferta para «Ver qué cambió».

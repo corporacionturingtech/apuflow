@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import {
+  esquemaConsultaImpacto,
   esquemaConsultaInsumos,
   esquemaHerramientaMenorCambio,
   esquemaInsumoCambio,
@@ -9,6 +10,7 @@ import {
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import type { insumo } from '../../db/esquema';
+import { impactoDePrecio } from './impacto';
 import * as repo from './repo';
 import {
   CodigoRepetido,
@@ -65,6 +67,23 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
       throw e;
     }
   });
+
+  app.get<{ Params: { id: string } }>(
+    '/api/insumos/:id/impacto',
+    { preHandler: app.autenticar },
+    async (req, res) => {
+      const d = esquemaConsultaImpacto.safeParse(req.query);
+      if (!d.success || !/^[0-9a-f-]{36}$/i.test(req.params.id))
+        return res.code(400).send(datosInvalidos);
+      try {
+        return await impactoDePrecio(db, req.params.id, d.data.puAnterior);
+      } catch (e) {
+        if (e instanceof NoExiste)
+          return res.code(404).send({ mensaje: 'Ese insumo ya no existe' });
+        throw e;
+      }
+    },
+  );
 
   app.patch<{ Params: { id: string } }>(
     '/api/insumos/:id',

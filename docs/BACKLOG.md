@@ -126,9 +126,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 4 pruebas de API nuevas (guardar capítulo como bloque, insertar con sufijo «(2)», 403/404, borrar con 409 y bitácora; 49 en total), 1 de web (costo directo del bloque con el motor), e2e `bloques` verde (17 en total; sale solo del paquete el fallo intermitente de materiales/listas). Sin migración: `bloque` y `linea_bloque` ya existían. Pantalla `/bloques` (tarjetas con costo directo, «Añadir a la oferta» con aviso de rubros y subtotal ofertado) y «Guardar como bloque» en el presupuesto. Semilla propia: `pnpm --filter api db:seed-bloques` (`BLQ-E2E*`).
   _Decisión:_ insertar un bloque no sube la `version` de la oferta (igual que añadir capítulo); la tarjeta muestra costo directo (los indirectos son de cada oferta). Pendiente: editar el nombre de un bloque ya guardado.
 
-- [ ] **F2-02** · Panel de impacto en cambios de precio · M · F1-02, F0-04
+- [x] **F2-02** · Panel de impacto en cambios de precio · M · F1-02, F0-04
   **Leer:** modelo-calculo.md (impacto), ux.md (regla 2), INDICE (1061–1071, 1380–1403).
   **Hecho cuando:** e2e cambia el cobre y ve "Afectó N APUs, M rubros, +$ X" y "Ver qué cambió".
+  _Medido:_ 3 pruebas de API nuevas (`GET /api/insumos/:id/impacto`: suma sobre varias ofertas, insumo sin uso, 404/400; 52 en total), 1 de web del panel (20 en total), e2e `impacto` verde (18 en total). Panel `PanelImpacto.tsx` en las cuatro listas. Semilla propia: `pnpm --filter api db:seed-impacto` (`IMP-E2E*`, oferta `OFE-IMP`).
+  _Decisión:_ el impacto se calcula en el servidor sobre todas las ofertas (D8); el cliente pide `puAnterior`. Pendiente: impacto al cambiar un APU (no solo un precio).
 
 - [ ] **F2-03** · Deshacer e historial de precios · S · F2-02
   Deshacer el último cambio (Ctrl+Z y botón), historial por insumo con fecha y usuario.

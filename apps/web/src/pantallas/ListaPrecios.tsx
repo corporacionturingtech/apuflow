@@ -5,6 +5,7 @@ import type { Insumo, InsumoCambio, ListaInsumos, TipoInsumo } from 'tipos';
 import { FormularioInsumo } from './FormularioInsumo';
 import { HerramientaMenor } from './HerramientaMenor';
 import { clavePapelera, PapeleraInsumos } from './PapeleraInsumos';
+import { PanelImpacto, type CambioPrecio } from './PanelImpacto';
 import { precioATexto } from './precio';
 import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
@@ -70,6 +71,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
   const [agregando, setAgregando] = useState(false);
   const [verPapelera, setVerPapelera] = useState(false);
   const [deshacer, setDeshacer] = useState<Insumo | null>(null);
+  const [impacto, setImpacto] = useState<CambioPrecio | null>(null);
 
   const { data, isPending, error } = useQuery({
     queryKey: [...CLAVE, busqueda],
@@ -93,8 +95,15 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
       setEditadas((s) => new Set(s).add(id));
       return { previo };
     },
-    onSuccess: (fila) => {
+    onSuccess: (fila, { cambio }) => {
       setAviso('');
+      if (cambio.pu !== undefined && fila.precioAnterior !== null)
+        setImpacto({
+          insumoId: fila.id,
+          descripcion: fila.descripcion,
+          puAnterior: fila.precioAnterior,
+          puNuevo: fila.pu,
+        });
       cliente.setQueriesData<ListaInsumos>(
         { queryKey: CLAVE },
         (l) => l && { ...l, items: l.items.map((i) => (i.id === fila.id ? fila : i)) },
@@ -245,6 +254,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           </button>
         </p>
       )}
+      {impacto && <PanelImpacto cambio={impacto} alCerrar={() => setImpacto(null)} />}
       {aviso && (
         <p role="alert" className="mb-2 rounded bg-red-50 px-3 py-1 text-sm text-red-800">
           {aviso}
