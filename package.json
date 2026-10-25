@@ -10,6 +10,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "test": "pnpm -r test",
+    "fixture": "node scripts/extraer-fixture.ts",
     "format": "prettier --write ."
   },
   "devDependencies": {

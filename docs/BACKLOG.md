@@ -19,7 +19,7 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   Vitest, scripts raíz `typecheck`, `lint`, `test`.
   **Hecho cuando:** `pnpm typecheck && pnpm lint && pnpm test` pasan en vacío.
 
-- [ ] **F0-02** · Fixture demo desde el prototipo · S · F0-01
+- [x] **F0-02** · Fixture demo desde el prototipo · S · F0-01
   **Leer:** referencia/INDICE.md (DATA, 477–631). Script `scripts/extraer-fixture.ts` que extrae
   `DATA` con `node:vm` a `packages/motor/test/fixtures/sedemi-demo.json`.
   **Hecho cuando:** el JSON tiene los conteos de insumos, APUs y bloques del prototipo.
