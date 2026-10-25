@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { Bd } from '../../db/conexion';
+import { SinCambios, confirmarPrecios, revisarPrecios } from './precios';
 import { LibroConProblemas, confirmar, revisar } from './servicio';
 
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -46,6 +47,28 @@ export async function rutasImportacion(app: FastifyInstance, { db }: { db: Bd })
         return res.code(422).send({
           mensaje: 'El libro tiene problemas que impiden importarlo. Revíselos y vuelva a subirlo.',
         });
+      return res.code(400).send(ilegible);
+    }
+  });
+
+  app.post('/api/importar/precios/revisar', { preHandler: puedeEscribir }, async (req, res) => {
+    if (!Buffer.isBuffer(req.body) || !req.body.length) return res.code(400).send(ilegible);
+    try {
+      return await revisarPrecios(db, new Uint8Array(req.body), archivo(req.headers));
+    } catch {
+      return res.code(400).send(ilegible);
+    }
+  });
+
+  app.post('/api/importar/precios/confirmar', { preHandler: puedeEscribir }, async (req, res) => {
+    if (!Buffer.isBuffer(req.body) || !req.body.length) return res.code(400).send(ilegible);
+    try {
+      return res
+        .code(201)
+        .send(await confirmarPrecios(db, req.usuario!.id, new Uint8Array(req.body)));
+    } catch (e) {
+      if (e instanceof SinCambios)
+        return res.code(422).send({ mensaje: 'No hay precios para actualizar en este libro.' });
       return res.code(400).send(ilegible);
     }
   });

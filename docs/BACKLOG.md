@@ -142,9 +142,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Leer:** INDICE (1126–1144). **Hecho cuando:** cambiar utilidad cambia todos los P.U. ofertados.
   _Medido:_ 2 pruebas de API nuevas (`PATCH /api/ofertas/:id/indirectos/:indId` con bitácora, 409 y rol; IVA por oferta vía `oferta.iva`, null = el de la empresa; 57 en total), 1 de web (22 en total), e2e `indirectos` verde (20 en total): utilidad 10 → 20 % lleva el subtotal de $ 22,00 a $ 24,00 y persiste. Semilla propia: `pnpm --filter api db:seed-indirectos` (`IND-E2E*`). Panel «Indirectos y utilidad» en la oferta.
 
-- [ ] **F2-05** · Importar solo precios · S · F2-02, F1-06
+- [x] **F2-05** · Importar solo precios · S · F2-02, F1-06
   Actualizar una lista desde Excel/CSV con vista previa y panel de impacto al confirmar.
   **Hecho cuando:** e2e sube una hoja Materiales y ve qué precios cambian antes de confirmar.
+  _Medido:_ 3 pruebas de excel (`leerPrecios`; 11 en total), 3 de API (`/api/importar/precios/revisar|confirmar`: cambia / sin cambio / no existe, impacto conjunto, historial, 422 sin cambios, 400, 403; 60 en total), 2 de web (24 en total), e2e `importar-precios` verde (21 en total; siguen intermitentes `listas`/`materiales` por semillas en paralelo). Pantalla `/importar/precios` (enlace desde Importar libro). Sin semilla: el e2e arma su libro con prefijo `IPRE2E`.
+  _Decisión:_ se empareja por tipo + descripción; lo que no existe se informa y se omite (no crea insumos); confirmar aplica todo en una transacción por `editarTx` (historial y bitácora por insumo). Solo `.xlsx` (CSV pendiente). _Pendiente:_ deshacer en bloque una importación de precios y emparejar por código.
 
 - [ ] **F2-06** · APU compartido vs copia en la oferta · S · F1-03
   **Leer:** dominio.md (decisiones). Al editar un APU desde una oferta preguntar el alcance.

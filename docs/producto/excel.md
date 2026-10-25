@@ -45,7 +45,7 @@ Flujo de 3 pasos en la UI: **Subir → Revisar → Confirmar**.
 
 Modos de importación:
 - **Libro completo** (onboarding): listas + APUs + presupuesto.
-- **Solo precios**: actualiza precios de una lista por coincidencia de descripción (o código),
+- **Solo precios** (hecho, `/importar/precios`; el libro puede traer solo algunas hojas de lista): actualiza precios de una lista por coincidencia de descripción (o código),
   con vista previa de qué cambia y panel de impacto al confirmar.
 
 Reglas:

@@ -13,6 +13,7 @@ import { Apus } from './pantallas/Apus';
 import { Bloques } from './pantallas/Bloques';
 import { PantallaApu } from './pantallas/PantallaApu';
 import { Importar } from './pantallas/Importar';
+import { ImportarPrecios } from './pantallas/ImportarPrecios';
 import { Ofertas } from './pantallas/Ofertas';
 import { Presupuesto } from './pantallas/Presupuesto';
 import { Login } from './pantallas/Login';
@@ -85,6 +86,11 @@ export function crearRouter(cliente: QueryClient) {
     path: '/importar',
     component: Importar,
   });
+  const importarPrecios = createRoute({
+    getParentRoute: () => protegida,
+    path: '/importar/precios',
+    component: ImportarPrecios,
+  });
   const oferta = createRoute({
     getParentRoute: () => protegida,
     path: '/ofertas/$id',
@@ -105,6 +111,7 @@ export function crearRouter(cliente: QueryClient) {
         bloques,
         ofertas,
         importar,
+        importarPrecios,
         oferta,
       ]),
     ]),

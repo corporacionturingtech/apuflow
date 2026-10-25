@@ -25,7 +25,11 @@ export interface ListasLeidas {
   hojas: number;
 }
 
-export function leerListas(wb: { worksheets: Worksheet[] }, problemas: Problema[]): ListasLeidas {
+export function leerListas(
+  wb: { worksheets: Worksheet[] },
+  problemas: Problema[],
+  { exigirTodas = true } = {},
+): ListasLeidas {
   const insumos = new Map<string, InsumoLibro>();
   let factor = '1';
   let herramientaMenor = '5';
@@ -35,6 +39,7 @@ export function leerListas(wb: { worksheets: Worksheet[] }, problemas: Problema[
     const ws = hojaPor(wb, ...HOJAS[tipo]);
     const nombre = ETIQUETA[tipo];
     if (!ws) {
+      if (!exigirTodas) continue;
       problemas.push({
         hoja: nombre,
         fila: 0,

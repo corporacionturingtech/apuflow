@@ -47,6 +47,13 @@ export function Importar() {
         Suba su libro, revise lo que encontramos y confírmelo. Se crea una oferta nueva; su archivo
         no sale de este servidor.
       </p>
+      <p className="mt-1 text-sm text-slate-600">
+        ¿Solo quiere actualizar precios?{' '}
+        <Link to="/importar/precios" className="font-medium text-blue-700 underline">
+          Importar solo precios
+        </Link>
+        .
+      </p>
       <ol className="mt-3 flex gap-4 text-sm" aria-label="Pasos">
         {['Subir', 'Revisar', 'Confirmar'].map((t, i) => (
           <li key={t} className={paso === i + 1 ? 'font-semibold' : 'text-slate-500'}>

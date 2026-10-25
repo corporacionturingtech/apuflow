@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { aEntradaMotor, exportarLibro } from '../src/exportar';
 import { comprobarCuadra } from '../src/importar/cuadra';
 import { leerLibro } from '../src/importar/leer';
+import { leerPrecios } from '../src/importar/precios';
 import type { LibroEntrada, TipoInsumo } from '../src/tipos';
 
 interface Fixture {
@@ -186,5 +187,42 @@ describe('leerLibro', () => {
     expect(mal.cuadra).toBe(false);
     expect(mal.rubrosDistintos).toHaveLength(1);
     expect(mal.rubrosDistintos[0]!.excel - mal.rubrosDistintos[0]!.apuflow).toBeCloseTo(10, 2);
+  });
+});
+
+describe('leerPrecios', () => {
+  const bytes = async (wb: ExcelJS.Workbook) => new Uint8Array(await wb.xlsx.writeBuffer());
+  const hojaMateriales = (filas: (string | number)[][]) => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Materiales');
+    ws.addRow(['ITEM', 'DESCRIPCIÓN', 'UNIDAD', 'PRECIO UNITARIO']);
+    filas.forEach((f) => ws.addRow(f));
+    return wb;
+  };
+
+  it('lee un libro con solo la hoja Materiales', async () => {
+    const r = await leerPrecios(await bytes(hojaMateriales([[1, 'Cable', 'm', 2.5]])));
+    expect(r.hojas).toBe(1);
+    expect(r.insumos).toMatchObject([{ tipo: 'MA', descripcion: 'Cable', pu: '2.5' }]);
+    expect(r.problemas).toEqual([]);
+  });
+
+  it('es bloqueante si no hay ninguna lista', async () => {
+    const wb = new ExcelJS.Workbook();
+    wb.addWorksheet('Otra').addRow(['x']);
+    const r = await leerPrecios(await bytes(wb));
+    expect(r.problemas.some((p) => p.bloqueante && p.mensaje.includes('ninguna lista'))).toBe(true);
+  });
+
+  it('es bloqueante si un insumo repetido trae otro precio', async () => {
+    const r = await leerPrecios(
+      await bytes(
+        hojaMateriales([
+          [1, 'Cable', 'm', 2.5],
+          [2, 'Cable', 'm', 3],
+        ]),
+      ),
+    );
+    expect(r.problemas.some((p) => p.bloqueante && p.mensaje.includes('repetido'))).toBe(true);
   });
 });

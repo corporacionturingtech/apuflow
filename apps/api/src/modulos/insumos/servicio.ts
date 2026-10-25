@@ -24,48 +24,49 @@ export async function crear(db: Bd, usuarioId: string, d: InsumoCrear) {
   });
 }
 
-export async function editar(db: Bd, usuarioId: string, id: string, cambio: InsumoCambio) {
-  return db.transaction(async (tx) => {
-    const actual = await repo.buscar(tx, id);
-    if (!actual) throw new NoExiste();
-    const { version, ...campos } = cambio;
-    const nuevos: Record<string, unknown> = {};
-    const bitacora = [];
-    if (cambio.codigo && cambio.codigo !== actual.codigo) {
-      if (await repo.codigoEnUso(tx, actual.tipo, cambio.codigo, id)) throw new CodigoRepetido();
-    }
-    for (const campo of CAMPOS) {
-      const valor = campos[campo];
-      if (valor === undefined) continue;
-      const antes = actual[campo];
-      // Compara numéricamente el PU: "10.4" y "10.400000" son el mismo precio.
-      const igual = campo === 'pu' ? Number(antes) === Number(valor) : antes === valor;
-      if (igual) continue;
-      nuevos[campo] = valor;
-      bitacora.push({
-        usuarioId,
-        entidad: 'insumo',
-        entidadId: id,
-        campo,
-        // Objeto, no escalar: el driver manda los textos crudos y Postgres los leería como JSON.
-        antes: { valor: antes },
-        despues: { valor },
-      });
-    }
-    if ('pu' in nuevos) nuevos.precioAnterior = actual.pu;
-    const fila = await repo.actualizar(tx, id, version, { ...nuevos, actualizadoPor: usuarioId });
-    if (!fila) throw new ConflictoVersion();
-    if ('pu' in nuevos) {
-      await repo.registrarPrecio(tx, {
-        insumoId: id,
-        puAnterior: actual.pu,
-        puNuevo: fila.pu,
-        usuarioId,
-      });
-    }
-    await repo.registrarBitacora(tx, bitacora);
-    return fila;
-  });
+export const editar = (db: Bd, usuarioId: string, id: string, cambio: InsumoCambio) =>
+  db.transaction((tx) => editarTx(tx, usuarioId, id, cambio));
+
+export async function editarTx(tx: repo.Tx, usuarioId: string, id: string, cambio: InsumoCambio) {
+  const actual = await repo.buscar(tx, id);
+  if (!actual) throw new NoExiste();
+  const { version, ...campos } = cambio;
+  const nuevos: Record<string, unknown> = {};
+  const bitacora = [];
+  if (cambio.codigo && cambio.codigo !== actual.codigo) {
+    if (await repo.codigoEnUso(tx, actual.tipo, cambio.codigo, id)) throw new CodigoRepetido();
+  }
+  for (const campo of CAMPOS) {
+    const valor = campos[campo];
+    if (valor === undefined) continue;
+    const antes = actual[campo];
+    // Compara numéricamente el PU: "10.4" y "10.400000" son el mismo precio.
+    const igual = campo === 'pu' ? Number(antes) === Number(valor) : antes === valor;
+    if (igual) continue;
+    nuevos[campo] = valor;
+    bitacora.push({
+      usuarioId,
+      entidad: 'insumo',
+      entidadId: id,
+      campo,
+      // Objeto, no escalar: el driver manda los textos crudos y Postgres los leería como JSON.
+      antes: { valor: antes },
+      despues: { valor },
+    });
+  }
+  if ('pu' in nuevos) nuevos.precioAnterior = actual.pu;
+  const fila = await repo.actualizar(tx, id, version, { ...nuevos, actualizadoPor: usuarioId });
+  if (!fila) throw new ConflictoVersion();
+  if ('pu' in nuevos) {
+    await repo.registrarPrecio(tx, {
+      insumoId: id,
+      puAnterior: actual.pu,
+      puNuevo: fila.pu,
+      usuarioId,
+    });
+  }
+  await repo.registrarBitacora(tx, bitacora);
+  return fila;
 }
 
 export async function cambiarHerramientaMenor(
