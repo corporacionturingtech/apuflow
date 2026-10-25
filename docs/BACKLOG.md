@@ -115,13 +115,16 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 - [x] **F1-07** · Comprobación "Cuadra con su Excel" · S · F1-06
   Compara total en caché del libro vs motor; si difiere, lista rubros con diferencia.
   **Hecho cuando:** e2e `cuadra.spec.ts` muestra "✓ Cuadra" con el fixture.
+  _Medido:_ `comprobarCuadra` (`packages/excel/src/importar/cuadra.ts`) compara el caché del libro con el motor (total y por rubro, tolerancia 0,005); `POST /api/importar/revisar` devuelve `cuadra`; en el paso Revisar sale «✓ Cuadra con su Excel: $ X = $ X» o, si no, los rubros que difieren. 1 prueba de excel, 1 aserción de API, e2e `cuadra` verde (suite e2e 16/16).
 
 ## F2 · Velocidad (momentos: "una bahía, un clic" y "todo se actualiza")
 
-- [ ] **F2-01** · Bloques de rubros · M · F1-04
+- [x] **F2-01** · Bloques de rubros · M · F1-04
   **Leer:** INDICE (786–809, 1197–1217). Crear bloque desde un capítulo, insertar bloque en una
   oferta (crea capítulo), editar cantidades después. Aviso con subtotal y rubros agregados.
   **Hecho cuando:** e2e añade "Bahía de 230 kV" y ve el aviso con su subtotal.
+  _Medido:_ 4 pruebas de API nuevas (guardar capítulo como bloque, insertar con sufijo «(2)», 403/404, borrar con 409 y bitácora; 49 en total), 1 de web (costo directo del bloque con el motor), e2e `bloques` verde (17 en total; sale solo del paquete el fallo intermitente de materiales/listas). Sin migración: `bloque` y `linea_bloque` ya existían. Pantalla `/bloques` (tarjetas con costo directo, «Añadir a la oferta» con aviso de rubros y subtotal ofertado) y «Guardar como bloque» en el presupuesto. Semilla propia: `pnpm --filter api db:seed-bloques` (`BLQ-E2E*`).
+  _Decisión:_ insertar un bloque no sube la `version` de la oferta (igual que añadir capítulo); la tarjeta muestra costo directo (los indirectos son de cada oferta). Pendiente: editar el nombre de un bloque ya guardado.
 
 - [ ] **F2-02** · Panel de impacto en cambios de precio · M · F1-02, F0-04
   **Leer:** modelo-calculo.md (impacto), ux.md (regla 2), INDICE (1061–1071, 1380–1403).

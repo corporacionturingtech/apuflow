@@ -10,6 +10,7 @@ import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
+import { GuardarBloque } from './presupuesto/GuardarBloque';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
 import { useCambiosOferta } from './presupuesto/mutaciones';
 import { precioATexto } from './precio';
@@ -21,6 +22,7 @@ export function Presupuesto() {
   const [ofertado, setOfertado] = useState(true);
   const [plegados, setPlegados] = useState<ReadonlySet<string>>(new Set());
   const [anadiendo, setAnadiendo] = useState(false);
+  const [guardandoBloque, setGuardandoBloque] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } =
     useCambiosOferta(id);
@@ -187,6 +189,14 @@ export function Presupuesto() {
           >
             Añadir rubro
           </button>
+          <button
+            type="button"
+            disabled={data.rubros.length === 0}
+            onClick={() => setGuardandoBloque(true)}
+            className="rounded border border-slate-300 px-2 py-0.5"
+          >
+            Guardar como bloque
+          </button>
           <input
             aria-label="Nombre del capítulo nuevo"
             placeholder="Nombre del capítulo"
@@ -210,6 +220,9 @@ export function Presupuesto() {
           alCerrar={() => setAnadiendo(false)}
           alElegir={(apuId, capituloId) => anadir.mutate({ apuId, capituloId })}
         />
+      )}
+      {guardandoBloque && (
+        <GuardarBloque capitulos={data.capitulos} alCerrar={() => setGuardandoBloque(false)} />
       )}
       {data.rubros.length === 0 ? (
         <p className="mt-4 text-slate-600">

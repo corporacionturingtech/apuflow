@@ -10,6 +10,7 @@ import { Layout } from './layout/Layout';
 import { Inicio } from './pantallas/Inicio';
 import { Equipos, ManoObra, Materiales, Transporte } from './pantallas/Listas';
 import { Apus } from './pantallas/Apus';
+import { Bloques } from './pantallas/Bloques';
 import { PantallaApu } from './pantallas/PantallaApu';
 import { Importar } from './pantallas/Importar';
 import { Ofertas } from './pantallas/Ofertas';
@@ -69,6 +70,11 @@ export function crearRouter(cliente: QueryClient) {
     component: PantallaApu,
   });
 
+  const bloques = createRoute({
+    getParentRoute: () => protegida,
+    path: '/bloques',
+    component: Bloques,
+  });
   const ofertas = createRoute({
     getParentRoute: () => protegida,
     path: '/ofertas',
@@ -96,6 +102,7 @@ export function crearRouter(cliente: QueryClient) {
         transporte,
         apus,
         apu,
+        bloques,
         ofertas,
         importar,
         oferta,

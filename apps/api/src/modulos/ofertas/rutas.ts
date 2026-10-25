@@ -48,7 +48,10 @@ const rubroDto = (r: Awaited<ReturnType<typeof repo.buscarRubro>> & object) => (
   version: r.version,
 });
 
-const apuDto = ({ apu: a, lineas }: Awaited<ReturnType<typeof repo.apusConLineas>>[number]) => ({
+export const apuDto = ({
+  apu: a,
+  lineas,
+}: Awaited<ReturnType<typeof repo.apusConLineas>>[number]) => ({
   id: a.id,
   codigo: a.codigo,
   descripcion: a.descripcion,
@@ -64,40 +67,42 @@ const apuDto = ({ apu: a, lineas }: Awaited<ReturnType<typeof repo.apusConLineas
   })),
 });
 
+export async function detalleOferta(db: Bd, id: string): Promise<OfertaDetalle | null> {
+  const o = await repo.buscar(db, id);
+  if (!o) return null;
+  const [caps, rubs, indirs, config] = await Promise.all([
+    repo.capitulos(db, id),
+    repo.rubros(db, id),
+    repo.indirectos(db, id),
+    repo.configuracion(db),
+  ]);
+  const apus = await repo.apusConLineas(db, [...new Set(rubs.map((r) => r.apuId))]);
+  return {
+    id: o.id,
+    nombre: o.nombre,
+    cliente: o.cliente,
+    tipo: o.tipo,
+    estado: o.estado,
+    version: o.version,
+    iva: config.iva,
+    factor: config.factorMateriales,
+    costoObjetivo: o.costoObjetivo,
+    indirectos: indirs.map((i) => ({ id: i.id, nombre: i.nombre, porcentaje: i.porcentaje })),
+    capitulos: caps.map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      disciplina: c.disciplina,
+      version: c.version,
+    })),
+    rubros: rubs.map(rubroDto),
+    apus: apus.map(apuDto),
+  };
+}
+
 export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
   const puedeEscribir = app.exigirRol('admin', 'cotizador');
 
-  async function detalle(id: string): Promise<OfertaDetalle | null> {
-    const o = await repo.buscar(db, id);
-    if (!o) return null;
-    const [caps, rubs, indirs, config] = await Promise.all([
-      repo.capitulos(db, id),
-      repo.rubros(db, id),
-      repo.indirectos(db, id),
-      repo.configuracion(db),
-    ]);
-    const apus = await repo.apusConLineas(db, [...new Set(rubs.map((r) => r.apuId))]);
-    return {
-      id: o.id,
-      nombre: o.nombre,
-      cliente: o.cliente,
-      tipo: o.tipo,
-      estado: o.estado,
-      version: o.version,
-      iva: config.iva,
-      factor: config.factorMateriales,
-      costoObjetivo: o.costoObjetivo,
-      indirectos: indirs.map((i) => ({ id: i.id, nombre: i.nombre, porcentaje: i.porcentaje })),
-      capitulos: caps.map((c) => ({
-        id: c.id,
-        nombre: c.nombre,
-        disciplina: c.disciplina,
-        version: c.version,
-      })),
-      rubros: rubs.map(rubroDto),
-      apus: apus.map(apuDto),
-    };
-  }
+  const detalle = (id: string) => detalleOferta(db, id);
 
   app.get('/api/ofertas', { preHandler: app.autenticar }, async () => ({
     items: (await repo.listar(db)).map(({ oferta: o, rubros }) => ({

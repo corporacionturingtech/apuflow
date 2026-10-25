@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { OfertaDetalle } from 'tipos';
-import { calcularPresupuesto } from './calculo';
+import { calcularPresupuesto, costoDirectoBloque } from './calculo';
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 
@@ -58,4 +58,17 @@ it('cambiar la cantidad cambia el subtotal', () => {
     rubros: [{ ...detalle.rubros[0]!, cantidad: '20' }],
   });
   expect(c.totales.subtotal.toFixed(2)).toBe('138.60');
+});
+
+it('costo directo de un bloque: cantidades × CU del APU', () => {
+  const b = {
+    id: uuid(9),
+    nombre: 'Bahía',
+    disciplina: null,
+    version: 1,
+    lineas: [{ apuId: uuid(5), cantidad: '10' }],
+  };
+  expect(costoDirectoBloque({ iva: '15', factor: '1', items: [b], apus: detalle.apus }, b)).toBe(
+    63,
+  );
 });
