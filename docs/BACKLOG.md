@@ -13,7 +13,7 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 
 ## F0 · Cimientos
 
-- [ ] **F0-01** · Entorno y monorepo · S
+- [x] **F0-01** · Entorno y monorepo · S
   **Leer:** arquitectura.md (estructura). Este equipo no tiene `node`: instalar Node 22 LTS con
   `fnm` y `corepack enable pnpm`. Crear workspaces, TS estricto compartido, ESLint, Prettier,
   Vitest, scripts raíz `typecheck`, `lint`, `test`.

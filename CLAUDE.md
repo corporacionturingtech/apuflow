@@ -42,6 +42,7 @@ pnpm --filter api db:migrate      # migraciones Drizzle
 
 Este equipo **no trae `node`** instalado: se instala en F0-01 con `fnm` (Node 22 LTS) y
 `corepack enable pnpm`. Si `pnpm` no aparece en una sesión nueva, `eval "$(fnm env)"`.
+TypeScript va fijado en 6.x: typescript-eslint aún no soporta TS 7.
 
 ## Reglas duras
 
