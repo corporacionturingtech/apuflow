@@ -3,3 +3,7 @@ export type { Dec, Num } from './redondeo';
 export { calcularApu, pctIndirectos, precioMaterial } from './apu';
 export { calcularOferta } from './oferta';
 export type * from './tipos';
+export { aplicarCambio, impacto } from './impacto';
+export type { Cambio, Impacto } from './impacto';
+export { brecha, rubrosQueMasPesan } from './objetivo';
+export type { Brecha } from './objetivo';

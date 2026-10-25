@@ -31,10 +31,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** cada APU, cada rubro y el total coinciden al centavo; casos de redondeo .005.
   _Medido:_ paridad con 3 escenarios (factor 1; 1,0734 y 0,9871 con cantidades fraccionarias), 31 pruebas verdes.
 
-- [ ] **F0-04** · Motor: impacto, objetivo y peso · S · F0-03
+- [x] **F0-04** · Motor: impacto, objetivo y peso · S · F0-03
   **Leer:** modelo-calculo.md (impacto, objetivo). `impacto(oferta, cambio)` devuelve APUs,
   rubros, antes, después; `brecha()`; `rubrosQueMasPesan()`.
   **Hecho cuando:** tests con el fixture; recálculo de 5.000 rubros < 150 ms en Node.
+  _Medido:_ `impacto` con 5.029 rubros ≈ 56 ms (reusando el cálculo «antes»); 46 pruebas del motor verdes. Los ms los mide la UI, no el motor.
 
 - [ ] **F0-05** · API base y BD · M · F0-01
   **Leer:** arquitectura.md (datos). Fastify, Drizzle, esquema completo de `dominio.md`,
