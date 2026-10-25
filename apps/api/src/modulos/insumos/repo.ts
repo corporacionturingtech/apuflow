@@ -25,9 +25,24 @@ export const listar = (db: Bd, tipo: TipoInsumo, q?: string) => {
     .orderBy(asc(insumo.orden), asc(insumo.codigo));
 };
 
-export const factorMateriales = async (db: Bd) =>
-  (await db.select({ f: configEmpresa.factorMateriales }).from(configEmpresa).limit(1))[0]?.f ??
-  '1';
+// Una sola fila de configuración por instalación; se crea con los valores por defecto si falta.
+export const configuracion = async (db: Bd | Tx) =>
+  (await db.select().from(configEmpresa).limit(1))[0] ??
+  (await db.insert(configEmpresa).values({ nombre: 'Mi empresa' }).returning())[0]!;
+
+export const actualizarConfiguracion = async (
+  tx: Tx,
+  id: string,
+  version: number,
+  cambios: Partial<typeof configEmpresa.$inferInsert>,
+) =>
+  (
+    await tx
+      .update(configEmpresa)
+      .set({ ...cambios, version: version + 1, actualizadoEn: new Date() })
+      .where(and(eq(configEmpresa.id, id), eq(configEmpresa.version, version)))
+      .returning()
+  )[0];
 
 export const insertar = async (tx: Tx, datos: typeof insumo.$inferInsert) =>
   (await tx.insert(insumo).values(datos).returning())[0]!;

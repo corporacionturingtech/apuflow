@@ -68,9 +68,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** e2e edita un precio con teclado y persiste; 2.000 filas fluidas.
   _Medido:_ 6 pruebas de API (409, bitácora, historial, 403), 5 de web, 2 e2e verdes; con 2.000 filas el DOM pinta <80 filas y el final se alcanza en <2 s. Molde: `apps/api/src/modulos/insumos/`, `apps/web/src/componentes/TablaEditable.tsx` y `pantallas/Materiales.tsx`. Se usó solo `@tanstack/react-virtual` (sin react-table). Trampas: el driver de Drizzle manda los escalares de `jsonb` como texto crudo (`"9.6"` se guardaba como número), por eso la bitácora guarda `{ valor }`; en jsdom el virtualizador mide con `clientHeight/clientWidth` (mockearlos). Falta de F1-01: borrado con papelera y alta desde la UI (la API de alta existe).
 
-- [ ] **F1-02** · Equipos, Mano de obra, Transporte · S · F1-01
+- [x] **F1-02** · Equipos, Mano de obra, Transporte · S · F1-01
   Copiar el patrón de F1-01 (no rediseñar). Herramienta menor en Equipos.
   **Hecho cuando:** las cuatro listas funcionan igual.
+  _Medido:_ 3 pruebas de API nuevas (lista por tipo, herramienta menor con bitácora/409/403/400), 3 de web, 4 e2e nuevos verdes (P.U. por teclado en EQ/MO/TR + herramienta menor). Molde reutilizable: `pantallas/ListaPrecios.tsx` con `LISTAS[...]`; la herramienta menor (`PATCH /api/herramienta-menor`) edita `config_empresa.pct_herramienta_menor`, fila que ahora se crea sola si falta.
 
 - [ ] **F1-03** · Biblioteca de APUs y pantalla APU · M · F1-02
   **Leer:** ux.md (regla 5), INDICE (995–1059). Los cuatro componentes en una pantalla,

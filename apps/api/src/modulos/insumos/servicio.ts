@@ -1,4 +1,4 @@
-import type { InsumoCambio, InsumoCrear } from 'tipos';
+import type { HerramientaMenorCambio, InsumoCambio, InsumoCrear } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import * as repo from './repo';
 
@@ -58,6 +58,34 @@ export async function editar(db: Bd, usuarioId: string, id: string, cambio: Insu
       });
     }
     await repo.registrarBitacora(tx, bitacora);
+    return fila;
+  });
+}
+
+export async function cambiarHerramientaMenor(
+  db: Bd,
+  usuarioId: string,
+  { version, pct }: HerramientaMenorCambio,
+) {
+  return db.transaction(async (tx) => {
+    const actual = await repo.configuracion(tx);
+    const fila = await repo.actualizarConfiguracion(tx, actual.id, version, {
+      pctHerramientaMenor: pct,
+      actualizadoPor: usuarioId,
+    });
+    if (!fila) throw new ConflictoVersion();
+    if (Number(actual.pctHerramientaMenor) !== Number(pct)) {
+      await repo.registrarBitacora(tx, [
+        {
+          usuarioId,
+          entidad: 'config_empresa',
+          entidadId: actual.id,
+          campo: 'pctHerramientaMenor',
+          antes: { valor: actual.pctHerramientaMenor },
+          despues: { valor: fila.pctHerramientaMenor },
+        },
+      ]);
+    }
     return fila;
   });
 }

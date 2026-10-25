@@ -4,6 +4,12 @@ import { api } from '../lib/api';
 import { consultaYo } from '../sesion';
 import { BarraTotales } from './BarraTotales';
 
+const LISTAS = [
+  ['/materiales', 'Materiales'],
+  ['/equipos', 'Equipos'],
+  ['/mano-de-obra', 'Mano de obra'],
+  ['/transporte', 'Transporte'],
+] as const;
 const PANTALLAS = ['Ofertas', 'Bloques', 'APUs', 'Historial', 'Configuración'];
 
 export function Layout() {
@@ -28,12 +34,15 @@ export function Layout() {
           Inicio
         </Link>
         <span className="mt-2 px-2 text-xs uppercase text-slate-500">Listas de precios</span>
-        <Link
-          to="/materiales"
-          className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
-        >
-          Materiales
-        </Link>
+        {LISTAS.map(([to, texto]) => (
+          <Link
+            key={to}
+            to={to}
+            className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
+          >
+            {texto}
+          </Link>
+        ))}
         <span className="mb-2" />
         {PANTALLAS.map((p) => (
           <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">

@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { TablaEditable, type Columna, type FilaTabla } from './TablaEditable';
-import { precioATexto } from '../pantallas/Materiales';
+import { precioATexto } from '../pantallas/ListaPrecios';
 
 afterEach(cleanup);
 

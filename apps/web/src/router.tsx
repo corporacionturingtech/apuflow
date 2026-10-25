@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { Layout } from './layout/Layout';
 import { Inicio } from './pantallas/Inicio';
-import { Materiales } from './pantallas/Materiales';
+import { Equipos, ManoObra, Materiales, Transporte } from './pantallas/Listas';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -41,8 +41,27 @@ export function crearRouter(cliente: QueryClient) {
     component: Materiales,
   });
 
+  const equipos = createRoute({
+    getParentRoute: () => protegida,
+    path: '/equipos',
+    component: Equipos,
+  });
+  const manoObra = createRoute({
+    getParentRoute: () => protegida,
+    path: '/mano-de-obra',
+    component: ManoObra,
+  });
+  const transporte = createRoute({
+    getParentRoute: () => protegida,
+    path: '/transporte',
+    component: Transporte,
+  });
+
   return createRouter({
-    routeTree: raiz.addChildren([login, protegida.addChildren([inicio, materiales])]),
+    routeTree: raiz.addChildren([
+      login,
+      protegida.addChildren([inicio, materiales, equipos, manoObra, transporte]),
+    ]),
   });
 }
 

@@ -45,8 +45,21 @@ export const esquemaConsultaInsumos = z.object({
   q: z.string().trim().optional(),
 });
 
+export const esquemaHerramientaMenor = z.object({
+  pct: dinero,
+  version: z.number().int(),
+});
+export type HerramientaMenor = z.infer<typeof esquemaHerramientaMenor>;
+
+export const esquemaHerramientaMenorCambio = z.object({
+  version: z.number().int(),
+  pct: dinero.refine((v) => Number(v) <= 100, 'Debe estar entre 0 y 100'),
+});
+export type HerramientaMenorCambio = z.infer<typeof esquemaHerramientaMenorCambio>;
+
 export const esquemaListaInsumos = z.object({
   items: z.array(esquemaInsumo),
   factor: dinero,
+  herramientaMenor: esquemaHerramientaMenor,
 });
 export type ListaInsumos = z.infer<typeof esquemaListaInsumos>;

@@ -1,13 +1,55 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { precioMaterial } from 'motor';
-import type { Insumo, InsumoCambio, ListaInsumos } from 'tipos';
+import type { Insumo, InsumoCambio, ListaInsumos, TipoInsumo } from 'tipos';
+import { HerramientaMenor } from './HerramientaMenor';
 import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
 import { money, n2, parseNum } from '../lib/formato';
 import { consultaYo } from '../sesion';
 
-const CLAVE = ['insumos', 'MA'] as const;
+export interface ConfigLista {
+  tipo: TipoInsumo;
+  titulo: string;
+  plural: string; // para el contador y los mensajes: "materiales"
+  buscar: string; // aria-label del buscador
+  tabla: string; // aria-label de la tabla
+  conFactor?: boolean;
+  herramientaMenor?: boolean;
+}
+
+export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte', ConfigLista> = {
+  materiales: {
+    tipo: 'MA',
+    titulo: 'Materiales',
+    plural: 'materiales',
+    buscar: 'Buscar material',
+    tabla: 'Lista de materiales',
+    conFactor: true,
+  },
+  equipos: {
+    tipo: 'EQ',
+    titulo: 'Equipos',
+    plural: 'equipos',
+    buscar: 'Buscar equipo',
+    tabla: 'Lista de equipos',
+    herramientaMenor: true,
+  },
+  manoObra: {
+    tipo: 'MO',
+    titulo: 'Mano de obra',
+    plural: 'cargos',
+    buscar: 'Buscar cargo',
+    tabla: 'Lista de mano de obra',
+  },
+  transporte: {
+    tipo: 'TR',
+    titulo: 'Transporte',
+    plural: 'tarifas',
+    buscar: 'Buscar tarifa',
+    tabla: 'Lista de transporte',
+  },
+};
 
 // Texto decimal que acepta el API ("10.4"); null si no es un precio válido.
 export function precioATexto(texto: string): string | null {
@@ -22,7 +64,8 @@ const variacion = (i: Insumo) => {
   return `${money(Number(i.precioAnterior))} ${d > 0 ? '↑' : d < 0 ? '↓' : ''}`.trim();
 };
 
-export function Materiales() {
+export function ListaPrecios({ config }: { config: ConfigLista }) {
+  const CLAVE = ['insumos', config.tipo] as const;
   const cliente = useQueryClient();
   const { data: yo } = useQuery(consultaYo);
   const [busqueda, setBusqueda] = useState('');
@@ -31,7 +74,8 @@ export function Materiales() {
 
   const { data, isPending, error } = useQuery({
     queryKey: [...CLAVE, busqueda],
-    queryFn: () => api<ListaInsumos>(`/api/insumos?tipo=MA&q=${encodeURIComponent(busqueda)}`),
+    queryFn: () =>
+      api<ListaInsumos>(`/api/insumos?tipo=${config.tipo}&q=${encodeURIComponent(busqueda)}`),
     placeholderData: (previo) => previo,
   });
 
@@ -84,16 +128,20 @@ export function Materiales() {
         ver: (i) => money(Number(i.pu)),
         editar: (i) => n2(Number(i.pu)).replace(/\./g, ''),
       },
-      {
-        id: 'puFactor',
-        titulo: `P.U. × FACTOR (${factor})`,
-        ancho: 170,
-        alinear: 'der',
-        ver: (i) => money(precioMaterial(i.pu, factor).toNumber()),
-      },
+      ...(config.conFactor
+        ? [
+            {
+              id: 'puFactor',
+              titulo: `P.U. × FACTOR (${factor})`,
+              ancho: 170,
+              alinear: 'der' as const,
+              ver: (i: Insumo) => money(precioMaterial(i.pu, factor).toNumber()),
+            },
+          ]
+        : []),
       { id: 'anterior', titulo: 'Precio referencial', ancho: 160, alinear: 'der', ver: variacion },
     ],
-    [factor],
+    [factor, config.conFactor],
   );
 
   const filas: FilaTabla<Insumo>[] = useMemo(() => {
@@ -124,16 +172,18 @@ export function Materiales() {
   return (
     <section>
       <div className="mb-3 flex items-center gap-4">
-        <h1 className="text-xl font-semibold">Materiales</h1>
+        <h1 className="text-xl font-semibold">{config.titulo}</h1>
         <input
           type="search"
-          aria-label="Buscar material"
+          aria-label={config.buscar}
           placeholder="Buscar por código o descripción"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           className="w-80 rounded border border-slate-300 px-2 py-1 text-sm"
         />
-        <span className="text-sm text-slate-500">{data?.items.length ?? 0} materiales</span>
+        <span className="text-sm text-slate-500">
+          {data?.items.length ?? 0} {config.plural}
+        </span>
         {puedeEscribir && (
           <span className="ml-auto text-xs text-slate-500">
             F2 o Enter para editar · flechas para moverse · Esc cancela
@@ -145,16 +195,23 @@ export function Materiales() {
           {aviso}
         </p>
       )}
-      {isPending && <p>Cargando materiales…</p>}
-      {error && <p role="alert">No pudimos cargar los materiales. Intente de nuevo.</p>}
+      {isPending && <p>Cargando {config.plural}…</p>}
+      {error && <p role="alert">No pudimos cargar {config.plural}. Intente de nuevo.</p>}
       {data && (
         <TablaEditable
-          nombre="Lista de materiales"
+          nombre={config.tabla}
           columnas={columnas}
           filas={filas}
           editadas={editadas}
           soloLectura={!puedeEscribir}
           alGuardar={alGuardar}
+        />
+      )}
+      {config.herramientaMenor && data && (
+        <HerramientaMenor
+          valor={data.herramientaMenor}
+          puedeEscribir={puedeEscribir}
+          clave={CLAVE}
         />
       )}
     </section>

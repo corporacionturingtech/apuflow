@@ -136,3 +136,52 @@ test('precio inválido: 400', async () => {
   });
   expect(res.statusCode).toBe(400);
 });
+
+test('lista por tipo sin mezclar y trae la herramienta menor', async () => {
+  await crear(galletaPrecios, { tipo: 'EQ', codigo: 'T-001', unidad: 'h' });
+  const eq = await app.inject({
+    method: 'GET',
+    url: '/api/insumos?tipo=EQ&q=T-001',
+    headers: { cookie: galletaLector },
+  });
+  expect(eq.json().items).toHaveLength(1);
+  expect(eq.json().herramientaMenor.pct).toMatch(/^\d/);
+  const ma = await app.inject({
+    method: 'GET',
+    url: '/api/insumos?tipo=MA&q=T-001',
+    headers: { cookie: galletaLector },
+  });
+  expect(ma.json().items).toEqual([]);
+});
+
+const patchHm = (cookie: string, payload: object) =>
+  app.inject({ method: 'PATCH', url: '/api/herramienta-menor', headers: { cookie }, payload });
+const leerHm = async () =>
+  (
+    await app.inject({
+      method: 'GET',
+      url: '/api/insumos?tipo=EQ&q=sin-resultados',
+      headers: { cookie: galletaLector },
+    })
+  ).json().herramientaMenor as { pct: string; version: number };
+
+test('herramienta menor: cambia, deja bitácora y respeta la versión', async () => {
+  const antes = await leerHm();
+  const nuevo = Number(antes.pct) === 7.5 ? '6' : '7.5';
+  const ok = await patchHm(galletaPrecios, { version: antes.version, pct: nuevo });
+  expect(ok.statusCode).toBe(200);
+  expect(Number(ok.json().pct)).toBe(Number(nuevo));
+  expect(ok.json().version).toBe(antes.version + 1);
+  const bit = await db.select().from(bitacora).where(eq(bitacora.entidad, 'config_empresa'));
+  expect(bit.some((b) => b.campo === 'pctHerramientaMenor')).toBe(true);
+  expect((await patchHm(galletaPrecios, { version: antes.version, pct: '9' })).statusCode).toBe(
+    409,
+  );
+});
+
+test('herramienta menor: lector 403 y porcentaje fuera de 0–100 es 400', async () => {
+  const hm = await leerHm();
+  expect((await patchHm(galletaLector, { version: hm.version, pct: '5' })).statusCode).toBe(403);
+  expect((await patchHm(galletaPrecios, { version: hm.version, pct: '101' })).statusCode).toBe(400);
+  expect((await patchHm(galletaPrecios, { version: hm.version, pct: 'x' })).statusCode).toBe(400);
+});

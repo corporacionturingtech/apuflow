@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import {
   esquemaConsultaInsumos,
+  esquemaHerramientaMenorCambio,
   esquemaInsumoCambio,
   esquemaInsumoCrear,
   type Insumo,
@@ -8,7 +9,7 @@ import {
 import type { Bd } from '../../db/conexion';
 import type { insumo } from '../../db/esquema';
 import * as repo from './repo';
-import { ConflictoVersion, NoExiste, crear, editar } from './servicio';
+import { ConflictoVersion, NoExiste, cambiarHerramientaMenor, crear, editar } from './servicio';
 
 const aInsumo = (f: typeof insumo.$inferSelect): Insumo => ({
   id: f.id,
@@ -31,11 +32,15 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
   app.get('/api/insumos', { preHandler: app.autenticar }, async (req, res) => {
     const c = esquemaConsultaInsumos.safeParse(req.query);
     if (!c.success) return res.code(400).send(datosInvalidos);
-    const [filas, factor] = await Promise.all([
+    const [filas, config] = await Promise.all([
       repo.listar(db, c.data.tipo, c.data.q),
-      repo.factorMateriales(db),
+      repo.configuracion(db),
     ]);
-    return { items: filas.map(aInsumo), factor };
+    return {
+      items: filas.map(aInsumo),
+      factor: config.factorMateriales,
+      herramientaMenor: { pct: config.pctHerramientaMenor, version: config.version },
+    };
   });
 
   app.post('/api/insumos', { preHandler: puedeEscribir }, async (req, res) => {
@@ -64,4 +69,20 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
       }
     },
   );
+
+  app.patch('/api/herramienta-menor', { preHandler: puedeEscribir }, async (req, res) => {
+    const d = esquemaHerramientaMenorCambio.safeParse(req.body);
+    if (!d.success) return res.code(400).send(datosInvalidos);
+    try {
+      const fila = await cambiarHerramientaMenor(db, req.usuario!.id, d.data);
+      return { pct: fila.pctHerramientaMenor, version: fila.version };
+    } catch (e) {
+      if (e instanceof ConflictoVersion) {
+        return res.code(409).send({
+          mensaje: 'Otra persona cambió este porcentaje. Se actualizó; vuelva a intentarlo.',
+        });
+      }
+      throw e;
+    }
+  });
 }
