@@ -127,6 +127,7 @@ test('revisar resume el libro sin escribir nada', async () => {
     capitulos: 1,
   });
   expect(r.puedeConfirmar).toBe(true);
+  expect(r.cuadra).toMatchObject({ hayCache: true, cuadra: true, rubrosDistintos: [] });
   expect(
     await db
       .select()

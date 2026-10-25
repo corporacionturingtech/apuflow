@@ -43,12 +43,9 @@ export async function rutasImportacion(app: FastifyInstance, { db }: { db: Bd })
       return res.code(201).send({ ofertaId });
     } catch (e) {
       if (e instanceof LibroConProblemas)
-        return res
-          .code(422)
-          .send({
-            mensaje:
-              'El libro tiene problemas que impiden importarlo. Revíselos y vuelva a subirlo.',
-          });
+        return res.code(422).send({
+          mensaje: 'El libro tiene problemas que impiden importarlo. Revíselos y vuelva a subirlo.',
+        });
       return res.code(400).send(ilegible);
     }
   });

@@ -1,4 +1,4 @@
-import { leerLibro, type LibroLeido, type Problema } from 'excel';
+import { comprobarCuadra, leerLibro, type LibroLeido, type Problema } from 'excel';
 import type { RevisionImportacion } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import * as repo from './repo';
@@ -77,6 +77,7 @@ export async function revisar(
         .length,
     },
     problemas,
+    cuadra: comprobarCuadra(leido),
     puedeConfirmar: !problemas.some((p) => p.bloqueante) && leido.resumen.rubros > 0,
   };
 }

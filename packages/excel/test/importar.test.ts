@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import { calcularOferta } from 'motor';
 import { describe, expect, it } from 'vitest';
 import { aEntradaMotor, exportarLibro } from '../src/exportar';
+import { comprobarCuadra } from '../src/importar/cuadra';
 import { leerLibro } from '../src/importar/leer';
 import type { LibroEntrada, TipoInsumo } from '../src/tipos';
 
@@ -172,5 +173,18 @@ describe('leerLibro', () => {
     expect(
       problemas.some((p) => p.bloqueante && p.mensaje.includes('repetido con otro precio')),
     ).toBe(true);
+  });
+  it('comprueba que el total del libro cuadra con el motor y señala el rubro que no', async () => {
+    const buf = await exportarLibro(libro());
+    const ok = comprobarCuadra(await leerLibro(buf));
+    expect(ok).toMatchObject({ hayCache: true, cuadra: true, rubrosDistintos: [] });
+
+    const leido = await leerLibro(buf);
+    leido.cache.rubros[0]!.totalOfertado! += 10;
+    leido.cache.total! += 10;
+    const mal = comprobarCuadra(leido);
+    expect(mal.cuadra).toBe(false);
+    expect(mal.rubrosDistintos).toHaveLength(1);
+    expect(mal.rubrosDistintos[0]!.excel - mal.rubrosDistintos[0]!.apuflow).toBeCloseTo(10, 2);
   });
 });

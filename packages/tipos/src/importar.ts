@@ -20,6 +20,22 @@ export const esquemaRevisionImportacion = z.object({
     rubros: z.number().int(),
   }),
   problemas: z.array(esquemaProblemaImportacion),
+  cuadra: z
+    .object({
+      hayCache: z.boolean(),
+      cuadra: z.boolean(),
+      totalExcel: z.number().nullable(),
+      totalApuflow: z.number(),
+      rubrosDistintos: z.array(
+        z.object({
+          fila: z.number().int(),
+          descripcion: z.string(),
+          excel: z.number(),
+          apuflow: z.number(),
+        }),
+      ),
+    })
+    .optional(),
   puedeConfirmar: z.boolean(),
 });
 export type RevisionImportacion = z.infer<typeof esquemaRevisionImportacion>;

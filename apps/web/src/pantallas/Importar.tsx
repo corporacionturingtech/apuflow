@@ -3,6 +3,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import type { RevisionImportacion, ResultadoImportacion } from 'tipos';
 import { ErrorApi, subirArchivo } from '../lib/api';
+import { money, sgn } from '../lib/formato';
 
 const mensajeDe = (e: unknown) =>
   e instanceof ErrorApi ? e.message : 'No pudimos leer el archivo. Intente de nuevo.';
@@ -78,6 +79,41 @@ export function Importar() {
             Encontramos {r.listas} listas, {r.insumos} insumos ({r.insumosNuevos} nuevos), {r.apus}{' '}
             APUs y 1 presupuesto de {r.rubros} rubros en {r.capitulos} capítulos.
           </p>
+          {revision.cuadra?.hayCache && (
+            <div
+              data-testid="cuadra"
+              className={
+                'mt-3 rounded border p-3 text-sm ' +
+                (revision.cuadra.cuadra
+                  ? 'border-green-300 bg-green-50'
+                  : 'border-amber-300 bg-amber-50')
+              }
+            >
+              {revision.cuadra.cuadra ? (
+                <b>
+                  ✓ Cuadra con su Excel: {money(revision.cuadra.totalExcel ?? 0)} ={' '}
+                  {money(revision.cuadra.totalApuflow)}
+                </b>
+              ) : (
+                <>
+                  <b>
+                    No cuadra con su Excel: {money(revision.cuadra.totalExcel ?? 0)} en su libro,{' '}
+                    {money(revision.cuadra.totalApuflow)} en APUflow.
+                  </b>
+                  {revision.cuadra.rubrosDistintos.length > 0 && (
+                    <ul className="mt-1 list-disc pl-5">
+                      {revision.cuadra.rubrosDistintos.map((x) => (
+                        <li key={x.fila}>
+                          Fila {x.fila}, {x.descripcion}: su Excel {money(x.excel)}, APUflow{' '}
+                          {money(x.apuflow)} ({sgn(x.apuflow - x.excel)})
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </div>
+          )}
           {bloqueantes.length > 0 && (
             <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm">
               <b>Hay que corregir esto en su libro antes de importar:</b>

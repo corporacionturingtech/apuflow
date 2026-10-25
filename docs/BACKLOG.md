@@ -112,7 +112,7 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ `leerLibro` (`packages/excel/src/importar`) lee por encabezados y devuelve `LibroEntrada` + caché + problemas por hoja y fila; ida y vuelta con el fixture (público y privado) da el mismo total al centavo (3 pruebas de excel). API: `POST /api/importar/revisar` y `/confirmar` (cuerpo binario, sin dependencia nueva; 4 pruebas, incluye exportar la oferta importada y comparar total); pantalla `/importar` en 3 pasos; e2e `importar` verde.
   _Decisión:_ los insumos existentes (mismo tipo y descripción) se reutilizan y su precio **no** se pisa (se avisa; actualizar precios es F2-05); los APU se crean siempre nuevos; factor/IVA/herramienta menor del libro no cambian la configuración de la empresa (se avisa si difieren). El export no trae códigos de insumo: se generan (`MAT-0001`…). F1-07 usa `cache` de `LibroLeido`.
 
-- [ ] **F1-07** · Comprobación "Cuadra con su Excel" · S · F1-06
+- [x] **F1-07** · Comprobación "Cuadra con su Excel" · S · F1-06
   Compara total en caché del libro vs motor; si difiere, lista rubros con diferencia.
   **Hecho cuando:** e2e `cuadra.spec.ts` muestra "✓ Cuadra" con el fixture.
 
