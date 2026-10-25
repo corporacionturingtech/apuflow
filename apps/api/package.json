@@ -6,11 +6,23 @@
   "main": "src/index.ts",
   "scripts": {
     "typecheck": "tsc -p .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev": "tsx watch src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrar.ts"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.4",
     "excel": "workspace:*",
+    "fastify": "^5.12.7",
     "motor": "workspace:*",
-    "tipos": "workspace:*"
+    "pg": "^8.23.1",
+    "tipos": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15"
   }
 }

@@ -37,7 +37,7 @@ pnpm dev                          # api + web + postgres de desarrollo
 pnpm --filter motor test          # pruebas de un paquete (preferir esto a la suite entera)
 pnpm typecheck && pnpm lint       # antes de cerrar un ticket
 pnpm e2e -- e2e/cuadra.spec.ts    # un solo spec de Playwright
-pnpm --filter api db:migrate      # migraciones Drizzle
+pnpm --filter api db:migrate      # migraciones Drizzle (BD: docker compose -f docker-compose.dev.yml up -d, puerto 5433)
 ```
 
 Este equipo **no trae `node`** instalado: se instala en F0-01 con `fnm` (Node 22 LTS) y
@@ -45,6 +45,7 @@ Este equipo **no trae `node`** instalado: se instala en F0-01 con `fnm` (Node 22
 en `.claude/settings.json`) agrega node/pnpm al PATH aunque el `HOME` de la cuenta sea otro.
 En una terminal propia, si `pnpm` no aparece: `eval "$(fnm env)"`.
 TypeScript va fijado en 6.x: typescript-eslint aún no soporta TS 7.
+No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. Formatear solo los archivos tocados (`pnpm prettier --write <archivos>`).
 
 ## Reglas duras
 

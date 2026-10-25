@@ -37,10 +37,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** tests con el fixture; recálculo de 5.000 rubros < 150 ms en Node.
   _Medido:_ `impacto` con 5.029 rubros ≈ 56 ms (reusando el cálculo «antes»); 46 pruebas del motor verdes. Los ms los mide la UI, no el motor.
 
-- [ ] **F0-05** · API base y BD · M · F0-01
+- [x] **F0-05** · API base y BD · M · F0-01
   **Leer:** arquitectura.md (datos). Fastify, Drizzle, esquema completo de `dominio.md`,
   migraciones, `docker-compose.dev.yml` con Postgres, endpoint `/api/salud`.
   **Hecho cuando:** `pnpm --filter api test` levanta la BD, migra y pasa.
+  _Medido:_ 15 tablas, migración `0000`, 6 pruebas de la API verdes. Postgres de desarrollo en el puerto 5433 (el 5432 suele estar ocupado).
 
 - [ ] **F0-06** · Login y sesión · S · F0-05
   Usuario/clave (argon2), cookie httpOnly, seed de un admin, middleware de rol.
