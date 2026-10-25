@@ -73,7 +73,13 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** las cuatro listas funcionan igual.
   _Medido:_ 3 pruebas de API nuevas (lista por tipo, herramienta menor con bitácora/409/403/400), 3 de web, 4 e2e nuevos verdes (P.U. por teclado en EQ/MO/TR + herramienta menor). Molde reutilizable: `pantallas/ListaPrecios.tsx` con `LISTAS[...]`; la herramienta menor (`PATCH /api/herramienta-menor`) edita `config_empresa.pct_herramienta_menor`, fila que ahora se crea sola si falta.
 
-- [ ] **F1-03** · Biblioteca de APUs y pantalla APU · M · F1-02
+- [x] **F1-02b** · Alta y papelera de insumos · S · F1-02
+  **Leer:** ux.md (regla 10). Botón Agregar, Supr elimina a la papelera con Deshacer, papelera
+  con Restaurar; borrado lógico (`eliminado_en`), código único entre activos del mismo tipo.
+  **Hecho cuando:** e2e agrega, edita, elimina y restaura un insumo y persiste tras recargar.
+  _Medido:_ 3 pruebas de API nuevas (papelera + bitácora, 409/403/404, código repetido al crear y restaurar), 1 de web, 1 e2e verde (10 e2e en total). Migración `0002` (`insumo.eliminado_en`). Trampa: Supr justo tras editar usaba la versión vieja de la fila (409 falso); la lista espera si hay un guardado en curso. Código único solo entre activos del mismo tipo.
+
+- [ ] **F1-03** · Biblioteca de APUs y pantalla APU · M · F1-02b
   **Leer:** ux.md (regla 5), INDICE (995–1059). Los cuatro componentes en una pantalla,
   rendimiento, agregar/quitar líneas buscando insumos, cálculo al pie con el motor.
   **Hecho cuando:** e2e abre un APU, sube ayudantes de 3 a 4 y el CU cambia como en el prototipo.

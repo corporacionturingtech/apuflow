@@ -2,10 +2,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { precioMaterial } from 'motor';
 import type { Insumo, InsumoCambio, ListaInsumos, TipoInsumo } from 'tipos';
+import { FormularioInsumo } from './FormularioInsumo';
 import { HerramientaMenor } from './HerramientaMenor';
+import { clavePapelera, PapeleraInsumos } from './PapeleraInsumos';
+import { precioATexto } from './precio';
 import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
-import { money, n2, parseNum } from '../lib/formato';
+import { money, n2 } from '../lib/formato';
 import { consultaYo } from '../sesion';
 
 export interface ConfigLista {
@@ -51,13 +54,6 @@ export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte'
   },
 };
 
-// Texto decimal que acepta el API ("10.4"); null si no es un precio válido.
-export function precioATexto(texto: string): string | null {
-  const n = parseNum(texto);
-  if (!Number.isFinite(n) || n < 0) return null;
-  return n.toFixed(6).replace(/\.?0+$/, '') || '0';
-}
-
 const variacion = (i: Insumo) => {
   if (i.precioAnterior === null) return '';
   const d = Number(i.pu) - Number(i.precioAnterior);
@@ -71,6 +67,9 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
   const [busqueda, setBusqueda] = useState('');
   const [editadas, setEditadas] = useState<ReadonlySet<string>>(new Set());
   const [aviso, setAviso] = useState('');
+  const [agregando, setAgregando] = useState(false);
+  const [verPapelera, setVerPapelera] = useState(false);
+  const [deshacer, setDeshacer] = useState<Insumo | null>(null);
 
   const { data, isPending, error } = useQuery({
     queryKey: [...CLAVE, busqueda],
@@ -107,6 +106,30 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
       void cliente.invalidateQueries({ queryKey: CLAVE });
     },
   });
+
+  const refrescar = () => {
+    void cliente.invalidateQueries({ queryKey: CLAVE });
+    void cliente.invalidateQueries({ queryKey: clavePapelera(config.tipo) });
+  };
+  const moverPapelera = useMutation({
+    mutationFn: ({ i, accion }: { i: Insumo; accion: 'eliminar' | 'restaurar' }) =>
+      api<Insumo>(`/api/insumos/${i.id}/${accion}`, {
+        metodo: 'POST',
+        cuerpo: { version: i.version },
+      }),
+    onSuccess: (fila, { accion }) => {
+      setAviso('');
+      setDeshacer(accion === 'eliminar' ? fila : null);
+    },
+    onError: (e) => setAviso(e instanceof ErrorApi ? e.message : 'No pudimos completar la acción.'),
+    onSettled: refrescar,
+  });
+
+  // Con un guardado en curso la versión de la fila aún es la vieja: se espera para no dar un 409 falso.
+  function eliminar(i: Insumo) {
+    if (guardar.isPending) return setAviso('Espere un momento: se está guardando el cambio.');
+    moverPapelera.mutate({ i, accion: 'eliminar' });
+  }
 
   const factor = Number(data?.factor ?? 1);
   const columnas: Columna<Insumo>[] = useMemo(
@@ -185,11 +208,43 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           {data?.items.length ?? 0} {config.plural}
         </span>
         {puedeEscribir && (
+          <button
+            type="button"
+            onClick={() => setAgregando(true)}
+            className="rounded bg-blue-700 px-3 py-1 text-sm text-white"
+          >
+            Agregar
+          </button>
+        )}
+        <button
+          type="button"
+          aria-pressed={verPapelera}
+          onClick={() => setVerPapelera((v) => !v)}
+          className="text-sm text-slate-600 underline"
+        >
+          {verPapelera ? 'Volver a la lista' : 'Ver papelera'}
+        </button>
+        {puedeEscribir && (
           <span className="ml-auto text-xs text-slate-500">
-            F2 o Enter para editar · flechas para moverse · Esc cancela
+            F2 o Enter para editar · Supr elimina · flechas para moverse · Esc cancela
           </span>
         )}
       </div>
+      {agregando && puedeEscribir && (
+        <FormularioInsumo tipo={config.tipo} alCerrar={() => setAgregando(false)} />
+      )}
+      {deshacer && (
+        <p role="status" className="mb-2 rounded bg-slate-100 px-3 py-1 text-sm">
+          «{deshacer.descripcion}» pasó a la papelera ·{' '}
+          <button
+            type="button"
+            className="font-medium text-blue-700 underline"
+            onClick={() => moverPapelera.mutate({ i: deshacer, accion: 'restaurar' })}
+          >
+            Deshacer
+          </button>
+        </p>
+      )}
       {aviso && (
         <p role="alert" className="mb-2 rounded bg-red-50 px-3 py-1 text-sm text-red-800">
           {aviso}
@@ -197,7 +252,8 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
       )}
       {isPending && <p>Cargando {config.plural}…</p>}
       {error && <p role="alert">No pudimos cargar {config.plural}. Intente de nuevo.</p>}
-      {data && (
+      {verPapelera && <PapeleraInsumos tipo={config.tipo} puedeEscribir={puedeEscribir} />}
+      {data && !verPapelera && (
         <TablaEditable
           nombre={config.tabla}
           columnas={columnas}
@@ -205,9 +261,10 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           editadas={editadas}
           soloLectura={!puedeEscribir}
           alGuardar={alGuardar}
+          alEliminar={eliminar}
         />
       )}
-      {config.herramientaMenor && data && (
+      {config.herramientaMenor && data && !verPapelera && (
         <HerramientaMenor
           valor={data.herramientaMenor}
           puedeEscribir={puedeEscribir}

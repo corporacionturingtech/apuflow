@@ -185,3 +185,53 @@ test('herramienta menor: lector 403 y porcentaje fuera de 0–100 es 400', async
   expect((await patchHm(galletaPrecios, { version: hm.version, pct: '101' })).statusCode).toBe(400);
   expect((await patchHm(galletaPrecios, { version: hm.version, pct: 'x' })).statusCode).toBe(400);
 });
+
+const accion = (cookie: string, id: string, que: 'eliminar' | 'restaurar', version: number) =>
+  app.inject({
+    method: 'POST',
+    url: `/api/insumos/${id}/${que}`,
+    headers: { cookie },
+    payload: { version },
+  });
+const codigos = async (papelera: boolean) =>
+  (
+    await app.inject({
+      method: 'GET',
+      url: `/api/insumos?tipo=MA&q=T-001&papelera=${papelera}`,
+      headers: { cookie: galletaLector },
+    })
+  )
+    .json()
+    .items.map((i: { codigo: string }) => i.codigo);
+
+test('eliminar manda a la papelera, restaurar vuelve, y ambos dejan bitácora', async () => {
+  const { id, version } = (await crear(galletaPrecios)).json();
+  const el = await accion(galletaPrecios, id, 'eliminar', version);
+  expect(el.statusCode).toBe(200);
+  expect(el.json().eliminadoEn).not.toBeNull();
+  expect(await codigos(false)).toEqual([]);
+  expect(await codigos(true)).toEqual(['T-001']);
+  const re = await accion(galletaPrecios, id, 'restaurar', el.json().version);
+  expect(re.json().eliminadoEn).toBeNull();
+  expect(await codigos(false)).toEqual(['T-001']);
+  const bit = await db.select().from(bitacora).where(eq(bitacora.entidadId, id));
+  expect(bit.filter((b) => b.campo === 'eliminadoEn')).toHaveLength(2);
+});
+
+test('eliminar: versión vieja 409, lector 403, inexistente 404', async () => {
+  const { id, version } = (await crear(galletaPrecios)).json();
+  expect((await accion(galletaLector, id, 'eliminar', version)).statusCode).toBe(403);
+  expect((await accion(galletaPrecios, id, 'eliminar', version + 5)).statusCode).toBe(409);
+  const nada = '00000000-0000-4000-8000-000000000000';
+  expect((await accion(galletaPrecios, nada, 'eliminar', 1)).statusCode).toBe(404);
+});
+
+test('código repetido entre activos: 409 al crear y al restaurar', async () => {
+  const a = (await crear(galletaPrecios)).json();
+  expect((await crear(galletaPrecios)).statusCode).toBe(409);
+  const el = await accion(galletaPrecios, a.id, 'eliminar', a.version);
+  const b = await crear(galletaPrecios); // el código quedó libre
+  expect(b.statusCode).toBe(201);
+  const re = await accion(galletaPrecios, a.id, 'restaurar', el.json().version);
+  expect(re.statusCode).toBe(409);
+});

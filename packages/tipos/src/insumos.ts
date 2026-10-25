@@ -16,6 +16,7 @@ export const esquemaInsumo = z.object({
   precioAnterior: dinero.nullable(),
   seccion: z.string().nullable(),
   orden: z.number().int(),
+  eliminadoEn: z.string().nullable(),
   version: z.number().int(),
 });
 export type Insumo = z.infer<typeof esquemaInsumo>;
@@ -43,7 +44,13 @@ export type InsumoCambio = z.infer<typeof esquemaInsumoCambio>;
 export const esquemaConsultaInsumos = z.object({
   tipo: esquemaTipoInsumo.default('MA'),
   q: z.string().trim().optional(),
+  papelera: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
 });
+
+export const esquemaInsumoVersion = z.object({ version: z.number().int() });
 
 export const esquemaHerramientaMenor = z.object({
   pct: dinero,

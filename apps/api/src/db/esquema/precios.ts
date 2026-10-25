@@ -11,6 +11,8 @@ export const insumo = pgTable('insumo', {
   precioAnterior: numeric('precio_anterior', entrada),
   seccion: text('seccion'),
   orden: integer('orden').notNull().default(0),
+  // Papelera: borrado lógico, el historial de precios y los APUs que lo usen se conservan.
+  eliminadoEn: timestamp('eliminado_en', { withTimezone: true }),
   ...auditoria(),
 });
 

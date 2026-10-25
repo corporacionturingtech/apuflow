@@ -1,11 +1,11 @@
-import { and, asc, eq, ilike, or } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import type { TipoInsumo } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import { bitacora, configEmpresa, historialPrecio, insumo } from '../../db/esquema';
 
 export type Tx = Parameters<Parameters<Bd['transaction']>[0]>[0];
 
-export const listar = (db: Bd, tipo: TipoInsumo, q?: string) => {
+export const listar = (db: Bd, tipo: TipoInsumo, q?: string, papelera = false) => {
   const texto = q ? `%${q.replace(/[%_\\]/g, '\\$&')}%` : null;
   return db
     .select()
@@ -13,6 +13,7 @@ export const listar = (db: Bd, tipo: TipoInsumo, q?: string) => {
     .where(
       and(
         eq(insumo.tipo, tipo),
+        papelera ? isNotNull(insumo.eliminadoEn) : isNull(insumo.eliminadoEn),
         texto
           ? or(
               ilike(insumo.codigo, texto),
@@ -43,6 +44,33 @@ export const actualizarConfiguracion = async (
       .where(and(eq(configEmpresa.id, id), eq(configEmpresa.version, version)))
       .returning()
   )[0];
+
+// Código ya usado por otro insumo activo del mismo tipo (la importación de F1-06 casa por código).
+export const codigoEnUso = async (tx: Tx, tipo: TipoInsumo, codigo: string, exceptoId?: string) =>
+  (
+    await tx
+      .select({ id: insumo.id })
+      .from(insumo)
+      .where(
+        and(
+          eq(insumo.tipo, tipo),
+          eq(insumo.codigo, codigo),
+          isNull(insumo.eliminadoEn),
+          exceptoId ? ne(insumo.id, exceptoId) : undefined,
+        ),
+      )
+      .limit(1)
+  ).length > 0;
+
+export const ultimoOrden = async (tx: Tx, tipo: TipoInsumo) =>
+  (
+    await tx
+      .select({ o: insumo.orden })
+      .from(insumo)
+      .where(eq(insumo.tipo, tipo))
+      .orderBy(desc(insumo.orden))
+      .limit(1)
+  )[0]?.o ?? 0;
 
 export const insertar = async (tx: Tx, datos: typeof insumo.$inferInsert) =>
   (await tx.insert(insumo).values(datos).returning())[0]!;

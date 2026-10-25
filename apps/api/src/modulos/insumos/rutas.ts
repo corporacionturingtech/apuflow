@@ -4,12 +4,22 @@ import {
   esquemaHerramientaMenorCambio,
   esquemaInsumoCambio,
   esquemaInsumoCrear,
+  esquemaInsumoVersion,
   type Insumo,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import type { insumo } from '../../db/esquema';
 import * as repo from './repo';
-import { ConflictoVersion, NoExiste, cambiarHerramientaMenor, crear, editar } from './servicio';
+import {
+  CodigoRepetido,
+  ConflictoVersion,
+  NoExiste,
+  cambiarHerramientaMenor,
+  crear,
+  editar,
+  eliminar,
+  restaurar,
+} from './servicio';
 
 const aInsumo = (f: typeof insumo.$inferSelect): Insumo => ({
   id: f.id,
@@ -21,9 +31,11 @@ const aInsumo = (f: typeof insumo.$inferSelect): Insumo => ({
   precioAnterior: f.precioAnterior,
   seccion: f.seccion,
   orden: f.orden,
+  eliminadoEn: f.eliminadoEn?.toISOString() ?? null,
   version: f.version,
 });
 
+const codigoRepetido = 'Ya existe un insumo de esta lista con ese código';
 const datosInvalidos = { mensaje: 'Revise los datos: hay un valor que no es válido' };
 
 export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
@@ -33,7 +45,7 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
     const c = esquemaConsultaInsumos.safeParse(req.query);
     if (!c.success) return res.code(400).send(datosInvalidos);
     const [filas, config] = await Promise.all([
-      repo.listar(db, c.data.tipo, c.data.q),
+      repo.listar(db, c.data.tipo, c.data.q, c.data.papelera),
       repo.configuracion(db),
     ]);
     return {
@@ -46,7 +58,12 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
   app.post('/api/insumos', { preHandler: puedeEscribir }, async (req, res) => {
     const d = esquemaInsumoCrear.safeParse(req.body);
     if (!d.success) return res.code(400).send(datosInvalidos);
-    return res.code(201).send(aInsumo(await crear(db, req.usuario!.id, d.data)));
+    try {
+      return res.code(201).send(aInsumo(await crear(db, req.usuario!.id, d.data)));
+    } catch (e) {
+      if (e instanceof CodigoRepetido) return res.code(409).send({ mensaje: codigoRepetido });
+      throw e;
+    }
   });
 
   app.patch<{ Params: { id: string } }>(
@@ -60,6 +77,7 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
       } catch (e) {
         if (e instanceof NoExiste)
           return res.code(404).send({ mensaje: 'Ese insumo ya no existe' });
+        if (e instanceof CodigoRepetido) return res.code(409).send({ mensaje: codigoRepetido });
         if (e instanceof ConflictoVersion) {
           return res.code(409).send({
             mensaje: 'Otra persona cambió este insumo. Se actualizó la lista; vuelva a intentarlo.',
@@ -69,6 +87,34 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
       }
     },
   );
+
+  for (const [accion, hacer] of [
+    ['eliminar', eliminar],
+    ['restaurar', restaurar],
+  ] as const) {
+    app.post<{ Params: { id: string } }>(
+      `/api/insumos/:id/${accion}`,
+      { preHandler: puedeEscribir },
+      async (req, res) => {
+        const d = esquemaInsumoVersion.safeParse(req.body);
+        if (!d.success) return res.code(400).send(datosInvalidos);
+        try {
+          return aInsumo(await hacer(db, req.usuario!.id, req.params.id, d.data.version));
+        } catch (e) {
+          if (e instanceof NoExiste)
+            return res.code(404).send({ mensaje: 'Ese insumo ya no existe' });
+          if (e instanceof CodigoRepetido) return res.code(409).send({ mensaje: codigoRepetido });
+          if (e instanceof ConflictoVersion) {
+            return res.code(409).send({
+              mensaje:
+                'Otra persona cambió este insumo. Se actualizó la lista; vuelva a intentarlo.',
+            });
+          }
+          throw e;
+        }
+      },
+    );
+  }
 
   app.patch('/api/herramienta-menor', { preHandler: puedeEscribir }, async (req, res) => {
     const d = esquemaHerramientaMenorCambio.safeParse(req.body);

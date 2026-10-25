@@ -4,13 +4,16 @@ import * as repo from './repo';
 
 export class ConflictoVersion extends Error {}
 export class NoExiste extends Error {}
+export class CodigoRepetido extends Error {}
 
 const CAMPOS = ['codigo', 'descripcion', 'unidad', 'pu', 'seccion'] as const;
 
 export async function crear(db: Bd, usuarioId: string, d: InsumoCrear) {
   return db.transaction(async (tx) => {
+    if (await repo.codigoEnUso(tx, d.tipo, d.codigo)) throw new CodigoRepetido();
     const fila = await repo.insertar(tx, {
       ...d,
+      orden: (await repo.ultimoOrden(tx, d.tipo)) + 1,
       seccion: d.seccion ?? null,
       actualizadoPor: usuarioId,
     });
@@ -28,6 +31,9 @@ export async function editar(db: Bd, usuarioId: string, id: string, cambio: Insu
     const { version, ...campos } = cambio;
     const nuevos: Record<string, unknown> = {};
     const bitacora = [];
+    if (cambio.codigo && cambio.codigo !== actual.codigo) {
+      if (await repo.codigoEnUso(tx, actual.tipo, cambio.codigo, id)) throw new CodigoRepetido();
+    }
     for (const campo of CAMPOS) {
       const valor = campos[campo];
       if (valor === undefined) continue;
@@ -89,3 +95,38 @@ export async function cambiarHerramientaMenor(
     return fila;
   });
 }
+
+// Papelera: borrado lógico con bloqueo optimista y bitácora; restaurar vuelve a comprobar el código.
+async function marcarEliminado(
+  db: Bd,
+  usuarioId: string,
+  id: string,
+  version: number,
+  eliminar: boolean,
+) {
+  return db.transaction(async (tx) => {
+    const actual = await repo.buscar(tx, id);
+    if (!actual) throw new NoExiste();
+    if (!eliminar && (await repo.codigoEnUso(tx, actual.tipo, actual.codigo, id)))
+      throw new CodigoRepetido();
+    const eliminadoEn = eliminar ? new Date() : null;
+    const fila = await repo.actualizar(tx, id, version, { eliminadoEn, actualizadoPor: usuarioId });
+    if (!fila) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, [
+      {
+        usuarioId,
+        entidad: 'insumo',
+        entidadId: id,
+        campo: 'eliminadoEn',
+        antes: { valor: actual.eliminadoEn?.toISOString() ?? null },
+        despues: { valor: eliminadoEn?.toISOString() ?? null },
+      },
+    ]);
+    return fila;
+  });
+}
+
+export const eliminar = (db: Bd, usuarioId: string, id: string, version: number) =>
+  marcarEliminado(db, usuarioId, id, version, true);
+export const restaurar = (db: Bd, usuarioId: string, id: string, version: number) =>
+  marcarEliminado(db, usuarioId, id, version, false);

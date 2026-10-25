@@ -23,6 +23,8 @@ type Props<T> = {
   soloLectura: boolean;
   /** Devuelve un mensaje si el valor no es válido; la celda se queda en edición. */
   alGuardar: (fila: T, columna: string, texto: string) => Promise<string | void> | string | void;
+  /** Tecla Supr sobre la fila enfocada (la lista decide cómo y si va a la papelera). */
+  alEliminar?: (fila: T) => void;
 };
 
 const ALTO_FILA = 28;
@@ -35,6 +37,7 @@ export function TablaEditable<T>({
   editadas,
   soloLectura,
   alGuardar,
+  alEliminar,
 }: Props<T>) {
   const contenedor = useRef<HTMLDivElement>(null);
   const [foco, setFoco] = useState({ f: 0, c: 0 });
@@ -92,6 +95,10 @@ export function TablaEditable<T>({
     if (mov) {
       e.preventDefault();
       return mover(...mov);
+    }
+    if (e.key === 'Delete' && alEliminar && !soloLectura && actual) {
+      e.preventDefault();
+      return alEliminar(actual);
     }
     if (!puedeEditar) return;
     if (e.key === 'F2' || e.key === 'Enter') {

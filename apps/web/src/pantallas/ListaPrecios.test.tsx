@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { LISTAS, ListaPrecios } from './ListaPrecios';
 
@@ -49,4 +49,13 @@ it('Mano de obra y Transporte: mismo molde, sin extras', async () => {
     expect(screen.queryByLabelText(/Herramienta menor/)).toBeNull();
     cleanup();
   }
+});
+
+it('Agregar abre el formulario de alta y Ver papelera cambia de vista', async () => {
+  montar(LISTAS.transporte);
+  fireEvent.click(await screen.findByRole('button', { name: 'Agregar' }));
+  expect(screen.getByRole('form', { name: 'Agregar' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Ver papelera' }));
+  expect(await screen.findByText('La papelera está vacía.')).toBeTruthy();
+  expect(screen.queryByRole('grid')).toBeNull();
 });
