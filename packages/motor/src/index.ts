@@ -7,3 +7,5 @@ export { aplicarCambio, impacto } from './impacto';
 export type { Cambio, Impacto } from './impacto';
 export { brecha, rubrosQueMasPesan } from './objetivo';
 export type { Brecha } from './objetivo';
+export { calcularDetalle } from './detalle';
+export type { DetalleCalculable } from './detalle';

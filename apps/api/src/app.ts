@@ -7,6 +7,7 @@ import { rutasApus } from './modulos/apus/rutas';
 import { rutasOfertas } from './modulos/ofertas/rutas';
 import { rutasBloques } from './modulos/bloques/rutas';
 import { rutasImportacion } from './modulos/importacion/rutas';
+import { rutasVersiones } from './modulos/ofertas/versiones';
 import { rutasSalud } from './modulos/salud/rutas';
 
 export function crearApp(db: Bd) {
@@ -17,6 +18,7 @@ export function crearApp(db: Bd) {
   app.register(rutasInsumos, { db });
   app.register(rutasApus, { db });
   app.register(rutasOfertas, { db });
+  app.register(rutasVersiones, { db });
   app.register(rutasBloques, { db });
   app.register(rutasImportacion, { db });
   return app;

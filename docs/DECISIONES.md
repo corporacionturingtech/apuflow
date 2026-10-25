@@ -38,3 +38,8 @@ motor (`impacto()`), suma APUs, rubros y diferencia, y devuelve el desglose por 
 `POST /api/rubros/:id/apu/copia` duplica el APU con sus líneas (código `<cód> (2)`, `(3)`…) y repunta solo ese rubro;
 las demás ofertas (y los otros rubros de la misma oferta) siguen con el original. «En todas» es `/apus/:id` con el aviso
 de uso (`GET /api/apus/:id/uso`). Se abre con doble clic en una celda de solo lectura o Alt+A.
+
+**D10 · 2026-10-25 · Una versión es la foto del `OfertaDetalle` completo y se compara con el mismo motor.**
+`POST /api/ofertas/:id/versiones` guarda el detalle (cantidades y PU de ese momento) y su total con IVA; las versiones
+no se editan ni se borran. La entrada del motor se arma en `calcularDetalle` (`packages/motor`), compartida por web y API.
+La comparación (`comparar.ts`) cruza rubros por id: cambió / nuevo / quitado.

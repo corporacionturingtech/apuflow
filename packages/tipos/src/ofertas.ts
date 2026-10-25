@@ -134,3 +134,22 @@ export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true }).extend(
   apus: z.array(esquemaApuDeOferta),
 });
 export type OfertaDetalle = z.infer<typeof esquemaOfertaDetalle>;
+
+export const esquemaVersionOfertaCrear = z.object({ nombre: z.string().trim().min(1).max(80) });
+export type VersionOfertaCrear = z.infer<typeof esquemaVersionOfertaCrear>;
+
+export const esquemaVersionOfertaResumen = z.object({
+  id: idUuid,
+  numero: z.number().int(),
+  nombre: z.string().nullable(),
+  emitida: z.boolean(),
+  total: z.string(),
+  creadaEn: z.string(),
+});
+export type VersionOfertaResumen = z.infer<typeof esquemaVersionOfertaResumen>;
+
+/** Una versión es la foto del detalle de la oferta: precios y cantidades de ese momento. */
+export const esquemaVersionOfertaDetalle = esquemaVersionOfertaResumen.extend({
+  snapshot: esquemaOfertaDetalle,
+});
+export type VersionOfertaDetalle = z.infer<typeof esquemaVersionOfertaDetalle>;

@@ -13,6 +13,7 @@ import { exportarLibro } from 'excel';
 import type { Bd } from '../../db/conexion';
 import { armarLibro } from './exportar';
 import * as repo from './repo';
+import type { Tx } from './repo';
 import {
   ConflictoVersion,
   NoExiste,
@@ -71,7 +72,7 @@ export const apuDto = ({
   })),
 });
 
-export async function detalleOferta(db: Bd, id: string): Promise<OfertaDetalle | null> {
+export async function detalleOferta(db: Bd | Tx, id: string): Promise<OfertaDetalle | null> {
   const o = await repo.buscar(db, id);
   if (!o) return null;
   const [caps, rubs, indirs, config] = await Promise.all([

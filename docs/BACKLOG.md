@@ -161,9 +161,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   más pesan con enlace a su APU. **Hecho cuando:** e2e de la misión 5 del prototipo.
   _Medido:_ 1 prueba de API nueva (65 en total), 1 de web (BarraTotales), e2e `objetivo` verde (23 en total; `materiales` 2.000 filas falla también sin este cambio). Panel `Objetivo.tsx` (botón «Costo objetivo» en el presupuesto), brecha en la barra de totales. Semilla propia: `pnpm --filter api db:seed-objetivo` (`OBJ-E2E*`).
 
-- [ ] **F3-02** · Versiones y comparación · M · F3-01
+- [x] **F3-02** · Versiones y comparación · M · F3-01
   Guardar versión (snapshot), comparar actual vs versión por capítulo y rubro.
   **Hecho cuando:** comparar muestra diferencias por rubro y el total de cada una.
+  _Medido:_ 2 pruebas de API nuevas (66 en total), 3 de web (`comparar`), 2 del motor (`calcularDetalle`), e2e `versiones` verde (24 en total; `materiales` 2.000 filas falla también sin este cambio). Panel `Versiones.tsx` (botón «Versiones» en el presupuesto). Semilla propia: `pnpm --filter api db:seed-version` (`VER-E2E*`).
+  _Decisión:_ D10.
 
 - [ ] **F3-03** · Emitir oferta · S · F3-02
   Congela una versión emitida; la oferta sigue editable como borrador nuevo.

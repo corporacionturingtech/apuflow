@@ -10,6 +10,7 @@ import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
+import { Versiones } from './presupuesto/Versiones';
 import { EditarApu } from './presupuesto/EditarApu';
 import { Objetivo } from './presupuesto/Objetivo';
 import { Indirectos } from './presupuesto/Indirectos';
@@ -29,6 +30,7 @@ export function Presupuesto() {
   const [editandoApu, setEditandoApu] = useState<string | null>(null);
   const [verIndirectos, setVerIndirectos] = useState(false);
   const [verObjetivo, setVerObjetivo] = useState(false);
+  const [verVersiones, setVerVersiones] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
   const cambios = useCambiosOferta(id);
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
@@ -198,7 +200,18 @@ export function Presupuesto() {
         >
           Costo objetivo
         </button>
+        <button
+          type="button"
+          aria-expanded={verVersiones}
+          onClick={() => setVerVersiones((v) => !v)}
+          className="rounded border border-slate-300 px-2 py-0.5 text-sm"
+        >
+          Versiones
+        </button>
       </div>
+      {verVersiones && (
+        <Versiones data={data} soloLectura={!puedeEscribir || data.estado === 'emitida'} />
+      )}
       {verObjetivo && calculo && (
         <Objetivo
           data={data}
