@@ -83,6 +83,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - Semillas de e2e: `seed-volumen` borra y recrea los `LST-*` y los e2e corren en paralelo; un e2e que dependa de precios fijos usa su propia semilla con otro prefijo (ver `seed-apu.ts`).
 - Mutaciones que quitan una fila del caché (react-query): leer la `version` de la fila antes de quitarla, dentro de `mutationFn` (no en `onMutate`, que corre al encolar); si no, el DELETE nunca sale. El e2e completo tiene fallos intermitentes por semillas en paralelo (materiales/listas); repetir antes de culpar al ticket.
 - Importar Excel: la API recibe el .xlsx como cuerpo binario (`application/octet-stream` + `X-Nombre-Archivo`), sin multipart. Un e2e puede armar su libro con `exportarLibro` importando `../packages/excel/src`.
+- Semilla de impacto parametrizada por prefijo (`seed-impacto.ts DES`): un e2e nuevo con precios fijos copia ese patrón. Hay dos botones «Deshacer» (papelera y panel de impacto): en e2e acotar por su aviso.
 - Trampa de tablas editables: tras guardar, la fila tiene `version` vieja hasta que responde el PATCH; acciones sobre la misma fila (Supr) deben esperar o dan 409 falso.
 - **Un ticket por sesión:** `/siguiente` → implementar → `/cerrar` → `/clear`. No arrastrar
   contexto de un ticket al siguiente.

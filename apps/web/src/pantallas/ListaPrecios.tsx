@@ -1,59 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { precioMaterial } from 'motor';
-import type { Insumo, InsumoCambio, ListaInsumos, TipoInsumo } from 'tipos';
+import type { Insumo, InsumoCambio, ListaInsumos } from 'tipos';
 import { FormularioInsumo } from './FormularioInsumo';
+import { HistorialPrecios } from './HistorialPrecios';
 import { HerramientaMenor } from './HerramientaMenor';
 import { clavePapelera, PapeleraInsumos } from './PapeleraInsumos';
 import { PanelImpacto, type CambioPrecio } from './PanelImpacto';
 import { precioATexto } from './precio';
+import { useDeshacerPrecio } from './useDeshacerPrecio';
 import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
 import { money, n2 } from '../lib/formato';
 import { consultaYo } from '../sesion';
 
-export interface ConfigLista {
-  tipo: TipoInsumo;
-  titulo: string;
-  plural: string; // para el contador y los mensajes: "materiales"
-  buscar: string; // aria-label del buscador
-  tabla: string; // aria-label de la tabla
-  conFactor?: boolean;
-  herramientaMenor?: boolean;
-}
+import { type ConfigLista } from './configListas';
 
-export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte', ConfigLista> = {
-  materiales: {
-    tipo: 'MA',
-    titulo: 'Materiales',
-    plural: 'materiales',
-    buscar: 'Buscar material',
-    tabla: 'Lista de materiales',
-    conFactor: true,
-  },
-  equipos: {
-    tipo: 'EQ',
-    titulo: 'Equipos',
-    plural: 'equipos',
-    buscar: 'Buscar equipo',
-    tabla: 'Lista de equipos',
-    herramientaMenor: true,
-  },
-  manoObra: {
-    tipo: 'MO',
-    titulo: 'Mano de obra',
-    plural: 'cargos',
-    buscar: 'Buscar cargo',
-    tabla: 'Lista de mano de obra',
-  },
-  transporte: {
-    tipo: 'TR',
-    titulo: 'Transporte',
-    plural: 'tarifas',
-    buscar: 'Buscar tarifa',
-    tabla: 'Lista de transporte',
-  },
-};
+export { LISTAS, type ConfigLista } from './configListas';
 
 const variacion = (i: Insumo) => {
   if (i.precioAnterior === null) return '';
@@ -72,6 +35,13 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
   const [verPapelera, setVerPapelera] = useState(false);
   const [deshacer, setDeshacer] = useState<Insumo | null>(null);
   const [impacto, setImpacto] = useState<CambioPrecio | null>(null);
+  const [historial, setHistorial] = useState<Insumo | null>(null);
+  const { deshacer: deshacerPrecio, deshaciendo } = useDeshacerPrecio(
+    CLAVE,
+    impacto,
+    setImpacto,
+    setAviso,
+  );
 
   const { data, isPending, error } = useQuery({
     queryKey: [...CLAVE, busqueda],
@@ -235,7 +205,8 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
         </button>
         {puedeEscribir && (
           <span className="ml-auto text-xs text-slate-500">
-            F2 o Enter para editar · Supr elimina · flechas para moverse · Esc cancela
+            F2 o Enter para editar · Supr elimina · Alt+H historial · Ctrl+Z deshace el precio · Esc
+            cancela
           </span>
         )}
       </div>
@@ -254,7 +225,21 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           </button>
         </p>
       )}
-      {impacto && <PanelImpacto cambio={impacto} alCerrar={() => setImpacto(null)} />}
+      {impacto && (
+        <PanelImpacto
+          cambio={impacto}
+          alCerrar={() => setImpacto(null)}
+          alDeshacer={puedeEscribir ? deshacerPrecio : undefined}
+          deshaciendo={deshaciendo}
+        />
+      )}
+      {historial && (
+        <HistorialPrecios
+          insumoId={historial.id}
+          descripcion={historial.descripcion}
+          alCerrar={() => setHistorial(null)}
+        />
+      )}
       {aviso && (
         <p role="alert" className="mb-2 rounded bg-red-50 px-3 py-1 text-sm text-red-800">
           {aviso}
@@ -272,6 +257,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           soloLectura={!puedeEscribir}
           alGuardar={alGuardar}
           alEliminar={eliminar}
+          alHistorial={setHistorial}
         />
       )}
       {config.herramientaMenor && data && !verPapelera && (

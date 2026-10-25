@@ -12,7 +12,17 @@ export interface CambioPrecio {
 }
 
 /** "Se actualizó solo": qué pasó en las ofertas al cambiar un precio (regla 2 de ux.md). */
-export function PanelImpacto({ cambio, alCerrar }: { cambio: CambioPrecio; alCerrar: () => void }) {
+export function PanelImpacto({
+  cambio,
+  alCerrar,
+  alDeshacer,
+  deshaciendo = false,
+}: {
+  cambio: CambioPrecio;
+  alCerrar: () => void;
+  alDeshacer?: () => void;
+  deshaciendo?: boolean;
+}) {
   const [detalle, setDetalle] = useState(false);
   const { data, error } = useQuery({
     queryKey: ['impacto', cambio.insumoId, cambio.puAnterior, cambio.puNuevo],
@@ -46,6 +56,16 @@ export function PanelImpacto({ cambio, alCerrar }: { cambio: CambioPrecio; alCer
             className="font-medium text-blue-700 underline"
           >
             Ver qué cambió
+          </button>
+        )}
+        {alDeshacer && (
+          <button
+            type="button"
+            disabled={deshaciendo}
+            onClick={alDeshacer}
+            className="font-medium text-blue-700 underline disabled:opacity-50"
+          >
+            Deshacer
           </button>
         )}
         <button type="button" aria-label="Cerrar" onClick={alCerrar} className="text-slate-500">

@@ -26,6 +26,8 @@ type Props<T> = {
   alGuardar: (fila: T, columna: string, texto: string) => Promise<string | void> | string | void;
   /** Tecla Supr sobre la fila enfocada (la lista decide cómo y si va a la papelera). */
   alEliminar?: (fila: T) => void;
+  /** Alt+H sobre la fila enfocada (también en solo lectura). */
+  alHistorial?: (fila: T) => void;
 };
 
 const ALTO_FILA = 28;
@@ -39,6 +41,7 @@ export function TablaEditable<T>({
   soloLectura,
   alGuardar,
   alEliminar,
+  alHistorial,
 }: Props<T>) {
   const contenedor = useRef<HTMLDivElement>(null);
   const [foco, setFoco] = useState({ f: 0, c: 0 });
@@ -96,6 +99,10 @@ export function TablaEditable<T>({
     if (mov) {
       e.preventDefault();
       return mover(...mov);
+    }
+    if (e.altKey && e.key.toLowerCase() === 'h' && alHistorial && actual) {
+      e.preventDefault();
+      return alHistorial(actual);
     }
     if (e.key === 'Delete' && alEliminar && !soloLectura && actual) {
       e.preventDefault();

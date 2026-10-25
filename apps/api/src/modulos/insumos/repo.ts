@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, ilike, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import type { TipoInsumo } from 'tipos';
 import type { Bd } from '../../db/conexion';
-import { bitacora, configEmpresa, historialPrecio, insumo } from '../../db/esquema';
+import { bitacora, configEmpresa, historialPrecio, insumo, usuario } from '../../db/esquema';
 
 export type Tx = Parameters<Parameters<Bd['transaction']>[0]>[0];
 
@@ -75,7 +75,7 @@ export const ultimoOrden = async (tx: Tx, tipo: TipoInsumo) =>
 export const insertar = async (tx: Tx, datos: typeof insumo.$inferInsert) =>
   (await tx.insert(insumo).values(datos).returning())[0]!;
 
-export const buscar = async (tx: Tx, id: string) =>
+export const buscar = async (tx: Tx | Bd, id: string) =>
   (await tx.select().from(insumo).where(eq(insumo.id, id)))[0];
 
 // El `where version` es el bloqueo optimista: 0 filas = alguien editó antes.
@@ -98,3 +98,18 @@ export const registrarPrecio = (tx: Tx, d: typeof historialPrecio.$inferInsert) 
 
 export const registrarBitacora = (tx: Tx, d: (typeof bitacora.$inferInsert)[]) =>
   d.length ? tx.insert(bitacora).values(d) : Promise.resolve();
+
+export const historial = (db: Bd, insumoId: string, limite = 50) =>
+  db
+    .select({
+      id: historialPrecio.id,
+      puAnterior: historialPrecio.puAnterior,
+      puNuevo: historialPrecio.puNuevo,
+      usuario: usuario.nombre,
+      fecha: historialPrecio.fecha,
+    })
+    .from(historialPrecio)
+    .leftJoin(usuario, eq(usuario.id, historialPrecio.usuarioId))
+    .where(eq(historialPrecio.insumoId, insumoId))
+    .orderBy(desc(historialPrecio.fecha), desc(historialPrecio.id))
+    .limit(limite);

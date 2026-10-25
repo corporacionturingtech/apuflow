@@ -6,6 +6,7 @@ import {
   esquemaInsumoCambio,
   esquemaInsumoCrear,
   esquemaInsumoVersion,
+  type HistorialPrecio,
   type Insumo,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
@@ -82,6 +83,18 @@ export async function rutasInsumos(app: FastifyInstance, { db }: { db: Bd }) {
           return res.code(404).send({ mensaje: 'Ese insumo ya no existe' });
         throw e;
       }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/api/insumos/:id/historial',
+    { preHandler: app.autenticar },
+    async (req, res): Promise<HistorialPrecio[] | undefined> => {
+      if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return res.code(400).send(datosInvalidos);
+      if (!(await repo.buscar(db, req.params.id)))
+        return res.code(404).send({ mensaje: 'Ese insumo ya no existe' });
+      const filas = await repo.historial(db, req.params.id);
+      return filas.map((f) => ({ ...f, fecha: f.fecha.toISOString() }));
     },
   );
 

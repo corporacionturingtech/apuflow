@@ -26,10 +26,10 @@ vi.mock('../lib/api', () => ({ api: vi.fn(async () => respuesta) }));
 
 afterEach(cleanup);
 const cambio = { insumoId: 'i', descripcion: 'Cable 2/0 AWG', puAnterior: '9.6', puNuevo: '10.4' };
-const montar = () =>
+const montar = (alDeshacer?: () => void) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <PanelImpacto cambio={cambio} alCerrar={() => {}} />
+      <PanelImpacto cambio={cambio} alCerrar={() => {}} alDeshacer={alDeshacer} />
     </QueryClientProvider>,
   );
 
@@ -40,4 +40,16 @@ it('resume el efecto y despliega el desglose por oferta', async () => {
   expect(panel.textContent).toMatch(/Recalculado en \d+ ms/);
   fireEvent.click(screen.getByRole('button', { name: 'Ver qué cambió' }));
   expect(screen.getByText('Subestación Norte').parentElement?.textContent).toContain('$ 2.240,00');
+});
+
+it('ofrece Deshacer solo si la lista puede escribir y lo llama al pulsarlo', async () => {
+  const alDeshacer = vi.fn();
+  const { unmount } = montar(alDeshacer);
+  await screen.findByText(/Afectó 4 APUs/);
+  fireEvent.click(screen.getByRole('button', { name: 'Deshacer' }));
+  expect(alDeshacer).toHaveBeenCalledOnce();
+  unmount();
+  montar();
+  await screen.findByText(/Afectó 4 APUs/);
+  expect(screen.queryByRole('button', { name: 'Deshacer' })).toBeNull();
 });

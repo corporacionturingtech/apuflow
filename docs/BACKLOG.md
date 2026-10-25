@@ -132,9 +132,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 3 pruebas de API nuevas (`GET /api/insumos/:id/impacto`: suma sobre varias ofertas, insumo sin uso, 404/400; 52 en total), 1 de web del panel (20 en total), e2e `impacto` verde (18 en total). Panel `PanelImpacto.tsx` en las cuatro listas. Semilla propia: `pnpm --filter api db:seed-impacto` (`IMP-E2E*`, oferta `OFE-IMP`).
   _Decisión:_ el impacto se calcula en el servidor sobre todas las ofertas (D8); el cliente pide `puAnterior`. Pendiente: impacto al cambiar un APU (no solo un precio).
 
-- [ ] **F2-03** · Deshacer e historial de precios · S · F2-02
+- [x] **F2-03** · Deshacer e historial de precios · S · F2-02
   Deshacer el último cambio (Ctrl+Z y botón), historial por insumo con fecha y usuario.
   **Hecho cuando:** deshacer devuelve el total exacto anterior.
+  _Medido:_ 3 pruebas de API nuevas (`GET /api/insumos/:id/historial`, deshacer = PATCH con el PU anterior; 55 en total), 1 de web (21 en total), e2e `deshacer` verde (19 en total): Deshacer por botón y Ctrl+Z devuelven $ 10,00 y Alt+H lista los 4 cambios. Semilla propia: `pnpm --filter api db:seed-deshacer` (`DES-E2E*`, oferta `OFE-DES`).
+  _Pendiente:_ deshacer cambios de APU y quitar rubros/capítulos (ux.md regla 10).
 
 - [ ] **F2-04** · Indirectos, utilidad e IVA por oferta · S · F1-04
   **Leer:** INDICE (1126–1144). **Hecho cuando:** cambiar utilidad cambia todos los P.U. ofertados.

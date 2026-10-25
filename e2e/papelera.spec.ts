@@ -38,7 +38,11 @@ test('agrega, edita, elimina con Supr, restaura y persiste', async ({ page }) =>
   await page.keyboard.press('Delete');
   await expect(page.getByText('pasó a la papelera')).toBeVisible();
   await expect(fila).toHaveCount(0);
-  await page.getByRole('button', { name: 'Deshacer' }).click();
+  await page
+    .getByRole('status')
+    .filter({ hasText: 'pasó a la papelera' })
+    .getByRole('button', { name: 'Deshacer' })
+    .click();
   await expect(fila).toHaveCount(1);
 
   // Eliminar de nuevo, verlo en la papelera y restaurarlo

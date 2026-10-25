@@ -93,3 +93,13 @@ export const esquemaImpactoPrecio = z.object({
 export type ImpactoPrecio = z.infer<typeof esquemaImpactoPrecio>;
 
 export const esquemaConsultaImpacto = z.object({ puAnterior: dinero });
+
+// Una fila del historial de precios de un insumo (más reciente primero).
+export const esquemaHistorialPrecio = z.object({
+  id: z.string().uuid(),
+  puAnterior: z.string().nullable(),
+  puNuevo: z.string(),
+  usuario: z.string().nullable(),
+  fecha: z.string(),
+});
+export type HistorialPrecio = z.infer<typeof esquemaHistorialPrecio>;
