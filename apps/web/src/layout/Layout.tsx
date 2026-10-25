@@ -4,7 +4,7 @@ import { api } from '../lib/api';
 import { consultaYo } from '../sesion';
 import { BarraTotales } from './BarraTotales';
 
-const PANTALLAS = ['Ofertas', 'Bloques', 'Listas de precios', 'APUs', 'Historial', 'Configuración'];
+const PANTALLAS = ['Ofertas', 'Bloques', 'APUs', 'Historial', 'Configuración'];
 
 export function Layout() {
   const cliente = useQueryClient();
@@ -27,6 +27,14 @@ export function Layout() {
         <Link to="/" className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700">
           Inicio
         </Link>
+        <span className="mt-2 px-2 text-xs uppercase text-slate-500">Listas de precios</span>
+        <Link
+          to="/materiales"
+          className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
+        >
+          Materiales
+        </Link>
+        <span className="mb-2" />
         {PANTALLAS.map((p) => (
           <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">
             {p}

@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { Layout } from './layout/Layout';
 import { Inicio } from './pantallas/Inicio';
+import { Materiales } from './pantallas/Materiales';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -34,7 +35,15 @@ export function crearRouter(cliente: QueryClient) {
 
   const inicio = createRoute({ getParentRoute: () => protegida, path: '/', component: Inicio });
 
-  return createRouter({ routeTree: raiz.addChildren([login, protegida.addChildren([inicio])]) });
+  const materiales = createRoute({
+    getParentRoute: () => protegida,
+    path: '/materiales',
+    component: Materiales,
+  });
+
+  return createRouter({
+    routeTree: raiz.addChildren([login, protegida.addChildren([inicio, materiales])]),
+  });
 }
 
 declare module '@tanstack/react-router' {

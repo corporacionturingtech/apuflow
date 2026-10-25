@@ -61,11 +61,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 
 ## F1 · Su Excel adentro (momento: "cuadra")
 
-- [ ] **F1-01** · Listas de precios: Materiales (patrón de referencia) · M · F0-07
+- [x] **F1-01** · Listas de precios: Materiales (patrón de referencia) · M · F0-07
   **Leer:** dominio.md, ux.md (reglas 2–4). CRUD API + tabla tipo Excel virtualizada con edición
   por teclado, FACTOR, precio referencial, secciones por disciplina, búsqueda.
   **Este ticket define el patrón** (módulo API + tabla editable) que copian los siguientes.
   **Hecho cuando:** e2e edita un precio con teclado y persiste; 2.000 filas fluidas.
+  _Medido:_ 6 pruebas de API (409, bitácora, historial, 403), 5 de web, 2 e2e verdes; con 2.000 filas el DOM pinta <80 filas y el final se alcanza en <2 s. Molde: `apps/api/src/modulos/insumos/`, `apps/web/src/componentes/TablaEditable.tsx` y `pantallas/Materiales.tsx`. Se usó solo `@tanstack/react-virtual` (sin react-table). Trampas: el driver de Drizzle manda los escalares de `jsonb` como texto crudo (`"9.6"` se guardaba como número), por eso la bitácora guarda `{ valor }`; en jsdom el virtualizador mide con `clientHeight/clientWidth` (mockearlos). Falta de F1-01: borrado con papelera y alta desde la UI (la API de alta existe).
 
 - [ ] **F1-02** · Equipos, Mano de obra, Transporte · S · F1-01
   Copiar el patrón de F1-01 (no rediseñar). Herramienta menor en Equipos.

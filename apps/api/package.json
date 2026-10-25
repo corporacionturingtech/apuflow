@@ -10,7 +10,8 @@
     "dev": "tsx watch src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrar.ts",
-    "db:seed": "tsx src/db/seed-admin.ts"
+    "db:seed": "tsx src/db/seed-admin.ts",
+    "db:seed-volumen": "tsx src/db/seed-volumen.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.3",
