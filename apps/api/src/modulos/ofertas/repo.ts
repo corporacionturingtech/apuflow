@@ -189,15 +189,13 @@ export const duplicarApu = async (tx: Tx, original: typeof apu.$inferSelect, por
     .returning();
   const lineas = await tx.select().from(lineaApu).where(eq(lineaApu.apuId, original.id));
   if (lineas.length)
-    await tx
-      .insert(lineaApu)
-      .values(
-        lineas.map(({ insumoId, cantidad, orden }) => ({
-          apuId: copia!.id,
-          insumoId,
-          cantidad,
-          orden,
-        })),
-      );
+    await tx.insert(lineaApu).values(
+      lineas.map(({ insumoId, cantidad, orden }) => ({
+        apuId: copia!.id,
+        insumoId,
+        cantidad,
+        orden,
+      })),
+    );
   return copia!;
 };

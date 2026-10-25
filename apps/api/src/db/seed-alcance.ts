@@ -32,16 +32,14 @@ export async function sembrarAlcanceE2e(db: ReturnType<typeof crearBd>['db']) {
       .insert(capitulo)
       .values({ ofertaId: o!.id, nombre: 'Capítulo ficticio', orden: 1 })
       .returning();
-    await db
-      .insert(rubro)
-      .values({
-        ofertaId: o!.id,
-        capituloId: cap!.id,
-        apuId: a!.id,
-        codigo: 'R1',
-        cantidad: '1',
-        orden: 1,
-      });
+    await db.insert(rubro).values({
+      ofertaId: o!.id,
+      capituloId: cap!.id,
+      apuId: a!.id,
+      codigo: 'R1',
+      cantidad: '1',
+      orden: 1,
+    });
   }
 }
 
