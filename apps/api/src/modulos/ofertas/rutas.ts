@@ -6,6 +6,7 @@ import {
   esquemaOfertaCrear,
   esquemaRubroCambio,
   esquemaRubroCrear,
+  esquemaVersionRubro,
   type OfertaDetalle,
 } from 'tipos';
 import { exportarLibro } from 'excel';
@@ -19,6 +20,7 @@ import {
   agregarRubro,
   cambiarIndirecto,
   cambiarRubro,
+  copiarApuDeRubro,
   crear,
   editar,
   quitarCapitulo,
@@ -243,6 +245,26 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
         const { rubro: r, apu: a } = await agregarRubro(db, req.usuario!.id, req.params.id, d.data);
+        return res.code(201).send({ rubro: rubroDto(r), apu: apuDto(a) });
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/api/rubros/:id/apu/copia',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const d = esquemaVersionRubro.safeParse(req.body);
+      if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
+      try {
+        const { rubro: r, apu: a } = await copiarApuDeRubro(
+          db,
+          req.usuario!.id,
+          req.params.id,
+          d.data.version,
+        );
         return res.code(201).send({ rubro: rubroDto(r), apu: apuDto(a) });
       } catch (e) {
         return responderError(e, res);

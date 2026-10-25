@@ -237,3 +237,86 @@ test('el IVA de la oferta reemplaza al de la empresa', async () => {
   expect(Number(ok.json().iva)).toBe(8);
   expect(Number(antes.iva)).not.toBe(8);
 });
+
+// F2-06: dos ofertas comparten el APU; el alcance decide quién ve el cambio.
+async function segundaOferta() {
+  const r0 = (await db.select().from(rubro).where(eq(rubro.id, rubroId)))[0]!;
+  const [o] = await db.insert(oferta).values({ nombre: 'TOFE-2', tipo: 'publico' }).returning();
+  const [c] = await db.insert(capitulo).values({ ofertaId: o!.id, nombre: 'Otra' }).returning();
+  const [r] = await db
+    .insert(rubro)
+    .values({ ofertaId: o!.id, capituloId: c!.id, apuId: r0.apuId, codigo: 'C01', cantidad: '1' })
+    .returning();
+  return { apuId: r0.apuId, otroRubro: r! };
+}
+
+test('APU compartido: se informa el uso y editarlo cambia todas las ofertas', async () => {
+  const { apuId } = await segundaOferta();
+  const uso = await pedir('GET', `/api/apus/${apuId}/uso`, galletaLector);
+  expect(uso.json()).toEqual({ rubros: 2, ofertas: 2 });
+
+  const a = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json().apus[0];
+  expect(a.id).toBe(apuId);
+  await db.update(lineaApu).set({ cantidad: '5' }).where(eq(lineaApu.apuId, apuId));
+  for (const id of [
+    ofertaId,
+    (await db.select().from(oferta).where(like(oferta.nombre, 'TOFE-2')))[0]!.id,
+  ]) {
+    const d = (await pedir('GET', `/api/ofertas/${id}`, galletaLector)).json();
+    expect(d.apus[0].lineas[0].cantidad).toBe('5.000000');
+  }
+});
+
+test('copia solo para esta oferta: el rubro pasa a una copia y la otra oferta no cambia', async () => {
+  const { apuId, otroRubro } = await segundaOferta();
+  const antes = (await db.select().from(rubro).where(eq(rubro.id, rubroId)))[0]!;
+  const res = await pedir('POST', `/api/rubros/${rubroId}/apu/copia`, galletaCotizador, {
+    version: antes.version,
+  });
+  expect(res.statusCode).toBe(201);
+  const { rubro: r, apu: copia } = res.json();
+  expect(r).toMatchObject({ id: rubroId, apuId: copia.id, version: antes.version + 1 });
+  expect(copia.id).not.toBe(apuId);
+  expect(copia.codigo).toBe('TOFE-1 (2)');
+  expect(copia.lineas).toHaveLength(1);
+
+  // Editar la copia no toca al original ni al rubro de la otra oferta.
+  await db.update(lineaApu).set({ cantidad: '9' }).where(eq(lineaApu.apuId, copia.id));
+  const orig = await db.select().from(lineaApu).where(eq(lineaApu.apuId, apuId));
+  expect(Number(orig[0]!.cantidad)).toBe(1);
+  expect((await db.select().from(rubro).where(eq(rubro.id, otroRubro.id)))[0]!.apuId).toBe(apuId);
+  expect((await pedir('GET', `/api/apus/${apuId}/uso`, galletaLector)).json().rubros).toBe(1);
+
+  const reg = await db.select().from(bitacora).where(eq(bitacora.entidadId, rubroId));
+  expect(reg.find((b) => b.campo === 'apuId')).toMatchObject({
+    antes: { valor: apuId },
+    despues: { valor: copia.id },
+  });
+
+  // Una segunda copia del original no repite el código.
+  const otra = await pedir('POST', `/api/rubros/${otroRubro.id}/apu/copia`, galletaCotizador, {
+    version: otroRubro.version,
+  });
+  expect(otra.json().apu.codigo).toBe('TOFE-1 (3)');
+});
+
+test('copia de APU: 409 con versión vieja, 404, 403 y 400', async () => {
+  const v = (await db.select().from(rubro).where(eq(rubro.id, rubroId)))[0]!.version;
+  const viejo = await pedir('POST', `/api/rubros/${rubroId}/apu/copia`, galletaCotizador, {
+    version: v + 5,
+  });
+  expect(viejo.statusCode).toBe(409);
+  expect((await db.select().from(apu).where(like(apu.codigo, 'TOFE-1 (%'))).length).toBe(0);
+  const noExiste = '00000000-0000-4000-8000-000000000000';
+  expect(
+    (await pedir('POST', `/api/rubros/${noExiste}/apu/copia`, galletaCotizador, { version: 1 }))
+      .statusCode,
+  ).toBe(404);
+  expect(
+    (await pedir('POST', `/api/rubros/${rubroId}/apu/copia`, galletaLector, { version: v }))
+      .statusCode,
+  ).toBe(403);
+  expect(
+    (await pedir('POST', `/api/rubros/${rubroId}/apu/copia`, galletaCotizador, {})).statusCode,
+  ).toBe(400);
+});

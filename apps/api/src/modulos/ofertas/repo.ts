@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray, isNull, max } from 'drizzle-orm';
+import { and, asc, count, countDistinct, desc, eq, inArray, isNull, max } from 'drizzle-orm';
 import type { Bd } from '../../db/conexion';
 import { apu, capitulo, indirecto, insumo, lineaApu, oferta, rubro } from '../../db/esquema';
 
@@ -156,3 +156,48 @@ export const insumosActivos = (db: Bd | Tx) =>
     .from(insumo)
     .where(isNull(insumo.eliminadoEn))
     .orderBy(asc(insumo.tipo), asc(insumo.orden), asc(insumo.codigo));
+
+// Cuántos rubros y ofertas usan un APU: es lo que se avisa antes de editarlo para todas.
+export const usoApu = async (db: Bd | Tx, apuId: string) => {
+  const [u] = await db
+    .select({ rubros: count(rubro.id), ofertas: countDistinct(rubro.ofertaId) })
+    .from(rubro)
+    .where(eq(rubro.apuId, apuId));
+  return { rubros: u!.rubros, ofertas: u!.ofertas };
+};
+
+// Primer «<código> (n)» libre, n desde 2.
+export const codigoLibre = async (tx: Tx, base: string) => {
+  const usados = new Set((await tx.select({ c: apu.codigo }).from(apu)).map((f) => f.c));
+  let n = 2;
+  while (usados.has(`${base} (${n})`)) n++;
+  return `${base} (${n})`;
+};
+
+export const duplicarApu = async (tx: Tx, original: typeof apu.$inferSelect, por: string) => {
+  const [copia] = await tx
+    .insert(apu)
+    .values({
+      codigo: await codigoLibre(tx, original.codigo),
+      descripcion: original.descripcion,
+      unidad: original.unidad,
+      disciplina: original.disciplina,
+      rendimiento: original.rendimiento,
+      pctHerramientaMenor: original.pctHerramientaMenor,
+      actualizadoPor: por,
+    })
+    .returning();
+  const lineas = await tx.select().from(lineaApu).where(eq(lineaApu.apuId, original.id));
+  if (lineas.length)
+    await tx
+      .insert(lineaApu)
+      .values(
+        lineas.map(({ insumoId, cantidad, orden }) => ({
+          apuId: copia!.id,
+          insumoId,
+          cantidad,
+          orden,
+        })),
+      );
+  return copia!;
+};

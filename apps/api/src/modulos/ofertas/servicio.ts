@@ -185,3 +185,28 @@ export async function agregarCapitulo(
     return c;
   });
 }
+
+// «Solo en esta oferta»: el rubro pasa a una copia del APU y las demás ofertas siguen con el original.
+export async function copiarApuDeRubro(db: Bd, usuarioId: string, id: string, version: number) {
+  return db.transaction(async (tx) => {
+    const actual = await repo.buscarRubro(tx, id);
+    if (!actual) throw new NoExiste();
+    const original = (await repo.apusConLineas(tx, [actual.apuId]))[0]?.apu;
+    if (!original) throw new NoExiste();
+    const copia = await repo.duplicarApu(tx, original, usuarioId);
+    const fila = await repo.actualizarRubro(tx, id, version, { apuId: copia.id }, usuarioId);
+    if (!fila) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, [
+      { usuarioId, entidad: 'apu', entidadId: copia.id, campo: null, antes: null, despues: copia },
+      {
+        usuarioId,
+        entidad: 'rubro',
+        entidadId: id,
+        campo: 'apuId',
+        antes: { valor: original.id },
+        despues: { valor: copia.id },
+      },
+    ]);
+    return { rubro: fila, apu: (await repo.apusConLineas(tx, [copia.id]))[0]! };
+  });
+}

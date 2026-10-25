@@ -28,6 +28,8 @@ type Props<T> = {
   alEliminar?: (fila: T) => void;
   /** Alt+H sobre la fila enfocada (también en solo lectura). */
   alHistorial?: (fila: T) => void;
+  /** Alt+A o doble clic en una celda de solo lectura: abrir el registro de la fila. */
+  alAbrir?: (fila: T) => void;
 };
 
 const ALTO_FILA = 28;
@@ -42,6 +44,7 @@ export function TablaEditable<T>({
   alGuardar,
   alEliminar,
   alHistorial,
+  alAbrir,
 }: Props<T>) {
   const contenedor = useRef<HTMLDivElement>(null);
   const [foco, setFoco] = useState({ f: 0, c: 0 });
@@ -103,6 +106,10 @@ export function TablaEditable<T>({
     if (e.altKey && e.key.toLowerCase() === 'h' && alHistorial && actual) {
       e.preventDefault();
       return alHistorial(actual);
+    }
+    if (e.altKey && e.key.toLowerCase() === 'a' && alAbrir && actual) {
+      e.preventDefault();
+      return alAbrir(actual);
     }
     if (e.key === 'Delete' && alEliminar && !soloLectura && actual) {
       e.preventDefault();
@@ -194,9 +201,10 @@ export function TablaEditable<T>({
                       role="gridcell"
                       aria-selected={activa}
                       onClick={() => setFoco({ f: v.index, c: ci })}
-                      onDoubleClick={() =>
-                        c.editar && !soloLectura && setEditor(c.editar(fila.dato!))
-                      }
+                      onDoubleClick={() => {
+                        if (c.editar && !soloLectura) setEditor(c.editar(fila.dato!));
+                        else if (!c.editar) alAbrir?.(fila.dato!);
+                      }}
                       style={{ width: c.ancho }}
                       className={`shrink-0 truncate border-r border-slate-100 px-2 py-1 ${
                         c.alinear ? 'text-right tabular-nums' : ''

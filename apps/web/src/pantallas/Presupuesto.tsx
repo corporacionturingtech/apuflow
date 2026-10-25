@@ -10,6 +10,7 @@ import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
+import { EditarApu } from './presupuesto/EditarApu';
 import { Indirectos } from './presupuesto/Indirectos';
 import { GuardarBloque } from './presupuesto/GuardarBloque';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
@@ -24,6 +25,7 @@ export function Presupuesto() {
   const [plegados, setPlegados] = useState<ReadonlySet<string>>(new Set());
   const [anadiendo, setAnadiendo] = useState(false);
   const [guardandoBloque, setGuardandoBloque] = useState(false);
+  const [editandoApu, setEditandoApu] = useState<string | null>(null);
   const [verIndirectos, setVerIndirectos] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
   const cambios = useCambiosOferta(id);
@@ -230,6 +232,9 @@ export function Presupuesto() {
           >
             Añadir capítulo
           </button>
+          <span className="text-xs text-slate-500">
+            Doble clic en la descripción o Alt+A: editar el APU del rubro
+          </span>
         </div>
       )}
       {anadiendo && (
@@ -241,6 +246,9 @@ export function Presupuesto() {
       )}
       {guardandoBloque && (
         <GuardarBloque capitulos={data.capitulos} alCerrar={() => setGuardandoBloque(false)} />
+      )}
+      {editandoApu && (
+        <EditarApu ofertaId={id} rubroId={editandoApu} alCerrar={() => setEditandoApu(null)} />
       )}
       {data.rubros.length === 0 ? (
         <p className="mt-4 text-slate-600">
@@ -258,6 +266,9 @@ export function Presupuesto() {
             soloLectura={!puedeEscribir || data.estado === 'emitida'}
             alGuardar={alGuardar}
             alEliminar={(f) => quitarRubro.mutate(f.id)}
+            alAbrir={
+              puedeEscribir && data.estado !== 'emitida' ? (f) => setEditandoApu(f.id) : undefined
+            }
           />
         </div>
       )}

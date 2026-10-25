@@ -33,3 +33,8 @@ el doc (es más nuevo); el prototipo manda solo en el cálculo.
 **D8 · 2026-10-25 · El impacto de un precio se calcula en el servidor, sobre todas las ofertas.**
 Los precios son de la empresa, no de una oferta. `GET /api/insumos/:id/impacto?puAnterior=` arma cada oferta con el
 motor (`impacto()`), suma APUs, rubros y diferencia, y devuelve el desglose por oferta para «Ver qué cambió».
+
+**D9 · 2026-10-25 · Editar un APU desde la oferta pregunta el alcance; «solo en esta» copia y repunta un rubro.**
+`POST /api/rubros/:id/apu/copia` duplica el APU con sus líneas (código `<cód> (2)`, `(3)`…) y repunta solo ese rubro;
+las demás ofertas (y los otros rubros de la misma oferta) siguen con el original. «En todas» es `/apus/:id` con el aviso
+de uso (`GET /api/apus/:id/uso`). Se abre con doble clic en una celda de solo lectura o Alt+A.

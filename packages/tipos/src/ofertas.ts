@@ -67,6 +67,8 @@ export const esquemaRubroCambio = z
   .refine((d) => Object.keys(d).some((k) => k !== 'version'), 'Nada que cambiar');
 export type RubroCambio = z.infer<typeof esquemaRubroCambio>;
 
+export const esquemaVersionRubro = z.object({ version: z.number().int() });
+
 export const esquemaRubroCrear = z.object({
   capituloId: idUuid,
   apuId: idUuid,

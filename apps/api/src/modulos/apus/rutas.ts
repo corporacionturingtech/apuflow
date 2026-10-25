@@ -8,6 +8,7 @@ import {
   type ApuDetalle,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
+import { usoApu } from '../ofertas/repo';
 import * as repo from './repo';
 import {
   ConflictoVersion,
@@ -92,6 +93,15 @@ export async function rutasApus(app: FastifyInstance, { db }: { db: Bd }) {
       return (
         (await detalle(req.params.id)) ?? res.code(404).send({ mensaje: 'Ese APU ya no existe' })
       );
+    },
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/api/apus/:id/uso',
+    { preHandler: app.autenticar },
+    async (req, res) => {
+      if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return res.code(404).send(datosInvalidos);
+      return usoApu(db, req.params.id);
     },
   );
 

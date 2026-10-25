@@ -148,9 +148,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 3 pruebas de excel (`leerPrecios`; 11 en total), 3 de API (`/api/importar/precios/revisar|confirmar`: cambia / sin cambio / no existe, impacto conjunto, historial, 422 sin cambios, 400, 403; 60 en total), 2 de web (24 en total), e2e `importar-precios` verde (21 en total; siguen intermitentes `listas`/`materiales` por semillas en paralelo). Pantalla `/importar/precios` (enlace desde Importar libro). Sin semilla: el e2e arma su libro con prefijo `IPRE2E`.
   _Decisión:_ se empareja por tipo + descripción; lo que no existe se informa y se omite (no crea insumos); confirmar aplica todo en una transacción por `editarTx` (historial y bitácora por insumo). Solo `.xlsx` (CSV pendiente). _Pendiente:_ deshacer en bloque una importación de precios y emparejar por código.
 
-- [ ] **F2-06** · APU compartido vs copia en la oferta · S · F1-03
+- [x] **F2-06** · APU compartido vs copia en la oferta · S · F1-03
   **Leer:** dominio.md (decisiones). Al editar un APU desde una oferta preguntar el alcance.
   **Hecho cuando:** test de ambos caminos.
+  _Medido:_ 3 pruebas de API nuevas (uso + editar compartido; copia «solo esta» con sufijo `(2)`/`(3)`, bitácora y otra oferta intacta; 409/404/403/400; 63 en total), e2e `apu-alcance` verde (22 en total; `materiales` 2.000 filas falla también sin este cambio). Diálogo `EditarApu.tsx` (doble clic o Alt+A en el presupuesto). Semilla propia: `pnpm --filter api db:seed-alcance` (`ALC-E2E*`).
+  _Decisión:_ D9. _Pendiente:_ aviso de uso al editar desde `/apus/:id` directo; deshacer la copia.
 
 ## F3 · Ganar (momento: "llegamos al objetivo")
 

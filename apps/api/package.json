@@ -18,7 +18,8 @@
     "db:seed-bloques": "tsx src/db/seed-bloques.ts",
     "db:seed-impacto": "tsx src/db/seed-impacto.ts",
     "db:seed-deshacer": "tsx src/db/seed-impacto.ts DES",
-    "db:seed-indirectos": "tsx src/db/seed-indirectos.ts"
+    "db:seed-indirectos": "tsx src/db/seed-indirectos.ts",
+    "db:seed-alcance": "tsx src/db/seed-alcance.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.3",
