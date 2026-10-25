@@ -9,6 +9,8 @@ import {
 import { Layout } from './layout/Layout';
 import { Inicio } from './pantallas/Inicio';
 import { Equipos, ManoObra, Materiales, Transporte } from './pantallas/Listas';
+import { Apus } from './pantallas/Apus';
+import { PantallaApu } from './pantallas/PantallaApu';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -57,10 +59,17 @@ export function crearRouter(cliente: QueryClient) {
     component: Transporte,
   });
 
+  const apus = createRoute({ getParentRoute: () => protegida, path: '/apus', component: Apus });
+  const apu = createRoute({
+    getParentRoute: () => protegida,
+    path: '/apus/$id',
+    component: PantallaApu,
+  });
+
   return createRouter({
     routeTree: raiz.addChildren([
       login,
-      protegida.addChildren([inicio, materiales, equipos, manoObra, transporte]),
+      protegida.addChildren([inicio, materiales, equipos, manoObra, transporte, apus, apu]),
     ]),
   });
 }

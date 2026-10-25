@@ -79,10 +79,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** e2e agrega, edita, elimina y restaura un insumo y persiste tras recargar.
   _Medido:_ 3 pruebas de API nuevas (papelera + bitácora, 409/403/404, código repetido al crear y restaurar), 1 de web, 1 e2e verde (10 e2e en total). Migración `0002` (`insumo.eliminado_en`). Trampa: Supr justo tras editar usaba la versión vieja de la fila (409 falso); la lista espera si hay un guardado en curso. Código único solo entre activos del mismo tipo.
 
-- [ ] **F1-03** · Biblioteca de APUs y pantalla APU · M · F1-02b
+- [x] **F1-03** · Biblioteca de APUs y pantalla APU · M · F1-02b
   **Leer:** ux.md (regla 5), INDICE (995–1059). Los cuatro componentes en una pantalla,
   rendimiento, agregar/quitar líneas buscando insumos, cálculo al pie con el motor.
   **Hecho cuando:** e2e abre un APU, sube ayudantes de 3 a 4 y el CU cambia como en el prototipo.
+  _Medido:_ 5 pruebas de API (lista/detalle, cantidad + bitácora, 409/403, rendimiento, agregar/quitar), 1 de web, 1 e2e verde (11 en total). El pie usa un campo local "Indirectos %" (no se guarda): F1-04 lo reemplaza por los indirectos de la oferta. Semilla propia del e2e: `pnpm --filter api db:seed-apu` (insumos `APU-E2E-*`, no `LST-*`: otros e2e editan esos precios y `seed-volumen` los borra).
 
 - [ ] **F1-04** · Ofertas, capítulos y rubros · M · F1-03
   **Leer:** INDICE (928–994). Lista de ofertas, datos generales, tipo público/privado (columnas

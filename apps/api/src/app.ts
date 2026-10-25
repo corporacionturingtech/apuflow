@@ -3,6 +3,7 @@ import type { Bd } from './db/conexion';
 import cookie from '@fastify/cookie';
 import { instalarAuth } from './modulos/auth/rutas';
 import { rutasInsumos } from './modulos/insumos/rutas';
+import { rutasApus } from './modulos/apus/rutas';
 import { rutasSalud } from './modulos/salud/rutas';
 
 export function crearApp(db: Bd) {
@@ -11,5 +12,6 @@ export function crearApp(db: Bd) {
   instalarAuth(app, db);
   app.register(rutasSalud, { db });
   app.register(rutasInsumos, { db });
+  app.register(rutasApus, { db });
   return app;
 }

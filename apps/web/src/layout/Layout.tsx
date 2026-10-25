@@ -10,7 +10,7 @@ const LISTAS = [
   ['/mano-de-obra', 'Mano de obra'],
   ['/transporte', 'Transporte'],
 ] as const;
-const PANTALLAS = ['Ofertas', 'Bloques', 'APUs', 'Historial', 'Configuración'];
+const PANTALLAS = ['Ofertas', 'Bloques', 'Historial', 'Configuración'];
 
 export function Layout() {
   const cliente = useQueryClient();
@@ -43,7 +43,12 @@ export function Layout() {
             {texto}
           </Link>
         ))}
-        <span className="mb-2" />
+        <Link
+          to="/apus"
+          className="mt-2 rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
+        >
+          APUs
+        </Link>
         {PANTALLAS.map((p) => (
           <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">
             {p}
