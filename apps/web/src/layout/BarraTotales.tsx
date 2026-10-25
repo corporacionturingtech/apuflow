@@ -1,4 +1,5 @@
 import { money } from '../lib/formato';
+import { useTotales } from './totales';
 
 interface Props {
   subtotal?: number;
@@ -6,8 +7,10 @@ interface Props {
   total?: number;
 }
 
-/** Regla UX 1: el total siempre a la vista. Vacía hasta F1-04. */
-export function BarraTotales({ subtotal = 0, iva = 0, total = 0 }: Props) {
+/** Regla UX 1: el total siempre a la vista. Muestra la oferta abierta; en cero si no hay. */
+export function BarraTotales(props: Props) {
+  const abierta = useTotales();
+  const { subtotal = 0, iva = 0, total = 0 } = { ...abierta, ...props };
   const celdas = [
     ['Subtotal', subtotal],
     ['IVA', iva],

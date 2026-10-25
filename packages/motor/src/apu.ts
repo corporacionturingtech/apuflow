@@ -49,7 +49,7 @@ export function calcularApu(apu: Apu, listas: Listas, p: Parametros): ApuCalcula
   );
 
   const mo = r2(suma(manoObra, (l) => l.importe));
-  const hm = r2(mo.times(p.herramientaMenor).div(100));
+  const hm = r2(mo.times(apu.herramientaMenor ?? p.herramientaMenor).div(100));
   const eq = r2(suma(equipos, (l) => l.importe).plus(hm));
   const ma = r2(suma(materiales, (l) => l.importe));
   const tra = r2(suma(transporte, (l) => l.importe));

@@ -85,10 +85,16 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** e2e abre un APU, sube ayudantes de 3 a 4 y el CU cambia como en el prototipo.
   _Medido:_ 5 pruebas de API (lista/detalle, cantidad + bitácora, 409/403, rendimiento, agregar/quitar), 1 de web, 1 e2e verde (11 en total). El pie usa un campo local "Indirectos %" (no se guarda): F1-04 lo reemplaza por los indirectos de la oferta. Semilla propia del e2e: `pnpm --filter api db:seed-apu` (insumos `APU-E2E-*`, no `LST-*`: otros e2e editan esos precios y `seed-volumen` los borra).
 
-- [ ] **F1-04** · Ofertas, capítulos y rubros · M · F1-03
+- [x] **F1-04** · Ofertas, capítulos y rubros · M · F1-03
   **Leer:** INDICE (928–994). Lista de ofertas, datos generales, tipo público/privado (columnas
   distintas), capítulos, rubros con cantidad, numeración, tabla virtualizada, barra de totales real.
   **Hecho cuando:** oferta de 1.500 rubros (generada) edita cantidades sin lag.
+  _Medido:_ 4 pruebas de API (lista/detalle, rol, cantidad + bitácora + 409, datos generales y capítulo), 3 de web, 1 e2e verde (12 en total): oferta de 1.500 rubros (`pnpm --filter api db:seed-oferta`, prefijo `OFE-E2E*`), la barra pasa de $ 15.000,00 a $ 15.020,00 al editar y persiste. Cálculo en la web con `calcularOferta`; el motor ahora acepta `herramientaMenor` por APU. Indirectos de la oferta: solo lectura aquí (se editan en F2-04). Detalle completo en un GET; PATCH de rubro devuelve solo `{id, cantidad, version}`.
+
+- [ ] **F1-04b** · Añadir y quitar rubros y capítulos · S · F1-04
+  **Leer:** INDICE (928–994). Buscador de APUs para añadir rubro, quitar rubro/capítulo, plegar
+  capítulos, numeración y código de rubro editables, CPC/origen/VAE editables en ofertas públicas.
+  **Hecho cuando:** e2e añade un rubro desde la biblioteca y el total de la barra sube.
 
 - [ ] **F1-05** · Exportar Excel · M · F1-04
   **Leer:** producto/excel.md, INDICE (1855–2069). `packages/excel` con ExcelJS, hojas y

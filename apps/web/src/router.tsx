@@ -11,6 +11,8 @@ import { Inicio } from './pantallas/Inicio';
 import { Equipos, ManoObra, Materiales, Transporte } from './pantallas/Listas';
 import { Apus } from './pantallas/Apus';
 import { PantallaApu } from './pantallas/PantallaApu';
+import { Ofertas } from './pantallas/Ofertas';
+import { Presupuesto } from './pantallas/Presupuesto';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -66,10 +68,31 @@ export function crearRouter(cliente: QueryClient) {
     component: PantallaApu,
   });
 
+  const ofertas = createRoute({
+    getParentRoute: () => protegida,
+    path: '/ofertas',
+    component: Ofertas,
+  });
+  const oferta = createRoute({
+    getParentRoute: () => protegida,
+    path: '/ofertas/$id',
+    component: Presupuesto,
+  });
+
   return createRouter({
     routeTree: raiz.addChildren([
       login,
-      protegida.addChildren([inicio, materiales, equipos, manoObra, transporte, apus, apu]),
+      protegida.addChildren([
+        inicio,
+        materiales,
+        equipos,
+        manoObra,
+        transporte,
+        apus,
+        apu,
+        ofertas,
+        oferta,
+      ]),
     ]),
   });
 }

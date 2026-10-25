@@ -23,6 +23,8 @@ export interface Listas {
 export interface Apu {
   id: string;
   rendimiento: number | string;
+  /** % propio; si falta, rige el de `Parametros`. */
+  herramientaMenor?: number | string;
   equipos: readonly LineaEntrada[];
   manoObra: readonly LineaEntrada[];
   materiales: readonly LineaEntrada[];
