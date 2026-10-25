@@ -82,7 +82,7 @@ Los "rubros que más pesan" son los 8 primeros ordenados por `CU TOTAL` descende
 
 Antes de aplicar un cambio se calcula `SUBTOTAL_antes`; después, `SUBTOTAL_después`.
 El panel muestra: APUs que usan el insumo, rubros de esos APUs, diferencia y milisegundos
-del recálculo. Ver `withImpact` y `setPrice` (líneas 1380–1403 del prototipo).
+del recálculo (los ms los mide la UI; el motor es puro: `impacto(oferta, cambio, antes?)` en `packages/motor`, pasar `antes` evita recalcularlo). Ver `withImpact` y `setPrice` (líneas 1380–1403 del prototipo).
 
 ## Paridad (test obligatorio)
 
