@@ -1,86 +1,32 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import type { OfertaDetalle } from 'tipos';
-import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
+import { TablaEditable, type FilaTabla } from '../componentes/TablaEditable';
 import { fijarTotales } from '../layout/totales';
-import { ErrorApi, api } from '../lib/api';
-import { money, pct, qty } from '../lib/formato';
+import { api } from '../lib/api';
+import { money } from '../lib/formato';
 import { consultaYo } from '../sesion';
+import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { calcularPresupuesto } from './presupuesto/calculo';
+import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
+import { useCambiosOferta } from './presupuesto/mutaciones';
 import { precioATexto } from './precio';
-
-interface FilaRubro {
-  id: string;
-  version: number;
-  numero: string;
-  codigo: string;
-  descripcion: string;
-  unidad: string;
-  cantidad: string;
-  cpc: string;
-  origen: string;
-  vae: string;
-  cu: number;
-  cuTotal: number;
-  pu: number;
-  total: number;
-  peso: number;
-}
 
 export function Presupuesto() {
   const { id } = useParams({ strict: false }) as { id: string };
   const clave = ['oferta', id] as const;
-  const cliente = useQueryClient();
   const { data: yo } = useQuery(consultaYo);
-  const [aviso, setAviso] = useState('');
   const [ofertado, setOfertado] = useState(true);
-  const [editadas, setEditadas] = useState<ReadonlySet<string>>(new Set());
+  const [plegados, setPlegados] = useState<ReadonlySet<string>>(new Set());
+  const [anadiendo, setAnadiendo] = useState(false);
+  const [nuevoCapitulo, setNuevoCapitulo] = useState('');
+  const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } =
+    useCambiosOferta(id);
 
   const { data, error } = useQuery({
     queryKey: clave,
     queryFn: () => api<OfertaDetalle>(`/api/ofertas/${id}`),
-  });
-
-  const guardar = useMutation({
-    // Una cola por oferta: cada cambio lee la versión que dejó el anterior (sin 409 falsos).
-    scope: { id: `oferta-${id}` },
-    mutationFn: ({ rubroId, valor }: { rubroId: string; valor: string }) => {
-      const version = cliente
-        .getQueryData<OfertaDetalle>(clave)!
-        .rubros.find((r) => r.id === rubroId)!.version;
-      return api<{ id: string; cantidad: string; version: number }>(`/api/rubros/${rubroId}`, {
-        metodo: 'PATCH',
-        cuerpo: { version, cantidad: valor },
-      });
-    },
-    onMutate: ({ rubroId, valor }) => {
-      // Optimista: los totales se recalculan con el motor antes de que responda el servidor.
-      cliente.setQueryData<OfertaDetalle>(
-        clave,
-        (d) =>
-          d && {
-            ...d,
-            rubros: d.rubros.map((r) => (r.id === rubroId ? { ...r, cantidad: valor } : r)),
-          },
-      );
-      setEditadas((s) => new Set(s).add(rubroId));
-    },
-    onSuccess: (fila) => {
-      setAviso('');
-      cliente.setQueryData<OfertaDetalle>(
-        clave,
-        (d) =>
-          d && {
-            ...d,
-            rubros: d.rubros.map((r) => (r.id === fila.id ? { ...r, version: fila.version } : r)),
-          },
-      );
-    },
-    onError: (e) => {
-      setAviso(e instanceof ErrorApi ? e.message : 'No pudimos guardar el cambio.');
-      void cliente.invalidateQueries({ queryKey: clave });
-    },
   });
 
   const calculo = useMemo(() => (data ? calcularPresupuesto(data) : null), [data]);
@@ -110,7 +56,21 @@ export function Presupuesto() {
       r.push({
         clave: `c-${c.id}`,
         seccion: `${ci + 1} · ${c.nombre} — ${rubros.length} rubros · Subtotal del capítulo: ${sub}`,
+        plegable: {
+          plegado: plegados.has(c.id),
+          alAlternar: () =>
+            setPlegados((p) => {
+              const n = new Set(p);
+              if (!n.delete(c.id)) n.add(c.id);
+              return n;
+            }),
+          alQuitar: () => {
+            if (window.confirm(`¿Quitar el capítulo «${c.nombre}» y sus ${rubros.length} rubros?`))
+              quitarCapitulo.mutate(c.id);
+          },
+        },
       });
+      if (plegados.has(c.id)) return;
       rubros.forEach((x, ri) => {
         const a = apus.get(x.apuId)!;
         const k = calculados.get(x.id)!;
@@ -137,57 +97,9 @@ export function Presupuesto() {
       });
     });
     return r;
-  }, [data, calculo, ofertado]);
+  }, [data, calculo, ofertado, plegados]);
 
-  const columnas: Columna<FilaRubro>[] = useMemo(
-    () => [
-      { id: 'numero', titulo: 'Número', ancho: 70, ver: (f) => f.numero },
-      { id: 'codigo', titulo: 'Código', ancho: 80, ver: (f) => f.codigo },
-      { id: 'descripcion', titulo: 'Descripción del rubro', ancho: 380, ver: (f) => f.descripcion },
-      ...(publico
-        ? [
-            { id: 'cpc', titulo: 'CPC', ancho: 100, ver: (f: FilaRubro) => f.cpc },
-            { id: 'origen', titulo: 'Origen', ancho: 70, ver: (f: FilaRubro) => f.origen },
-            { id: 'vae', titulo: 'VAE %', ancho: 80, ver: (f: FilaRubro) => f.vae },
-          ]
-        : []),
-      { id: 'unidad', titulo: 'Unidad', ancho: 70, ver: (f) => f.unidad },
-      {
-        id: 'cantidad',
-        titulo: 'Cantidad',
-        ancho: 110,
-        alinear: 'der',
-        ver: (f) => qty(Number(f.cantidad)),
-        editar: (f) => qty(Number(f.cantidad)).replace(/\./g, ''),
-      },
-      ofertado
-        ? { id: 'pu', titulo: 'P.U. ofertado', ancho: 130, alinear: 'der', ver: (f) => money(f.pu) }
-        : {
-            id: 'cu',
-            titulo: 'CU (costo directo)',
-            ancho: 140,
-            alinear: 'der',
-            ver: (f) => money(f.cu),
-          },
-      ofertado
-        ? {
-            id: 'total',
-            titulo: 'Total ofertado',
-            ancho: 140,
-            alinear: 'der',
-            ver: (f) => money(f.total),
-          }
-        : {
-            id: 'cuTotal',
-            titulo: 'CU total',
-            ancho: 140,
-            alinear: 'der',
-            ver: (f) => money(f.cuTotal),
-          },
-      { id: 'peso', titulo: 'Peso', ancho: 80, alinear: 'der', ver: (f) => pct(f.peso) },
-    ],
-    [publico, ofertado],
-  );
+  const columnas = useMemo(() => columnasPresupuesto(publico, ofertado), [publico, ofertado]);
 
   if (error)
     return (
@@ -200,11 +112,34 @@ export function Presupuesto() {
   const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'cotizador';
 
   function alGuardar(fila: FilaRubro, columna: string, texto: string) {
-    if (columna !== 'cantidad') return;
-    const valor = precioATexto(texto);
-    if (valor === null) return 'Escriba una cantidad válida, por ejemplo 12,5';
-    if (Number(valor) === Number(fila.cantidad)) return;
-    guardar.mutate({ rubroId: fila.id, valor });
+    const t = texto.trim();
+    const cambio = (c: Parameters<typeof guardar.mutate>[0]['cambio']) =>
+      guardar.mutate({ rubroId: fila.id, cambio: c });
+    if (columna === 'cantidad') {
+      const valor = precioATexto(texto);
+      if (valor === null) return 'Escriba una cantidad válida, por ejemplo 12,5';
+      if (Number(valor) !== Number(fila.cantidad)) cambio({ cantidad: valor });
+    } else if (columna === 'codigo') {
+      if (!t) return 'El código no puede quedar vacío';
+      if (t !== fila.codigo) cambio({ codigo: t });
+    } else if (columna === 'cpc') {
+      if (t !== fila.cpc) cambio({ cpc: t || null });
+    } else if (columna === 'origen') {
+      const o = t.toUpperCase();
+      if (o && !['P', 'ND', 'I'].includes(o)) return 'El origen es P, ND o I';
+      if (o !== fila.origen) cambio({ origen: (o || null) as 'P' | 'ND' | 'I' | null });
+    } else if (columna === 'vae') {
+      const valor = t ? precioATexto(t) : null;
+      if (t && (valor === null || Number(valor) > 100)) return 'Escriba un VAE entre 0 y 100';
+      if ((valor ?? '') !== (fila.vae ? String(Number(fila.vae)) : '')) cambio({ vae: valor });
+    }
+  }
+
+  function anadirCap() {
+    const nombre = nuevoCapitulo.trim();
+    if (!nombre) return;
+    anadirCapitulo.mutate(nombre);
+    setNuevoCapitulo('');
   }
 
   return (
@@ -240,9 +175,45 @@ export function Presupuesto() {
           {aviso}
         </p>
       )}
+      {puedeEscribir && data.estado !== 'emitida' && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+          <button
+            type="button"
+            disabled={data.capitulos.length === 0}
+            onClick={() => setAnadiendo(true)}
+            className="rounded border border-slate-300 px-2 py-0.5"
+          >
+            Añadir rubro
+          </button>
+          <input
+            aria-label="Nombre del capítulo nuevo"
+            placeholder="Nombre del capítulo"
+            value={nuevoCapitulo}
+            onChange={(e) => setNuevoCapitulo(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && anadirCap()}
+            className="w-56 rounded border border-slate-300 px-2 py-0.5"
+          />
+          <button
+            type="button"
+            onClick={anadirCap}
+            className="rounded border border-slate-300 px-2 py-0.5"
+          >
+            Añadir capítulo
+          </button>
+        </div>
+      )}
+      {anadiendo && (
+        <AnadirRubro
+          capitulos={data.capitulos}
+          alCerrar={() => setAnadiendo(false)}
+          alElegir={(apuId, capituloId) => anadir.mutate({ apuId, capituloId })}
+        />
+      )}
       {data.rubros.length === 0 ? (
         <p className="mt-4 text-slate-600">
-          La oferta está vacía. Los rubros se añaden desde bloques y la biblioteca de APUs.
+          {data.capitulos.length === 0
+            ? 'La oferta está vacía. Cree un capítulo para empezar.'
+            : 'Este presupuesto no tiene rubros. Use «Añadir rubro» para traerlos de la biblioteca de APUs.'}
         </p>
       ) : (
         <div className="mt-3">
@@ -253,6 +224,7 @@ export function Presupuesto() {
             editadas={editadas}
             soloLectura={!puedeEscribir || data.estado === 'emitida'}
             alGuardar={alGuardar}
+            alEliminar={(f) => quitarRubro.mutate(f.id)}
           />
         </div>
       )}

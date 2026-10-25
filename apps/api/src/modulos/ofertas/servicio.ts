@@ -1,4 +1,4 @@
-import type { CapituloCrear, OfertaCambio, OfertaCrear, RubroCambio } from 'tipos';
+import type { CapituloCrear, OfertaCambio, OfertaCrear, RubroCambio, RubroCrear } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import * as repo from './repo';
 
@@ -50,21 +50,83 @@ export async function cambiarRubro(db: Bd, usuarioId: string, id: string, d: Rub
   return db.transaction(async (tx) => {
     const actual = await repo.buscarRubro(tx, id);
     if (!actual) throw new NoExiste();
-    const fila = await repo.actualizarRubro(tx, id, d.version, d.cantidad, usuarioId);
-    if (!fila) throw new ConflictoVersion();
-    if (Number(actual.cantidad) !== Number(d.cantidad)) {
-      await repo.registrarBitacora(tx, [
-        {
-          usuarioId,
-          entidad: 'rubro',
-          entidadId: id,
-          campo: 'cantidad',
-          antes: { valor: actual.cantidad },
-          despues: { valor: d.cantidad },
-        },
-      ]);
+    const { version, ...campos } = d;
+    const nuevos: Record<string, string | null> = {};
+    const bitacora = [];
+    for (const campo of ['cantidad', 'codigo', 'cpc', 'origen', 'vae'] as const) {
+      const valor = campos[campo];
+      if (valor === undefined) continue;
+      const antes = actual[campo];
+      const igual =
+        campo === 'cantidad' || campo === 'vae' ? Number(antes) === Number(valor) : antes === valor;
+      if (igual && (antes !== null) === (valor !== null)) continue;
+      nuevos[campo] = valor;
+      bitacora.push({
+        usuarioId,
+        entidad: 'rubro',
+        entidadId: id,
+        campo,
+        antes: { valor: antes },
+        despues: { valor },
+      });
     }
+    const fila = await repo.actualizarRubro(tx, id, version, nuevos, usuarioId);
+    if (!fila) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, bitacora);
     return fila;
+  });
+}
+
+export async function agregarRubro(db: Bd, usuarioId: string, ofertaId: string, d: RubroCrear) {
+  return db.transaction(async (tx) => {
+    const cap = await repo.buscarCapitulo(tx, d.capituloId);
+    if (!cap || cap.ofertaId !== ofertaId) throw new NoExiste();
+    const a = (await repo.apusConLineas(tx, [d.apuId]))[0];
+    if (!a) throw new NoExiste();
+    const r = await repo.insertarRubro(tx, {
+      ofertaId,
+      capituloId: d.capituloId,
+      apuId: d.apuId,
+      codigo: a.apu.codigo,
+      cantidad: d.cantidad ?? '1',
+      orden: await repo.siguienteOrdenRubro(tx, d.capituloId),
+      actualizadoPor: usuarioId,
+    });
+    await repo.registrarBitacora(tx, [
+      { usuarioId, entidad: 'rubro', entidadId: r.id, campo: null, antes: null, despues: r },
+    ]);
+    return { rubro: r, apu: a };
+  });
+}
+
+export async function quitarRubro(db: Bd, usuarioId: string, id: string, version: number) {
+  return db.transaction(async (tx) => {
+    if (!(await repo.buscarRubro(tx, id))) throw new NoExiste();
+    const r = await repo.eliminarRubro(tx, id, version);
+    if (!r) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, [
+      { usuarioId, entidad: 'rubro', entidadId: id, campo: null, antes: r, despues: null },
+    ]);
+  });
+}
+
+export async function quitarCapitulo(db: Bd, usuarioId: string, id: string, version: number) {
+  return db.transaction(async (tx) => {
+    if (!(await repo.buscarCapitulo(tx, id))) throw new NoExiste();
+    const rubros = await repo.rubrosDeCapitulo(tx, id);
+    const c = await repo.eliminarCapitulo(tx, id, version);
+    if (!c) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, [
+      {
+        usuarioId,
+        entidad: 'capitulo',
+        entidadId: id,
+        campo: null,
+        antes: { ...c, rubros },
+        despues: null,
+      },
+    ]);
+    return c.ofertaId;
   });
 }
 

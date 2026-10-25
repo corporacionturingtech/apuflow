@@ -12,7 +12,8 @@ export type Columna<T> = {
   editar?: (fila: T) => string;
 };
 
-export type FilaTabla<T> = { clave: string; seccion?: string; dato?: T };
+export type Plegable = { plegado: boolean; alAlternar: () => void; alQuitar?: () => void };
+export type FilaTabla<T> = { clave: string; seccion?: string; plegable?: Plegable; dato?: T };
 
 type Props<T> = {
   nombre: string;
@@ -144,9 +145,28 @@ export function TablaEditable<T>({
                   role="row"
                   aria-rowindex={v.index + 1}
                   style={estilo}
-                  className="absolute w-full bg-slate-200 px-2 py-1 font-semibold"
+                  className="absolute flex w-full items-center gap-2 bg-slate-200 px-2 py-1 font-semibold"
                 >
-                  {fila.seccion}
+                  {fila.plegable && (
+                    <button
+                      type="button"
+                      aria-expanded={!fila.plegable.plegado}
+                      aria-label={`${fila.plegable.plegado ? 'Mostrar' : 'Ocultar'} rubros`}
+                      onClick={fila.plegable.alAlternar}
+                    >
+                      {fila.plegable.plegado ? '▸' : '▾'}
+                    </button>
+                  )}
+                  <span>{fila.seccion}</span>
+                  {fila.plegable?.alQuitar && !soloLectura && (
+                    <button
+                      type="button"
+                      onClick={fila.plegable.alQuitar}
+                      className="ml-auto text-xs font-normal underline"
+                    >
+                      Quitar capítulo
+                    </button>
+                  )}
                 </div>
               );
             }

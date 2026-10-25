@@ -81,6 +81,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - **Modelo:** Sonnet 5.5 para implementar. Subagentes de exploración con Haiku 5.5. No
   lanzar subagentes para lo que se resuelve con un `grep`.
 - Semillas de e2e: `seed-volumen` borra y recrea los `LST-*` y los e2e corren en paralelo; un e2e que dependa de precios fijos usa su propia semilla con otro prefijo (ver `seed-apu.ts`).
+- Mutaciones que quitan una fila del caché (react-query): leer la `version` de la fila antes de quitarla, dentro de `mutationFn` (no en `onMutate`, que corre al encolar); si no, el DELETE nunca sale. El e2e completo tiene fallos intermitentes por semillas en paralelo (materiales/listas); repetir antes de culpar al ticket.
 - Trampa de tablas editables: tras guardar, la fila tiene `version` vieja hasta que responde el PATCH; acciones sobre la misma fila (Supr) deben esperar o dan 409 falso.
 - **Un ticket por sesión:** `/siguiente` → implementar → `/cerrar` → `/clear`. No arrastrar
   contexto de un ticket al siguiente.

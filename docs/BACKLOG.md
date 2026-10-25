@@ -91,10 +91,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** oferta de 1.500 rubros (generada) edita cantidades sin lag.
   _Medido:_ 4 pruebas de API (lista/detalle, rol, cantidad + bitácora + 409, datos generales y capítulo), 3 de web, 1 e2e verde (12 en total): oferta de 1.500 rubros (`pnpm --filter api db:seed-oferta`, prefijo `OFE-E2E*`), la barra pasa de $ 15.000,00 a $ 15.020,00 al editar y persiste. Cálculo en la web con `calcularOferta`; el motor ahora acepta `herramientaMenor` por APU. Indirectos de la oferta: solo lectura aquí (se editan en F2-04). Detalle completo en un GET; PATCH de rubro devuelve solo `{id, cantidad, version}`.
 
-- [ ] **F1-04b** · Añadir y quitar rubros y capítulos · S · F1-04
+- [x] **F1-04b** · Añadir y quitar rubros y capítulos · S · F1-04
   **Leer:** INDICE (928–994). Buscador de APUs para añadir rubro, quitar rubro/capítulo, plegar
   capítulos, numeración y código de rubro editables, CPC/origen/VAE editables en ofertas públicas.
   **Hecho cuando:** e2e añade un rubro desde la biblioteca y el total de la barra sube.
+  _Medido:_ 3 pruebas de API nuevas (40 en total), 18 de web, e2e `presupuesto-rubros` verde (13 e2e en total): añadir rubro desde la biblioteca sube la barra a $ 10,00, plegar la conserva, Supr la deja en $ 0,00. Semilla propia: `pnpm --filter api db:seed-rubros` (`RUB-E2E*`, ofertas `OFE-RUB*`). Quitar rubro/capítulo es borrado físico con bitácora (ux.md regla 10 pide poder deshacer: queda para F2-03).
+  _Pendiente (partido a propósito):_ numeración editable (hoy es `capítulo.rubro` calculada; requiere columna y migración) y «Guardar como bloque» (F2-01).
 
 - [ ] **F1-05** · Exportar Excel · M · F1-04
   **Leer:** producto/excel.md, INDICE (1855–2069). `packages/excel` con ExcelJS, hojas y

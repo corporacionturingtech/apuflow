@@ -66,14 +66,48 @@ export const actualizarRubro = async (
   tx: Tx,
   id: string,
   version: number,
-  cantidad: string,
+  cambios: Partial<typeof rubro.$inferInsert>,
   por: string,
 ) =>
   (
     await tx
       .update(rubro)
-      .set({ cantidad, version: version + 1, actualizadoPor: por, actualizadoEn: new Date() })
+      .set({ ...cambios, version: version + 1, actualizadoPor: por, actualizadoEn: new Date() })
       .where(and(eq(rubro.id, id), eq(rubro.version, version)))
+      .returning()
+  )[0];
+
+export const insertarRubro = async (tx: Tx, d: typeof rubro.$inferInsert) =>
+  (await tx.insert(rubro).values(d).returning())[0]!;
+
+export const siguienteOrdenRubro = async (tx: Tx, capituloId: string) =>
+  ((
+    await tx
+      .select({ m: max(rubro.orden) })
+      .from(rubro)
+      .where(eq(rubro.capituloId, capituloId))
+  )[0]?.m ?? 0) + 1;
+
+export const eliminarRubro = async (tx: Tx, id: string, version: number) =>
+  (
+    await tx
+      .delete(rubro)
+      .where(and(eq(rubro.id, id), eq(rubro.version, version)))
+      .returning()
+  )[0];
+
+export const buscarCapitulo = async (tx: Tx, id: string) =>
+  (await tx.select().from(capitulo).where(eq(capitulo.id, id)))[0];
+
+export const rubrosDeCapitulo = (tx: Tx, capituloId: string) =>
+  tx.select().from(rubro).where(eq(rubro.capituloId, capituloId));
+
+// Los rubros caen por `on delete cascade`.
+export const eliminarCapitulo = async (tx: Tx, id: string, version: number) =>
+  (
+    await tx
+      .delete(capitulo)
+      .where(and(eq(capitulo.id, id), eq(capitulo.version, version)))
       .returning()
   )[0];
 

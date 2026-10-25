@@ -16,7 +16,7 @@ const detalle: OfertaDetalle = {
   factor: '1',
   costoObjetivo: null,
   indirectos: [{ id: uuid(2), nombre: 'Indirectos', porcentaje: '10' }],
-  capitulos: [{ id: uuid(3), nombre: 'Bahía', disciplina: null }],
+  capitulos: [{ id: uuid(3), nombre: 'Bahía', disciplina: null, version: 1 }],
   rubros: [
     {
       id: uuid(4),

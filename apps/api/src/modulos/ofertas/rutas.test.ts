@@ -66,8 +66,12 @@ beforeEach(async () => {
   rubroId = r!.id;
 });
 
-const pedir = (method: 'GET' | 'POST' | 'PATCH', url: string, galleta: string, payload?: object) =>
-  app.inject({ method, url, headers: { cookie: galleta }, payload });
+const pedir = (
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  url: string,
+  galleta: string,
+  payload?: object,
+) => app.inject({ method, url, headers: { cookie: galleta }, payload });
 
 test('lista y detalle traen capítulos, rubros y APUs con sus líneas', async () => {
   const lista = await pedir('GET', '/api/ofertas', galletaLector);
@@ -126,4 +130,61 @@ test('datos generales y capítulo nuevo', async () => {
     nombre: 'TOFE-x',
   });
   expect(viejo.statusCode).toBe(409);
+});
+
+test('editar código, CPC, origen y VAE deja una bitácora por campo', async () => {
+  const ok = await pedir('PATCH', `/api/rubros/${rubroId}`, galletaCotizador, {
+    version: 1,
+    codigo: 'C99',
+    cpc: '4682',
+    origen: 'ND',
+    vae: '12.5',
+  });
+  expect(ok.statusCode).toBe(200);
+  expect(ok.json()).toMatchObject({ codigo: 'C99', origen: 'ND', version: 2 });
+  const b = await db.select().from(bitacora).where(eq(bitacora.entidadId, rubroId));
+  expect(b.map((x) => x.campo).sort()).toEqual(['codigo', 'cpc', 'origen', 'vae']);
+  const mal = await pedir('PATCH', `/api/rubros/${rubroId}`, galletaCotizador, {
+    version: 2,
+    origen: 'X',
+  });
+  expect(mal.statusCode).toBe(400);
+});
+
+test('añadir rubro usa el código del APU, deja bitácora y pide rol de escritura', async () => {
+  const d = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json();
+  const body = { capituloId: d.capitulos[0].id, apuId: d.apus[0].id, cantidad: '4' };
+  const lector = await pedir('POST', `/api/ofertas/${ofertaId}/rubros`, galletaLector, body);
+  expect(lector.statusCode).toBe(403);
+  const ok = await pedir('POST', `/api/ofertas/${ofertaId}/rubros`, galletaCotizador, body);
+  expect(ok.statusCode).toBe(201);
+  expect(ok.json().rubro).toMatchObject({ codigo: 'TOFE-1', cantidad: '4.000000', version: 1 });
+  expect(ok.json().apu.lineas).toHaveLength(1);
+  const b = await db.select().from(bitacora).where(eq(bitacora.entidadId, ok.json().rubro.id));
+  expect(b).toHaveLength(1);
+  const otro = await pedir('POST', `/api/ofertas/${ofertaId}/rubros`, galletaCotizador, {
+    ...body,
+    capituloId: '00000000-0000-4000-8000-000000000000',
+  });
+  expect(otro.statusCode).toBe(404);
+});
+
+test('quitar rubro y capítulo respeta la versión y deja bitácora', async () => {
+  const viejo = await pedir('DELETE', `/api/rubros/${rubroId}?version=7`, galletaCotizador);
+  expect(viejo.statusCode).toBe(409);
+  const ok = await pedir('DELETE', `/api/rubros/${rubroId}?version=1`, galletaCotizador);
+  expect(ok.statusCode).toBe(204);
+  const d = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json();
+  expect(d.rubros).toHaveLength(0);
+  const b = await db.select().from(bitacora).where(eq(bitacora.entidadId, rubroId));
+  expect(b.some((x) => x.despues === null && x.antes !== null)).toBe(true);
+  const cap = await pedir(
+    'DELETE',
+    `/api/capitulos/${d.capitulos[0].id}?version=1`,
+    galletaCotizador,
+  );
+  expect(cap.statusCode).toBe(204);
+  expect(
+    (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json().capitulos,
+  ).toHaveLength(0);
 });

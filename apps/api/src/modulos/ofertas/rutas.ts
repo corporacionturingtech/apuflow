@@ -4,6 +4,7 @@ import {
   esquemaOfertaCambio,
   esquemaOfertaCrear,
   esquemaRubroCambio,
+  esquemaRubroCrear,
   type OfertaDetalle,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
@@ -12,9 +13,12 @@ import {
   ConflictoVersion,
   NoExiste,
   agregarCapitulo,
+  agregarRubro,
   cambiarRubro,
   crear,
   editar,
+  quitarCapitulo,
+  quitarRubro,
 } from './servicio';
 
 const datosInvalidos = { mensaje: 'Revise los datos: hay un valor que no es válido' };
@@ -29,6 +33,34 @@ function responderError(e: unknown, res: FastifyReply) {
   }
   throw e;
 }
+
+const rubroDto = (r: Awaited<ReturnType<typeof repo.buscarRubro>> & object) => ({
+  id: r.id,
+  capituloId: r.capituloId,
+  apuId: r.apuId,
+  codigo: r.codigo,
+  cantidad: r.cantidad,
+  cpc: r.cpc,
+  origen: r.origen,
+  vae: r.vae,
+  version: r.version,
+});
+
+const apuDto = ({ apu: a, lineas }: Awaited<ReturnType<typeof repo.apusConLineas>>[number]) => ({
+  id: a.id,
+  codigo: a.codigo,
+  descripcion: a.descripcion,
+  unidad: a.unidad,
+  disciplina: a.disciplina,
+  rendimiento: a.rendimiento,
+  herramientaMenor: a.pctHerramientaMenor,
+  lineas: lineas.map((l) => ({
+    insumoId: l.insumo.id,
+    tipo: l.insumo.tipo,
+    pu: l.insumo.pu,
+    cantidad: l.cantidad,
+  })),
+});
 
 export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
   const puedeEscribir = app.exigirRol('admin', 'cotizador');
@@ -54,33 +86,14 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       factor: config.factorMateriales,
       costoObjetivo: o.costoObjetivo,
       indirectos: indirs.map((i) => ({ id: i.id, nombre: i.nombre, porcentaje: i.porcentaje })),
-      capitulos: caps.map((c) => ({ id: c.id, nombre: c.nombre, disciplina: c.disciplina })),
-      rubros: rubs.map((r) => ({
-        id: r.id,
-        capituloId: r.capituloId,
-        apuId: r.apuId,
-        codigo: r.codigo,
-        cantidad: r.cantidad,
-        cpc: r.cpc,
-        origen: r.origen,
-        vae: r.vae,
-        version: r.version,
+      capitulos: caps.map((c) => ({
+        id: c.id,
+        nombre: c.nombre,
+        disciplina: c.disciplina,
+        version: c.version,
       })),
-      apus: apus.map(({ apu: a, lineas }) => ({
-        id: a.id,
-        codigo: a.codigo,
-        descripcion: a.descripcion,
-        unidad: a.unidad,
-        disciplina: a.disciplina,
-        rendimiento: a.rendimiento,
-        herramientaMenor: a.pctHerramientaMenor,
-        lineas: lineas.map((l) => ({
-          insumoId: l.insumo.id,
-          tipo: l.insumo.tipo,
-          pu: l.insumo.pu,
-          cantidad: l.cantidad,
-        })),
-      })),
+      rubros: rubs.map(rubroDto),
+      apus: apus.map(apuDto),
     };
   }
 
@@ -153,7 +166,65 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
         const r = await cambiarRubro(db, req.usuario!.id, req.params.id, d.data);
-        return { id: r.id, cantidad: r.cantidad, version: r.version };
+        return {
+          id: r.id,
+          cantidad: r.cantidad,
+          codigo: r.codigo,
+          cpc: r.cpc,
+          origen: r.origen,
+          vae: r.vae,
+          version: r.version,
+        };
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  // Responde el rubro y su APU: la web lo suma al caché sin recargar toda la oferta.
+  app.post<{ Params: { id: string } }>(
+    '/api/ofertas/:id/rubros',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const d = esquemaRubroCrear.safeParse(req.body);
+      if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
+      try {
+        const { rubro: r, apu: a } = await agregarRubro(db, req.usuario!.id, req.params.id, d.data);
+        return res.code(201).send({ rubro: rubroDto(r), apu: apuDto(a) });
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  const versionDe = (q: unknown) => Number((q as { version?: string }).version);
+
+  app.delete<{ Params: { id: string } }>(
+    '/api/rubros/:id',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const version = versionDe(req.query);
+      if (!Number.isInteger(version) || !esUuid(req.params.id))
+        return res.code(400).send(datosInvalidos);
+      try {
+        await quitarRubro(db, req.usuario!.id, req.params.id, version);
+        return res.code(204).send();
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/api/capitulos/:id',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const version = versionDe(req.query);
+      if (!Number.isInteger(version) || !esUuid(req.params.id))
+        return res.code(400).send(datosInvalidos);
+      try {
+        await quitarCapitulo(db, req.usuario!.id, req.params.id, version);
+        return res.code(204).send();
       } catch (e) {
         return responderError(e, res);
       }

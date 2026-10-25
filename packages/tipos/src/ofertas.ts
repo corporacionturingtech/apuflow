@@ -39,8 +39,28 @@ export const esquemaCapituloCrear = z.object({
 });
 export type CapituloCrear = z.infer<typeof esquemaCapituloCrear>;
 
-export const esquemaRubroCambio = z.object({ version: z.number().int(), cantidad: decimal });
+export const esquemaRubroCambio = z
+  .object({
+    version: z.number().int(),
+    cantidad: decimal.optional(),
+    codigo: z.string().trim().min(1).optional(),
+    cpc: z.string().trim().nullable().optional(),
+    origen: z.enum(['P', 'ND', 'I']).nullable().optional(),
+    vae: z
+      .string()
+      .regex(/^\d+(\.\d{1,4})?$/, 'VAE no válido')
+      .nullable()
+      .optional(),
+  })
+  .refine((d) => Object.keys(d).some((k) => k !== 'version'), 'Nada que cambiar');
 export type RubroCambio = z.infer<typeof esquemaRubroCambio>;
+
+export const esquemaRubroCrear = z.object({
+  capituloId: idUuid,
+  apuId: idUuid,
+  cantidad: decimal.optional(),
+});
+export type RubroCrear = z.infer<typeof esquemaRubroCrear>;
 
 const esquemaRubro = z.object({
   id: idUuid,
@@ -76,7 +96,12 @@ export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true }).extend(
   costoObjetivo: z.string().nullable(),
   indirectos: z.array(z.object({ id: idUuid, nombre: z.string(), porcentaje: decimal })),
   capitulos: z.array(
-    z.object({ id: idUuid, nombre: z.string(), disciplina: z.string().nullable() }),
+    z.object({
+      id: idUuid,
+      nombre: z.string(),
+      disciplina: z.string().nullable(),
+      version: z.number().int(),
+    }),
   ),
   rubros: z.array(esquemaRubro),
   apus: z.array(esquemaApuDeOferta),
