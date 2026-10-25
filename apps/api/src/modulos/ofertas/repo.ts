@@ -47,6 +47,34 @@ export const rubros = (db: Bd | Tx, ofertaId: string) =>
 export const indirectos = (db: Bd | Tx, ofertaId: string) =>
   db.select().from(indirecto).where(eq(indirecto.ofertaId, ofertaId)).orderBy(asc(indirecto.orden));
 
+export const buscarIndirecto = async (db: Bd | Tx, ofertaId: string, id: string) =>
+  (
+    await db
+      .select()
+      .from(indirecto)
+      .where(and(eq(indirecto.id, id), eq(indirecto.ofertaId, ofertaId)))
+  )[0];
+
+export const actualizarIndirecto = async (
+  tx: Tx,
+  id: string,
+  version: number,
+  porcentaje: string,
+  usuarioId: string,
+) =>
+  (
+    await tx
+      .update(indirecto)
+      .set({
+        porcentaje,
+        version: version + 1,
+        actualizadoPor: usuarioId,
+        actualizadoEn: new Date(),
+      })
+      .where(and(eq(indirecto.id, id), eq(indirecto.version, version)))
+      .returning()
+  )[0];
+
 export const apusConLineas = async (db: Bd | Tx, ids: string[]) => {
   if (!ids.length) return [];
   const apus = await db.select().from(apu).where(inArray(apu.id, ids));

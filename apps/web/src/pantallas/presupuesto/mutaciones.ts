@@ -103,5 +103,55 @@ export function useCambiosOferta(id: string) {
     onError,
   });
 
-  return { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo };
+  const cambiarIndirecto = useMutation({
+    scope,
+    mutationFn: ({ indId, porcentaje }: { indId: string; porcentaje: string }) =>
+      api<{ id: string; porcentaje: string; version: number }>(
+        `/api/ofertas/${id}/indirectos/${indId}`,
+        {
+          metodo: 'PATCH',
+          cuerpo: { version: leer().indirectos.find((i) => i.id === indId)!.version, porcentaje },
+        },
+      ),
+    onMutate: ({ indId, porcentaje }) =>
+      poner((d) => ({
+        ...d,
+        indirectos: d.indirectos.map((i) => (i.id === indId ? { ...i, porcentaje } : i)),
+      })),
+    onSuccess: (fila) => {
+      setAviso('');
+      poner((d) => ({
+        ...d,
+        indirectos: d.indirectos.map((i) => (i.id === fila.id ? { ...i, ...fila } : i)),
+      }));
+    },
+    onError,
+  });
+
+  const cambiarIva = useMutation({
+    scope,
+    mutationFn: (iva: string) =>
+      api<OfertaDetalle>(`/api/ofertas/${id}`, {
+        metodo: 'PATCH',
+        cuerpo: { version: leer().version, iva },
+      }),
+    onMutate: (iva) => poner((d) => ({ ...d, iva })),
+    onSuccess: (detalle) => {
+      setAviso('');
+      poner((d) => ({ ...d, iva: detalle.iva, version: detalle.version }));
+    },
+    onError,
+  });
+
+  return {
+    aviso,
+    editadas,
+    guardar,
+    anadir,
+    quitarRubro,
+    quitarCapitulo,
+    anadirCapitulo,
+    cambiarIndirecto,
+    cambiarIva,
+  };
 }

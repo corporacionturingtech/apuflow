@@ -1,4 +1,11 @@
-import type { CapituloCrear, OfertaCambio, OfertaCrear, RubroCambio, RubroCrear } from 'tipos';
+import type {
+  CapituloCrear,
+  IndirectoCambio,
+  OfertaCambio,
+  OfertaCrear,
+  RubroCambio,
+  RubroCrear,
+} from 'tipos';
 import type { Bd } from '../../db/conexion';
 import * as repo from './repo';
 
@@ -27,9 +34,10 @@ export async function editar(db: Bd, usuarioId: string, id: string, cambio: Ofer
     const { version, ...campos } = cambio;
     const nuevos: Record<string, string | null> = {};
     const bitacora = [];
-    for (const campo of ['nombre', 'cliente', 'tipo'] as const) {
+    for (const campo of ['nombre', 'cliente', 'tipo', 'iva'] as const) {
       const valor = campos[campo];
       if (valor === undefined || valor === actual[campo]) continue;
+      if (campo === 'iva' && Number(valor) === Number(actual.iva)) continue;
       nuevos[campo] = valor;
       bitacora.push({
         usuarioId,
@@ -43,6 +51,32 @@ export async function editar(db: Bd, usuarioId: string, id: string, cambio: Ofer
     const fila = await repo.actualizar(tx, id, version, { ...nuevos, actualizadoPor: usuarioId });
     if (!fila) throw new ConflictoVersion();
     await repo.registrarBitacora(tx, bitacora);
+  });
+}
+
+export async function cambiarIndirecto(
+  db: Bd,
+  usuarioId: string,
+  ofertaId: string,
+  id: string,
+  d: IndirectoCambio,
+) {
+  return db.transaction(async (tx) => {
+    const actual = await repo.buscarIndirecto(tx, ofertaId, id);
+    if (!actual) throw new NoExiste();
+    const fila = await repo.actualizarIndirecto(tx, id, d.version, d.porcentaje, usuarioId);
+    if (!fila) throw new ConflictoVersion();
+    await repo.registrarBitacora(tx, [
+      {
+        usuarioId,
+        entidad: 'indirecto',
+        entidadId: id,
+        campo: 'porcentaje',
+        antes: { valor: actual.porcentaje, nombre: actual.nombre },
+        despues: { valor: fila.porcentaje, nombre: actual.nombre },
+      },
+    ]);
+    return fila;
   });
 }
 

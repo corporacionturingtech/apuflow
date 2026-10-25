@@ -10,6 +10,7 @@ import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
+import { Indirectos } from './presupuesto/Indirectos';
 import { GuardarBloque } from './presupuesto/GuardarBloque';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
 import { useCambiosOferta } from './presupuesto/mutaciones';
@@ -23,9 +24,10 @@ export function Presupuesto() {
   const [plegados, setPlegados] = useState<ReadonlySet<string>>(new Set());
   const [anadiendo, setAnadiendo] = useState(false);
   const [guardandoBloque, setGuardandoBloque] = useState(false);
+  const [verIndirectos, setVerIndirectos] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
-  const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } =
-    useCambiosOferta(id);
+  const cambios = useCambiosOferta(id);
+  const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
 
   const { data, error } = useQuery({
     queryKey: clave,
@@ -173,7 +175,23 @@ export function Presupuesto() {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          aria-expanded={verIndirectos}
+          onClick={() => setVerIndirectos((v) => !v)}
+          className="rounded border border-slate-300 px-2 py-0.5 text-sm"
+        >
+          Indirectos y utilidad
+        </button>
       </div>
+      {verIndirectos && calculo && (
+        <Indirectos
+          data={data}
+          calculo={calculo}
+          cambios={cambios}
+          soloLectura={!puedeEscribir || data.estado === 'emitida'}
+        />
+      )}
       {aviso && (
         <p role="alert" className="mt-1 text-sm text-red-700">
           {aviso}

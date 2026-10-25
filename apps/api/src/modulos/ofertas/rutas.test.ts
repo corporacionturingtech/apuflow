@@ -7,6 +7,7 @@ import {
   apu,
   bitacora,
   capitulo,
+  indirecto,
   insumo,
   lineaApu,
   oferta,
@@ -203,4 +204,36 @@ test('exportar entrega un .xlsx a cualquier rol y 404 si la oferta no existe', a
     galletaLector,
   );
   expect(no.statusCode).toBe(404);
+});
+
+test('editar un indirecto deja bitácora, sube la versión y respeta 409 y rol', async () => {
+  const [ind] = await db
+    .insert(indirecto)
+    .values({ ofertaId, nombre: 'Utilidad', porcentaje: '10', esUtilidad: true })
+    .returning();
+  const url = `/api/ofertas/${ofertaId}/indirectos/${ind!.id}`;
+  const ok = await pedir('PATCH', url, galletaCotizador, { version: 1, porcentaje: '12.5' });
+  expect(ok.statusCode).toBe(200);
+  expect(ok.json()).toMatchObject({ porcentaje: '12.5000', version: 2 });
+  const b = await db.select().from(bitacora).where(eq(bitacora.entidadId, ind!.id));
+  expect(b[0]).toMatchObject({ campo: 'porcentaje', despues: { valor: '12.5000' } });
+  const d = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json();
+  expect(d.indirectos[0]).toMatchObject({ porcentaje: '12.5000', esUtilidad: true, version: 2 });
+  const viejo = await pedir('PATCH', url, galletaCotizador, { version: 1, porcentaje: '9' });
+  expect(viejo.statusCode).toBe(409);
+  const lector = await pedir('PATCH', url, galletaLector, { version: 2, porcentaje: '9' });
+  expect(lector.statusCode).toBe(403);
+  const malo = await pedir('PATCH', url, galletaCotizador, { version: 2, porcentaje: '150' });
+  expect(malo.statusCode).toBe(400);
+});
+
+test('el IVA de la oferta reemplaza al de la empresa', async () => {
+  const antes = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json();
+  const ok = await pedir('PATCH', `/api/ofertas/${ofertaId}`, galletaCotizador, {
+    version: 1,
+    iva: '8',
+  });
+  expect(ok.statusCode).toBe(200);
+  expect(Number(ok.json().iva)).toBe(8);
+  expect(Number(antes.iva)).not.toBe(8);
 });

@@ -42,6 +42,8 @@ export const oferta = pgTable('oferta', {
     .notNull()
     .default('borrador'),
   costoObjetivo: numeric('costo_objetivo', resultado),
+  // null = usa el IVA de la empresa
+  iva: numeric('iva', porcentaje),
   ...auditoria(),
 });
 

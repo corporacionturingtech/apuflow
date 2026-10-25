@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import {
   esquemaCapituloCrear,
+  esquemaIndirectoCambio,
   esquemaOfertaCambio,
   esquemaOfertaCrear,
   esquemaRubroCambio,
@@ -16,6 +17,7 @@ import {
   NoExiste,
   agregarCapitulo,
   agregarRubro,
+  cambiarIndirecto,
   cambiarRubro,
   crear,
   editar,
@@ -84,10 +86,16 @@ export async function detalleOferta(db: Bd, id: string): Promise<OfertaDetalle |
     tipo: o.tipo,
     estado: o.estado,
     version: o.version,
-    iva: config.iva,
+    iva: o.iva ?? config.iva,
     factor: config.factorMateriales,
     costoObjetivo: o.costoObjetivo,
-    indirectos: indirs.map((i) => ({ id: i.id, nombre: i.nombre, porcentaje: i.porcentaje })),
+    indirectos: indirs.map((i) => ({
+      id: i.id,
+      nombre: i.nombre,
+      porcentaje: i.porcentaje,
+      esUtilidad: i.esUtilidad,
+      version: i.version,
+    })),
     capitulos: caps.map((c) => ({
       id: c.id,
       nombre: c.nombre,
@@ -173,6 +181,29 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       try {
         await agregarCapitulo(db, req.usuario!.id, req.params.id, d.data);
         return res.code(201).send(await detalle(req.params.id));
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  app.patch<{ Params: { id: string; indId: string } }>(
+    '/api/ofertas/:id/indirectos/:indId',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const d = esquemaIndirectoCambio.safeParse(req.body);
+      if (!d.success || !esUuid(req.params.id) || !esUuid(req.params.indId)) {
+        return res.code(400).send(datosInvalidos);
+      }
+      try {
+        const i = await cambiarIndirecto(
+          db,
+          req.usuario!.id,
+          req.params.id,
+          req.params.indId,
+          d.data,
+        );
+        return { id: i.id, porcentaje: i.porcentaje, version: i.version };
       } catch (e) {
         return responderError(e, res);
       }

@@ -1,0 +1,1 @@
+ALTER TABLE "oferta" ADD COLUMN "iva" numeric(9, 4);

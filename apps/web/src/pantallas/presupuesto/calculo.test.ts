@@ -15,7 +15,9 @@ const detalle: OfertaDetalle = {
   iva: '15',
   factor: '1',
   costoObjetivo: null,
-  indirectos: [{ id: uuid(2), nombre: 'Indirectos', porcentaje: '10' }],
+  indirectos: [
+    { id: uuid(2), nombre: 'Indirectos', porcentaje: '10', esUtilidad: false, version: 1 },
+  ],
   capitulos: [{ id: uuid(3), nombre: 'Bahía', disciplina: null, version: 1 }],
   rubros: [
     {
@@ -58,6 +60,15 @@ it('cambiar la cantidad cambia el subtotal', () => {
     rubros: [{ ...detalle.rubros[0]!, cantidad: '20' }],
   });
   expect(c.totales.subtotal.toFixed(2)).toBe('138.60');
+});
+
+it('cambiar la utilidad cambia el P.U. ofertado y el subtotal', () => {
+  const c = calcularPresupuesto({
+    ...detalle,
+    indirectos: [{ ...detalle.indirectos[0]!, porcentaje: '20' }],
+  });
+  expect(c.rubros[0]!.puOfertado.toFixed(2)).toBe('7.56');
+  expect(c.totales.subtotal.toFixed(2)).toBe('75.60');
 });
 
 it('costo directo de un bloque: cantidades × CU del APU', () => {

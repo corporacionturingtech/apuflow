@@ -25,13 +25,25 @@ export const esquemaOfertaCrear = z.object({
 });
 export type OfertaCrear = z.infer<typeof esquemaOfertaCrear>;
 
+const porcentajeOferta = z
+  .string()
+  .regex(/^\d{1,3}(\.\d{1,4})?$/, 'Porcentaje no válido')
+  .refine((v) => Number(v) <= 100, 'Porcentaje no válido');
+
 export const esquemaOfertaCambio = z.object({
   version: z.number().int(),
   nombre: z.string().trim().min(1).optional(),
   cliente: z.string().trim().min(1).nullable().optional(),
   tipo: esquemaTipoOferta.optional(),
+  iva: porcentajeOferta.optional(),
 });
 export type OfertaCambio = z.infer<typeof esquemaOfertaCambio>;
+
+export const esquemaIndirectoCambio = z.object({
+  version: z.number().int(),
+  porcentaje: porcentajeOferta,
+});
+export type IndirectoCambio = z.infer<typeof esquemaIndirectoCambio>;
 
 export const esquemaCapituloCrear = z.object({
   nombre: z.string().trim().min(1),
@@ -94,7 +106,15 @@ export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true }).extend(
   iva: decimal,
   factor: decimal,
   costoObjetivo: z.string().nullable(),
-  indirectos: z.array(z.object({ id: idUuid, nombre: z.string(), porcentaje: decimal })),
+  indirectos: z.array(
+    z.object({
+      id: idUuid,
+      nombre: z.string(),
+      porcentaje: decimal,
+      esUtilidad: z.boolean(),
+      version: z.number().int(),
+    }),
+  ),
   capitulos: z.array(
     z.object({
       id: idUuid,

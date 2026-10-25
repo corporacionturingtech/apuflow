@@ -138,8 +138,9 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 3 pruebas de API nuevas (`GET /api/insumos/:id/historial`, deshacer = PATCH con el PU anterior; 55 en total), 1 de web (21 en total), e2e `deshacer` verde (19 en total): Deshacer por botón y Ctrl+Z devuelven $ 10,00 y Alt+H lista los 4 cambios. Semilla propia: `pnpm --filter api db:seed-deshacer` (`DES-E2E*`, oferta `OFE-DES`).
   _Pendiente:_ deshacer cambios de APU y quitar rubros/capítulos (ux.md regla 10).
 
-- [ ] **F2-04** · Indirectos, utilidad e IVA por oferta · S · F1-04
+- [x] **F2-04** · Indirectos, utilidad e IVA por oferta · S · F1-04
   **Leer:** INDICE (1126–1144). **Hecho cuando:** cambiar utilidad cambia todos los P.U. ofertados.
+  _Medido:_ 2 pruebas de API nuevas (`PATCH /api/ofertas/:id/indirectos/:indId` con bitácora, 409 y rol; IVA por oferta vía `oferta.iva`, null = el de la empresa; 57 en total), 1 de web (22 en total), e2e `indirectos` verde (20 en total): utilidad 10 → 20 % lleva el subtotal de $ 22,00 a $ 24,00 y persiste. Semilla propia: `pnpm --filter api db:seed-indirectos` (`IND-E2E*`). Panel «Indirectos y utilidad» en la oferta.
 
 - [ ] **F2-05** · Importar solo precios · S · F2-02, F1-06
   Actualizar una lista desde Excel/CSV con vista previa y panel de impacto al confirmar.
