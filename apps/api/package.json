@@ -19,6 +19,7 @@
     "db:seed-impacto": "tsx src/db/seed-impacto.ts",
     "db:seed-deshacer": "tsx src/db/seed-impacto.ts DES",
     "db:seed-indirectos": "tsx src/db/seed-indirectos.ts",
+    "db:seed-objetivo": "tsx src/db/seed-objetivo.ts",
     "db:seed-alcance": "tsx src/db/seed-alcance.ts"
   },
   "dependencies": {

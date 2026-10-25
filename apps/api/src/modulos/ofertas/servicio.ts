@@ -34,10 +34,12 @@ export async function editar(db: Bd, usuarioId: string, id: string, cambio: Ofer
     const { version, ...campos } = cambio;
     const nuevos: Record<string, string | null> = {};
     const bitacora = [];
-    for (const campo of ['nombre', 'cliente', 'tipo', 'iva'] as const) {
+    for (const campo of ['nombre', 'cliente', 'tipo', 'iva', 'costoObjetivo'] as const) {
       const valor = campos[campo];
       if (valor === undefined || valor === actual[campo]) continue;
       if (campo === 'iva' && Number(valor) === Number(actual.iva)) continue;
+      if (campo === 'costoObjetivo' && valor !== null && Number(valor) === Number(actual[campo]))
+        continue;
       nuevos[campo] = valor;
       bitacora.push({
         usuarioId,

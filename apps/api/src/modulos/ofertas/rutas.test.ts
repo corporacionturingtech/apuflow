@@ -238,6 +238,31 @@ test('el IVA de la oferta reemplaza al de la empresa', async () => {
   expect(Number(antes.iva)).not.toBe(8);
 });
 
+test('el costo objetivo se guarda, deja bitácora y se puede borrar', async () => {
+  const url = `/api/ofertas/${ofertaId}`;
+  const v = (await pedir('GET', url, galletaLector)).json().version;
+  const ok = await pedir('PATCH', url, galletaCotizador, { version: v, costoObjetivo: '1500.5' });
+  expect(ok.statusCode).toBe(200);
+  expect(Number(ok.json().costoObjetivo)).toBe(1500.5);
+  const b = await db.select().from(bitacora).where(eq(bitacora.entidadId, ofertaId));
+  expect(b.find((x) => x.campo === 'costoObjetivo')).toMatchObject({ antes: { valor: null } });
+  expect(
+    (await pedir('PATCH', url, galletaCotizador, { version: v, costoObjetivo: '9' })).statusCode,
+  ).toBe(409);
+  expect(
+    (await pedir('PATCH', url, galletaLector, { version: v + 1, costoObjetivo: '9' })).statusCode,
+  ).toBe(403);
+  expect(
+    (await pedir('PATCH', url, galletaCotizador, { version: v + 1, costoObjetivo: '-5' }))
+      .statusCode,
+  ).toBe(400);
+  const borrado = await pedir('PATCH', url, galletaCotizador, {
+    version: v + 1,
+    costoObjetivo: null,
+  });
+  expect(borrado.json().costoObjetivo).toBeNull();
+});
+
 // F2-06: dos ofertas comparten el APU; el alcance decide quién ve el cambio.
 async function segundaOferta() {
   const r0 = (await db.select().from(rubro).where(eq(rubro.id, rubroId)))[0]!;

@@ -156,9 +156,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 
 ## F3 · Ganar (momento: "llegamos al objetivo")
 
-- [ ] **F3-01** · Costo objetivo y brecha · S · F0-04, F1-04
+- [x] **F3-01** · Costo objetivo y brecha · S · F0-04, F1-04
   **Leer:** INDICE (857–861, 1145–1196). Brecha en la barra de totales (rojo/verde), rubros que
   más pesan con enlace a su APU. **Hecho cuando:** e2e de la misión 5 del prototipo.
+  _Medido:_ 1 prueba de API nueva (65 en total), 1 de web (BarraTotales), e2e `objetivo` verde (23 en total; `materiales` 2.000 filas falla también sin este cambio). Panel `Objetivo.tsx` (botón «Costo objetivo» en el presupuesto), brecha en la barra de totales. Semilla propia: `pnpm --filter api db:seed-objetivo` (`OBJ-E2E*`).
 
 - [ ] **F3-02** · Versiones y comparación · M · F3-01
   Guardar versión (snapshot), comparar actual vs versión por capítulo y rubro.

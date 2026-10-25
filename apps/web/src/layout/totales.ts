@@ -4,6 +4,8 @@ export interface Totales {
   subtotal: number;
   iva: number;
   total: number;
+  /** Solo si la oferta tiene costo objetivo: positiva = falta bajar. */
+  brecha?: { valor: number; llego: boolean };
 }
 
 // La oferta abierta publica aquí sus totales; la barra fija del Layout los muestra (ux.md regla 1).

@@ -11,6 +11,7 @@ import { AnadirRubro } from './presupuesto/AnadirRubro';
 import { BotonExportar } from './presupuesto/BotonExportar';
 import { calcularPresupuesto } from './presupuesto/calculo';
 import { EditarApu } from './presupuesto/EditarApu';
+import { Objetivo } from './presupuesto/Objetivo';
 import { Indirectos } from './presupuesto/Indirectos';
 import { GuardarBloque } from './presupuesto/GuardarBloque';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
@@ -27,6 +28,7 @@ export function Presupuesto() {
   const [guardandoBloque, setGuardandoBloque] = useState(false);
   const [editandoApu, setEditandoApu] = useState<string | null>(null);
   const [verIndirectos, setVerIndirectos] = useState(false);
+  const [verObjetivo, setVerObjetivo] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
   const cambios = useCambiosOferta(id);
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
@@ -45,6 +47,9 @@ export function Presupuesto() {
       subtotal: t.subtotal.toNumber(),
       iva: t.iva.toNumber(),
       total: t.total.toNumber(),
+      brecha: calculo.brecha
+        ? { valor: calculo.brecha.brecha.toNumber(), llego: calculo.brecha.llego }
+        : undefined,
     });
     return () => fijarTotales(null);
   }, [calculo]);
@@ -185,7 +190,23 @@ export function Presupuesto() {
         >
           Indirectos y utilidad
         </button>
+        <button
+          type="button"
+          aria-expanded={verObjetivo}
+          onClick={() => setVerObjetivo((v) => !v)}
+          className="rounded border border-slate-300 px-2 py-0.5 text-sm"
+        >
+          Costo objetivo
+        </button>
       </div>
+      {verObjetivo && calculo && (
+        <Objetivo
+          data={data}
+          calculo={calculo}
+          cambios={cambios}
+          soloLectura={!puedeEscribir || data.estado === 'emitida'}
+        />
+      )}
       {verIndirectos && calculo && (
         <Indirectos
           data={data}

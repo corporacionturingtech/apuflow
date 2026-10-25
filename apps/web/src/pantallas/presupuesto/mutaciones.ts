@@ -143,6 +143,21 @@ export function useCambiosOferta(id: string) {
     onError,
   });
 
+  const cambiarObjetivo = useMutation({
+    scope,
+    mutationFn: (costoObjetivo: string | null) =>
+      api<OfertaDetalle>(`/api/ofertas/${id}`, {
+        metodo: 'PATCH',
+        cuerpo: { version: leer().version, costoObjetivo },
+      }),
+    onMutate: (costoObjetivo) => poner((d) => ({ ...d, costoObjetivo })),
+    onSuccess: (detalle) => {
+      setAviso('');
+      poner((d) => ({ ...d, costoObjetivo: detalle.costoObjetivo, version: detalle.version }));
+    },
+    onError,
+  });
+
   return {
     aviso,
     editadas,
@@ -153,5 +168,6 @@ export function useCambiosOferta(id: string) {
     anadirCapitulo,
     cambiarIndirecto,
     cambiarIva,
+    cambiarObjetivo,
   };
 }

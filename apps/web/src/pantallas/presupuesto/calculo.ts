@@ -1,8 +1,17 @@
-import { calcularOferta, type Apu, type Listas, type Oferta as OfertaMotor } from 'motor';
+import { brecha, calcularOferta, type Apu, type Listas, type Oferta as OfertaMotor } from 'motor';
 import type { BloqueLista, BloquesRespuesta, OfertaDetalle } from 'tipos';
 
 /** Arma la entrada del motor desde el detalle: la web no multiplica nada por su cuenta. */
 export function calcularPresupuesto(d: OfertaDetalle) {
+  const oferta = calcular(d);
+  return {
+    ...oferta,
+    oferta,
+    brecha: d.costoObjetivo ? brecha(oferta, d.costoObjetivo) : null,
+  };
+}
+
+function calcular(d: OfertaDetalle) {
   const vistos = new Set<string>();
   const listas: { [K in keyof Listas]: Listas[K][number][] } = {
     materiales: [],

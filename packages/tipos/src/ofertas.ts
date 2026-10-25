@@ -36,6 +36,11 @@ export const esquemaOfertaCambio = z.object({
   cliente: z.string().trim().min(1).nullable().optional(),
   tipo: esquemaTipoOferta.optional(),
   iva: porcentajeOferta.optional(),
+  costoObjetivo: z
+    .string()
+    .regex(/^\d{1,12}(\.\d{1,2})?$/, 'Costo no válido')
+    .nullable()
+    .optional(),
 });
 export type OfertaCambio = z.infer<typeof esquemaOfertaCambio>;
 

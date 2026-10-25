@@ -1,5 +1,5 @@
 import { money } from '../lib/formato';
-import { useTotales } from './totales';
+import { useTotales, type Totales } from './totales';
 
 interface Props {
   subtotal?: number;
@@ -10,7 +10,7 @@ interface Props {
 /** Regla UX 1: el total siempre a la vista. Muestra la oferta abierta; en cero si no hay. */
 export function BarraTotales(props: Props) {
   const abierta = useTotales();
-  const { subtotal = 0, iva = 0, total = 0 } = { ...abierta, ...props };
+  const { subtotal = 0, iva = 0, total = 0, brecha } = { ...abierta, ...props } as Totales;
   const celdas = [
     ['Subtotal', subtotal],
     ['IVA', iva],
@@ -24,6 +24,16 @@ export function BarraTotales(props: Props) {
           <span className="font-semibold tabular-nums">{money(valor)}</span>
         </div>
       ))}
+      {brecha && (
+        <div
+          className={`flex items-baseline gap-2 ${brecha.llego ? 'text-green-700' : 'text-red-700'}`}
+        >
+          <span>Brecha</span>
+          <span className="font-semibold tabular-nums">
+            {brecha.llego ? `Dentro por ${money(-brecha.valor)}` : `Faltan ${money(brecha.valor)}`}
+          </span>
+        </div>
+      )}
     </footer>
   );
 }
