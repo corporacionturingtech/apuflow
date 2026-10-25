@@ -72,7 +72,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - Módulo API: `apps/api/src/modulos/<modulo>/{rutas,servicio,repo}.ts` + `*.test.ts`.
 - Archivos < 300 líneas. Si crece, dividir por responsabilidad.
 - Validación con zod en `packages/tipos`; la API valida entrada y salida con el mismo esquema.
-- **Patrón de referencia:** el módulo y la tabla de Materiales (F1-01) son el molde. Para
+- **Patrón de referencia:** el módulo y la tabla de Materiales (F1-01) son el molde; las cuatro listas viven en `pantallas/ListaPrecios.tsx` (config `LISTAS`) y el borrado es lógico (`eliminado_en`, papelera). Para
   Equipos, Mano de obra, Transporte y cualquier CRUD nuevo, copiar ese molde, no rediseñar.
 - Comentarios solo cuando el porqué no es obvio (p. ej. el orden del redondeo).
 
@@ -80,6 +80,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 
 - **Modelo:** Sonnet 5.5 para implementar. Subagentes de exploración con Haiku 5.5. No
   lanzar subagentes para lo que se resuelve con un `grep`.
+- Trampa de tablas editables: tras guardar, la fila tiene `version` vieja hasta que responde el PATCH; acciones sobre la misma fila (Supr) deben esperar o dan 409 falso.
 - **Un ticket por sesión:** `/siguiente` → implementar → `/cerrar` → `/clear`. No arrastrar
   contexto de un ticket al siguiente.
 - **Leer lo mínimo:** solo los docs del campo **Leer** del ticket. Nunca abrir
