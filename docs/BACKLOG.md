@@ -48,11 +48,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** tests de login correcto, incorrecto y ruta protegida.
   _Medido:_ 9 pruebas nuevas de auth (login ok/incorrecto/inexistente/inactivo, 401/403, logout, expiración, seed idempotente); 15 pruebas de la API verdes. Migración `0001` (tabla `sesion`).
 
-- [ ] **F0-07** · Web base · M · F0-06
+- [x] **F0-07** · Web base · M · F0-06
   **Leer:** producto/ux.md (estilo, pantallas). Vite, React, TanStack Router/Query, Tailwind,
   shadcn/ui. Login, layout con navegación lateral y **barra de totales fija** (vacía por ahora),
   formato `$ 1.313,64` y entrada `10,40` (portar `fmt`/`parseNum`, líneas 645–674).
   **Hecho cuando:** e2e `login.spec.ts` entra y ve el layout.
+  _Medido:_ 3 e2e verdes (redirige sin sesión, clave incorrecta, entra y ve nav + barra de totales a 1366×768); 5 pruebas de web (formato, BarraTotales). shadcn/ui no se instaló aún: los componentes de F0-07 son Tailwind simple; agregar shadcn al primer ticket que necesite tablas/diálogos (F1-01).
 
 - [ ] **F0-08** · CI · S · F0-07
   GitHub Actions: typecheck, lint, test, e2e. **Hecho cuando:** pipeline verde.

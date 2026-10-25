@@ -1,0 +1,44 @@
+import type { QueryClient } from '@tanstack/react-query';
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  redirect,
+  Outlet,
+} from '@tanstack/react-router';
+import { Layout } from './layout/Layout';
+import { Inicio } from './pantallas/Inicio';
+import { Login } from './pantallas/Login';
+import { usuarioActual } from './sesion';
+
+export function crearRouter(cliente: QueryClient) {
+  const raiz = createRootRoute({ component: Outlet });
+
+  const login = createRoute({
+    getParentRoute: () => raiz,
+    path: '/login',
+    beforeLoad: async () => {
+      if (await usuarioActual(cliente)) throw redirect({ to: '/' });
+    },
+    component: Login,
+  });
+
+  const protegida = createRoute({
+    getParentRoute: () => raiz,
+    id: 'protegida',
+    beforeLoad: async () => {
+      if (!(await usuarioActual(cliente))) throw redirect({ to: '/login' });
+    },
+    component: Layout,
+  });
+
+  const inicio = createRoute({ getParentRoute: () => protegida, path: '/', component: Inicio });
+
+  return createRouter({ routeTree: raiz.addChildren([login, protegida.addChildren([inicio])]) });
+}
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof crearRouter>;
+  }
+}

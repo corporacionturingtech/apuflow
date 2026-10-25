@@ -11,10 +11,12 @@
     "lint": "eslint .",
     "test": "pnpm -r test",
     "fixture": "node scripts/extraer-fixture.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "eslint": "^10.13.0",
     "prettier": "^3.9.10",
     "typescript": "^6.0.3",
