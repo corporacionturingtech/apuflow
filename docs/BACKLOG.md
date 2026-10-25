@@ -24,11 +24,12 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   `DATA` con `node:vm` a `packages/motor/test/fixtures/sedemi-demo.json`.
   **Hecho cuando:** el JSON tiene los conteos de insumos, APUs y bloques del prototipo.
 
-- [ ] **F0-03** · Motor: APU y oferta con paridad · M · F0-02
+- [x] **F0-03** · Motor: APU y oferta con paridad · M · F0-02
   **Leer:** producto/modelo-calculo.md, producto/dominio.md. `redondeo.ts`, `apu.ts`,
   `oferta.ts` con decimal.js. Test de paridad que ejecuta `apuCalc`/`calc` originales (líneas
   723–785) con `node:vm` sobre una oferta armada con todos los bloques.
   **Hecho cuando:** cada APU, cada rubro y el total coinciden al centavo; casos de redondeo .005.
+  _Medido:_ paridad con 3 escenarios (factor 1; 1,0734 y 0,9871 con cantidades fraccionarias), 31 pruebas verdes.
 
 - [ ] **F0-04** · Motor: impacto, objetivo y peso · S · F0-03
   **Leer:** modelo-calculo.md (impacto, objetivo). `impacto(oferta, cambio)` devuelve APUs,

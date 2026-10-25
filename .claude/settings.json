@@ -1,5 +1,10 @@
 {
   "model": "sonnet",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/claude-env.sh\"" }] }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(pnpm typecheck:*)",
@@ -14,9 +19,6 @@
       "Bash(git log:*)",
       "Bash(sed -n:*)",
       "Bash(grep:*)"
-    ],
-    "deny": [
-      "Read(./referencia/prototipo_v2.html)"
     ]
   }
 }

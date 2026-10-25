@@ -41,7 +41,9 @@ pnpm --filter api db:migrate      # migraciones Drizzle
 ```
 
 Este equipo **no trae `node`** instalado: se instala en F0-01 con `fnm` (Node 22 LTS) y
-`corepack enable pnpm`. Si `pnpm` no aparece en una sesión nueva, `eval "$(fnm env)"`.
+`corepack enable pnpm`. En sesiones de Claude, el hook `scripts/claude-env.sh` (SessionStart,
+en `.claude/settings.json`) agrega node/pnpm al PATH aunque el `HOME` de la cuenta sea otro.
+En una terminal propia, si `pnpm` no aparece: `eval "$(fnm env)"`.
 TypeScript va fijado en 6.x: typescript-eslint aún no soporta TS 7.
 
 ## Reglas duras

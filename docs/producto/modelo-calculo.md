@@ -90,5 +90,9 @@ del recálculo. Ver `withImpact` y `setPrice` (líneas 1380–1403 del prototipo
 de `apuCalc`/`calc` con `node:vm` y compara cada APU, cada rubro y el total al centavo con el
 motor TS. Cualquier cambio al motor que rompa este test se revierte.
 
+El test extrae el JS del prototipo por texto (`const sum =`, `const r2 =`, `function maps(` hasta
+`return { A, rows, caps, t, M };`), no por número de línea; si se reorganiza el HTML, ajustar esos marcadores.
+El motor devuelve `Decimal` (clon propio en `redondeo.ts`); convertir a número solo en la UI.
+
 Cuando se tenga un libro real de un cliente (anonimizado), se agrega como segundo fixture
 con el total que muestra su Excel.
