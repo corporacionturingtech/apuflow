@@ -209,9 +209,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   barra guía. **Hecho cuando:** e2e recorre las 7 misiones con un único objetivo resaltado por paso.
   _Medido:_ e2e `misiones` verde (7 misiones, 1 solo `.guia-objetivo` por paso; estable 3/3 en la suite completa), 1 prueba de API nueva (90 en total), 4 de web (32 en total). `POST /api/demo/cargar` (admin, idempotente) importa el fixture como oferta + 4 bloques; `GET /api/demo` da su id. Barra guía en `apps/web/src/misiones/` (avance por escrituras reales de `api()`, clics y pantalla). _Pendiente:_ misión 6 sin simulador (usa el Historial real); el avance de misiones vive en `localStorage` (D13). `materiales` 2.000 filas y `presupuesto-rubros` fallan también sin este cambio.
 
-- [ ] **F5-03** · Prueba de volumen · S · F4-03
+- [x] **F5-03** · Prueba de volumen · S · F4-03
   Generador de oferta de 5.000 rubros; medir recálculo, scroll y guardado.
   **Hecho cuando:** recálculo < 300 ms en navegador y scroll sin saltos; cifras en este ticket.
+  _Medido:_ e2e `volumen` verde con 5.000 rubros (`pnpm --filter api db:seed-volumen-oferta`, prefijo `OFE-VOL`): recálculo al editar una cantidad 84 ms (umbral 300), scroll de 80.000 px con peor cuadro 33 ms y 44 filas en el DOM (virtualizado), guardado PATCH + recarga correctos.
 
 - [ ] **F5-04** · Panel de valor · M · F4-02
   **Leer:** ux.md (panel de valor). Métricas del mes desde la bitácora, horas ahorradas con

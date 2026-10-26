@@ -12,15 +12,16 @@ export async function sembrarOfertaE2e(
   db: ReturnType<typeof crearBd>['db'],
   capitulos = 5,
   porCapitulo = 300,
+  prefijo = 'OFE-E2E',
 ) {
-  await db.delete(oferta).where(like(oferta.nombre, 'OFE-E2E%'));
-  await db.delete(apu).where(like(apu.codigo, 'OFE-E2E%'));
-  await db.delete(insumo).where(like(insumo.codigo, 'OFE-E2E%'));
+  await db.delete(oferta).where(like(oferta.nombre, `${prefijo}%`));
+  await db.delete(apu).where(like(apu.codigo, `${prefijo}%`));
+  await db.delete(insumo).where(like(insumo.codigo, `${prefijo}%`));
   const [m] = await db
     .insert(insumo)
     .values({
       tipo: 'MA',
-      codigo: 'OFE-E2E-MA',
+      codigo: `${prefijo}-MA`,
       descripcion: 'Material de oferta ficticio',
       unidad: 'u',
       pu: '10',
@@ -29,7 +30,7 @@ export async function sembrarOfertaE2e(
   const [a] = await db
     .insert(apu)
     .values({
-      codigo: 'OFE-E2E',
+      codigo: prefijo,
       descripcion: 'Rubro ficticio de volumen',
       unidad: 'u',
       disciplina: 'Eléctrico',
@@ -38,7 +39,14 @@ export async function sembrarOfertaE2e(
   await db.insert(lineaApu).values({ apuId: a!.id, insumoId: m!.id, cantidad: '1' });
   const [o] = await db
     .insert(oferta)
-    .values({ nombre: NOMBRE_OFERTA_E2E, cliente: 'Cliente ficticio', tipo: 'publico' })
+    .values({
+      nombre:
+        prefijo === 'OFE-E2E'
+          ? NOMBRE_OFERTA_E2E
+          : `${prefijo} Oferta de ${capitulos * porCapitulo} rubros`,
+      cliente: 'Cliente ficticio',
+      tipo: 'publico',
+    })
     .returning();
   for (let c = 0; c < capitulos; c++) {
     const [cap] = await db
@@ -61,6 +69,9 @@ export async function sembrarOfertaE2e(
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
   const { db, pool } = crearBd(urlBd());
-  console.log(`Oferta E2E sembrada: ${await sembrarOfertaE2e(db)} rubros`);
+  // `pnpm db:seed-volumen-oferta` pasa `VOL`: 10 × 500 = 5.000 rubros para e2e/volumen.spec.ts
+  const vol = process.argv[2] === 'VOL';
+  const n = vol ? await sembrarOfertaE2e(db, 10, 500, 'OFE-VOL') : await sembrarOfertaE2e(db);
+  console.log(`Oferta ${vol ? 'de volumen' : 'E2E'} sembrada: ${n} rubros`);
   await pool.end();
 }
