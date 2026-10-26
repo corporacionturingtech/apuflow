@@ -75,6 +75,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - **Patrón de referencia:** el módulo y la tabla de Materiales (F1-01) son el molde; las cuatro listas viven en `pantallas/ListaPrecios.tsx` (config `LISTAS`) y el borrado es lógico (`eliminado_en`, papelera). Para
   Equipos, Mano de obra, Transporte y cualquier CRUD nuevo, copiar ese molde, no rediseñar.
 - Comentarios solo cuando el porqué no es obvio (p. ej. el orden del redondeo).
+- UI: botones, campos e insignias desde `apps/web/src/ui/` (ver `ux.md` § Estilo visual); no clases sueltas de botón.
 
 ## Flujo de trabajo (para gastar pocos tokens)
 
@@ -89,6 +90,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - e2e: tras el clic de «Ingresar», esperar un elemento de la app (p. ej. el enlace «Ofertas») antes de un `page.goto`; si no, la navegación corta el login y el test falla a veces.
 - e2e que usan `seed-rubros` (RUB-E2E): nombrar sus ofertas `OFE-RUB…`; la semilla solo borra esas y, si queda otra oferta con el APU, falla por clave foránea.
 - Misiones guiadas: cada elemento objetivo lleva `data-guia="…"` (ver `misiones/misiones.ts`). El e2e `misiones` usa la empresa demo compartida (`/api/demo/cargar`) y al final quita los capítulos que añadió: un rubro ajeno en la demo impide a otras semillas (p. ej. `seed-bloques`) borrar sus APUs. `tsx watch` de un servidor ya levantado puede no recargar rutas nuevas: si `/api/…` da 404, reinícielo antes del e2e.
+- e2e `empresa` y `valor` escriben la misma fila de `config_empresa`: en paralelo `empresa` puede dar 409; repetir solo antes de culpar al ticket.
 - **Un ticket por sesión:** `/siguiente` → implementar → `/cerrar` → `/clear`. No arrastrar
   contexto de un ticket al siguiente.
 - **Leer lo mínimo:** solo los docs del campo **Leer** del ticket. Nunca abrir

@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Undo2, X, Zap } from 'lucide-react';
 import type { ImpactoPrecio } from 'tipos';
 import { api } from '../lib/api';
 import { fmt, money, sgn } from '../lib/formato';
+import { variantesBoton } from '../ui/button';
 
 export interface CambioPrecio {
   insumoId: string;
@@ -38,9 +40,15 @@ export function PanelImpacto({
 
   const titulo = `${cambio.descripcion} pasó de ${money(Number(cambio.puAnterior))} a ${money(Number(cambio.puNuevo))}.`;
   return (
-    <div role="status" className="mb-2 rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm">
+    <div
+      role="status"
+      className="aparecer mb-3 rounded-lg border border-primario/25 bg-white px-3 py-2.5 text-sm shadow-sm ring-4 ring-primario/5"
+    >
       <div className="flex items-start gap-3">
-        <p className="flex-1">
+        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primario/10 text-primario">
+          <Zap className="size-3.5" aria-hidden />
+        </span>
+        <p className="flex-1 leading-6">
           {titulo} {error && 'No pudimos calcular el efecto en las ofertas.'}
           {!data && !error && 'Calculando el efecto en las ofertas…'}
           {data &&
@@ -54,7 +62,7 @@ export function PanelImpacto({
             data-guia="ver-cambio"
             aria-expanded={detalle}
             onClick={() => setDetalle((v) => !v)}
-            className="font-medium text-blue-700 underline"
+            className={variantesBoton({ variant: 'outline', size: 'sm' })}
           >
             Ver qué cambió
           </button>
@@ -64,17 +72,23 @@ export function PanelImpacto({
             type="button"
             disabled={deshaciendo}
             onClick={alDeshacer}
-            className="font-medium text-blue-700 underline disabled:opacity-50"
+            className={variantesBoton({ variant: 'outline', size: 'sm' })}
           >
+            <Undo2 aria-hidden />
             Deshacer
           </button>
         )}
-        <button type="button" aria-label="Cerrar" onClick={alCerrar} className="text-slate-500">
-          ×
+        <button
+          type="button"
+          aria-label="Cerrar"
+          onClick={alCerrar}
+          className={variantesBoton({ variant: 'ghost', size: 'icon-sm' })}
+        >
+          <X aria-hidden />
         </button>
       </div>
       {detalle && data && (
-        <ul className="mt-2 space-y-1">
+        <ul className="ml-9 mt-2 space-y-1 border-t border-borde pt-2 text-slate-600">
           {data.d.ofertas.map((o) => (
             <li key={o.id}>
               <b>{o.nombre}</b>: {o.apus} APUs, {o.rubros} rubros · subtotal{' '}

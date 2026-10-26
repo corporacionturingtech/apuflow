@@ -16,7 +16,7 @@ export function empresaDe(c: Fila): Empresa & { version: number } {
     iva: c.iva,
     moneda: c.moneda,
     formatoNumero: a.formatoNumero ?? 'es',
-    acento: a.acento ?? '#334155',
+    acento: a.acento ?? '#2563eb',
     logo: a.logo ?? null,
     tipoOfertaDefecto: a.tipoOfertaDefecto ?? 'privado',
   };

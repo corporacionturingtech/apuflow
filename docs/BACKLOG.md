@@ -224,6 +224,36 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** cambiar IVA a 18 % (Perú) recalcula el total.
   _Medido:_ e2e `empresa` verde (oferta de $ 10,00: total $ 11,50 con 15 % → $ 11,80 con 18 %, persiste tras recargar, restaura al final), 1 prueba de API nueva (92 en total), 1 de web (34). `GET/PUT /api/empresa` (PUT solo admin, bitácora por campo, 409 por `version`); pantalla Configuración › Empresa. Las disciplinas siguen en Usuarios (ya existían). _Pendiente:_ `materiales` (2.000 filas) falla también sin este cambio.
 
+- [x] **F5-08** · Sistema de diseño y armazón · M · F5-05
+  **Leer:** producto/ux.md (Estilo visual). shadcn/ui en `apps/web/src/ui/` + `lucide-react` +
+  Inter local; tokens en `index.css` con `--acento` → `--primary`; navegación lateral agrupada
+  con íconos; barra de totales con el total destacado; login con marca; botones de
+  `AvisoLicencia`, `BarraGuia` y `PanelImpacto` desde `ui/`.
+  **Hecho cuando:** a 1366×768 la navegación no parte ningún texto, el total se lee en 18px y los
+  e2e `login`, `misiones`, `empresa` y `valor` pasan.
+  _Medido:_ revisado a 1366×768 (navegación sin cortes, total de 18px, Inicio sin tarjetas
+  cortadas); e2e `login`, `misiones`, `valor`, `impacto`, `indirectos` y `empresa` verdes (suite
+  completa: 33 de 34 en serie; `materiales` 2.000 filas sigue fallando como antes); 34 pruebas de
+  web. `ui/` con `button`, `input`, `label`, `badge`, `card` (diálogo, pestañas y toasts entran en
+  F5-09 cuando una pantalla los use). Acento por defecto `#2563eb` (D16). _Pendiente:_ el error
+  de ruta de TanStack sale en inglés («Something went wrong!»): darle pantalla propia en F5-10.
+
+- [ ] **F5-09** · Pantallas núcleo premium · M · F5-08
+  **Leer:** producto/ux.md (reglas 1–5). Presupuesto con encabezado en dos niveles y pestañas
+  (Indirectos, Costo objetivo, Versiones); `TablaEditable` con encabezado pegajoso, hover, foco
+  con acento y números tabulares; APU con componentes con ícono y pie de cálculo destacado;
+  barra de Listas de precios con buscador, contador y atajos en tooltip; panel de impacto flotante.
+  **Hecho cuando:** a 1366×768 el Presupuesto no tiene scroll horizontal ni botones cortados y
+  los e2e `presupuesto`, `apu`, `materiales`, `impacto` y `volumen` pasan.
+
+- [ ] **F5-10** · Resto de pantallas y detalles · S · F5-09
+  **Leer:** producto/ux.md (reglas 8–9). Inicio con KPIs destacados; Ofertas como tabla con
+  buscador, total y estado; Historial legible (hoy muestra `[object Object]` en
+  `parametrosValor`: `historialTexto.ts`); Bloques, Usuarios, Empresa, Licencia, Importar y
+  Papelera desde `ui/`; estados vacíos y de carga.
+  **Hecho cuando:** ninguna fila del Historial muestra `[object Object]` (e2e `historial`) y la
+  suite e2e completa pasa.
+
 - [ ] **F5-06** · Instalador y respaldos · M · F5-01
   **Leer:** arquitectura.md (despliegue). Dockerfile, compose, Caddy, `instalar.sh`, respaldo
   diario con rotación, `restaurar.sh`. **Hecho cuando:** instalación limpia en una VM Ubuntu LTS

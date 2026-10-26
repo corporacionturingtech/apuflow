@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import { Compass, PartyPopper } from 'lucide-react';
 import { api } from '../lib/api';
 import { consultaYo } from '../sesion';
+import { variantesBoton } from '../ui/button';
 import {
   avisarClic,
   avisarRuta,
@@ -101,15 +103,20 @@ export function BarraGuia() {
         <div
           role="region"
           aria-label="Guía de la misión"
-          className="mb-3 flex items-center gap-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm"
+          className="mb-3 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm shadow-xs"
         >
-          <span className="font-semibold">
+          <Compass className="size-4 shrink-0 text-amber-600" aria-hidden />
+          <span className="whitespace-nowrap font-semibold">
             Misión {MISIONES.indexOf(mision) + 1} · paso {g.paso + 1} de {mision.pasos.length}
           </span>
           <span className="flex-1">
             {vista.texto} <small className="text-slate-500">{mision.titulo}</small>
           </span>
-          <button type="button" onClick={salirDeMision} className="text-slate-600 underline">
+          <button
+            type="button"
+            onClick={salirDeMision}
+            className={variantesBoton({ variant: 'ghost', size: 'sm' })}
+          >
             Salir de la misión
           </button>
         </div>
@@ -118,25 +125,30 @@ export function BarraGuia() {
         <div
           role="status"
           aria-label="Misión cumplida"
-          className="mb-3 rounded border border-green-300 bg-green-50 p-3 text-sm"
+          className="aparecer mb-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm shadow-xs"
         >
-          <p className="font-semibold">
+          <p className="flex items-center gap-2 font-semibold text-emerald-800">
+            <PartyPopper className="size-4" aria-hidden />
             Misión {MISIONES.indexOf(cumplida) + 1} cumplida: {cumplida.titulo}
           </p>
           <p className="mt-1">
             <b>Qué gana su empresa aquí.</b> {cumplida.gana}
           </p>
-          <div className="mt-2 flex gap-3">
+          <div className="mt-3 flex gap-2">
             {siguiente && (
               <button
                 type="button"
                 onClick={() => iniciarMision(siguiente.id)}
-                className="rounded border border-slate-900 bg-slate-900 px-2 py-0.5 text-white"
+                className={variantesBoton({ size: 'sm' })}
               >
                 Siguiente: {siguiente.titulo}
               </button>
             )}
-            <button type="button" onClick={cerrarCumplida} className="underline">
+            <button
+              type="button"
+              onClick={cerrarCumplida}
+              className={variantesBoton({ variant: 'ghost', size: 'sm' })}
+            >
               Seguir explorando
             </button>
           </div>

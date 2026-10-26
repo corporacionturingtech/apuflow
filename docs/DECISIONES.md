@@ -63,3 +63,6 @@ se carga con `POST /api/demo/cargar` reutilizando la importación del libro (sin
 
 **D15 · 2026-10-25 · La configuración de país vive en `config_empresa`, lo visual en `ajustes.empresa`.**
 Nombre, IVA y moneda usan sus columnas; logo (data URL ≤ 200 KB), acento, formato numérico (`es`/`en`) y tipo de oferta por defecto van en `ajustes.empresa` (sin migración). El formato de `lib/formato.ts` es un estado de módulo que fija el `Layout` al cargar `/api/empresa`; el `Layout` no pinta la pantalla hasta que la consulta responde, para no remontarla a mitad de una carga.
+
+**D16 · 2026-10-25 · Sistema de diseño propio sobre shadcn/ui, sin su CLI.**
+Los componentes viven copiados en `apps/web/src/ui/` (como propone shadcn), con imports relativos y `cn()` en `lib/cn.ts`; solo se agregan los que una pantalla usa. El acento de la empresa es `--acento` y Tailwind lo expone como `primario` (`@theme inline`), así cada cliente ve su marca en botones, foco y navegación. Inter va empaquetada con `@fontsource-variable/inter` porque la instalación es on-premise y puede no tener internet. Acento por defecto `#2563eb` (el gris anterior no se distinguía sobre la navegación oscura).

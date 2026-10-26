@@ -1,7 +1,34 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/* Tokens de APUflow (ux.md § Estilo visual). `--acento` lo fija la empresa en el Layout. */
+:root {
+  --acento: #2563eb;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-primario: var(--acento);
+  --color-borde: var(--color-slate-200);
+  --color-fondo: #f6f7f9;
+  --color-civil: #b45309;
+  --color-electrico: #2563eb;
+  --color-mecanico: #059669;
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+}
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-fondo text-[13.5px] text-slate-900 antialiased;
+  font-feature-settings:
+    'cv11' 1,
+    'ss01' 1;
+}
+
+/* Dinero y cantidades: dígitos del mismo ancho para que las columnas alineen. */
+.tabular-nums,
+td,
+.cifra {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Barra guía de misiones: un único elemento resaltado por paso. */
@@ -16,8 +43,21 @@ body {
     outline-color: #fcd34d;
   }
 }
+
+/* Variación del total tras un cambio (regla UX 1). */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.aparecer {
+  animation: aparecer 180ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .guia-objetivo {
+  .guia-objetivo,
+  .aparecer {
     animation: none;
   }
 }

@@ -2,7 +2,17 @@ import { useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import type { UsuarioSesion } from 'tipos';
+import { CircleCheck } from 'lucide-react';
 import { api } from '../lib/api';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+
+const VENTAJAS = [
+  'Cambie un precio y vea al instante qué APUs y rubros se recalcularon.',
+  'Arme una bahía completa con un clic usando sus bloques.',
+  'Exporte a Excel en el formato de siempre, con fórmulas.',
+];
 
 export function Login() {
   const cliente = useQueryClient();
@@ -29,42 +39,68 @@ export function Login() {
     }
   }
 
-  const campo = 'mt-1 w-full rounded border border-slate-300 px-3 py-2 text-sm';
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <form
-        onSubmit={entrar}
-        className="w-80 rounded border border-slate-200 bg-white p-6 shadow-sm"
-      >
-        <h1 className="mb-4 text-xl font-semibold">Ingresar a APUflow</h1>
-        <label className="block text-sm">
-          Usuario
-          <input name="usuario" autoComplete="username" required className={campo} />
-        </label>
-        <label className="mt-3 block text-sm">
-          Clave
-          <input
-            name="clave"
-            type="password"
-            autoComplete="current-password"
-            required
-            className={campo}
-          />
-        </label>
-        {error && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
-            {error}
+    <main className="grid min-h-screen bg-white lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative hidden flex-col justify-between overflow-hidden bg-slate-950 p-10 text-white lg:flex">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-primario/30 blur-3xl"
+        />
+        <span className="relative flex items-center gap-2 text-lg font-semibold tracking-tight">
+          <span className="grid size-7 place-items-center rounded-md bg-primario text-xs font-bold">
+            A
+          </span>
+          APUflow
+        </span>
+        <div className="relative max-w-md">
+          <p className="text-3xl font-semibold leading-tight tracking-tight">
+            Sus presupuestos y APUs, siempre cuadrados.
           </p>
-        )}
-        <button
-          type="submit"
-          disabled={enviando}
-          className="mt-4 w-full rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-        >
-          {enviando ? 'Ingresando…' : 'Ingresar'}
-        </button>
-      </form>
-      <p className="mt-6 text-xs text-slate-400">Corporación Turingtech</p>
+          <ul className="mt-6 space-y-3 text-sm text-slate-300">
+            {VENTAJAS.map((v) => (
+              <li key={v} className="flex items-start gap-2.5">
+                <CircleCheck className="mt-0.5 size-4 shrink-0 text-primario" aria-hidden />
+                {v}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="relative text-xs text-slate-500">Corporación Turingtech</p>
+      </section>
+      <section className="flex flex-col items-center justify-center p-6">
+        <form onSubmit={entrar} className="w-full max-w-sm">
+          <h1 className="text-2xl font-semibold tracking-tight">Ingresar a APUflow</h1>
+          <p className="mt-1 text-sm text-slate-500">Use el usuario que le asignó su empresa.</p>
+          <div className="mt-8 space-y-4">
+            <Label className="block">
+              Usuario
+              <Input name="usuario" autoComplete="username" required className="mt-1.5 h-10" />
+            </Label>
+            <Label className="block">
+              Clave
+              <Input
+                name="clave"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="mt-1.5 h-10"
+              />
+            </Label>
+          </div>
+          {error && (
+            <p
+              role="alert"
+              className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-inset ring-red-200"
+            >
+              {error}
+            </p>
+          )}
+          <Button type="submit" size="lg" disabled={enviando} className="mt-6 w-full">
+            {enviando ? 'Ingresando…' : 'Ingresar'}
+          </Button>
+        </form>
+        <p className="mt-10 text-xs text-slate-400 lg:hidden">Corporación Turingtech</p>
+      </section>
     </main>
   );
 }
