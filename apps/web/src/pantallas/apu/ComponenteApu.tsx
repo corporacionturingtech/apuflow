@@ -87,7 +87,7 @@ export function ComponenteApu({
   const conRendimiento = def.tipo === 'EQ' || def.tipo === 'MO';
 
   return (
-    <section className="mt-5" aria-label={def.titulo}>
+    <section className="mt-5" aria-label={def.titulo} data-guia={`apu-${def.tipo}`}>
       <h3 className="flex items-baseline justify-between border-b border-slate-300 pb-1 font-semibold">
         {def.titulo}
         <span className="text-sm font-normal">

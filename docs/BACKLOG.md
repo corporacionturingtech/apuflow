@@ -204,9 +204,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** tests de vigente, por vencer, en gracia, vencida (exportar sigue funcionando).
   _Medido:_ 89 pruebas de API verdes (+10: firma, estados por fecha en los límites 10/15 días, límite de usuarios, solo lectura 403, exportar 200) y e2e `licencia` verde. Sin licencia = modo desarrollo salvo `LICENCIA_OBLIGATORIA=1`. _Pendiente:_ la clave pública embebida es de ejemplo; se reemplaza por la real (o `LICENCIA_CLAVE_PUBLICA`) al armar `emitir-licencia`.
 
-- [ ] **F5-02** · Empresa demo y misiones guiadas · M · F2-01, F3-01
+- [x] **F5-02** · Empresa demo y misiones guiadas · M · F2-01, F3-01
   **Leer:** ux.md (regla 9), INDICE (1241–1364). Cargar la empresa demo y las 7 misiones con la
   barra guía. **Hecho cuando:** e2e recorre las 7 misiones con un único objetivo resaltado por paso.
+  _Medido:_ e2e `misiones` verde (7 misiones, 1 solo `.guia-objetivo` por paso; estable 3/3 en la suite completa), 1 prueba de API nueva (90 en total), 4 de web (32 en total). `POST /api/demo/cargar` (admin, idempotente) importa el fixture como oferta + 4 bloques; `GET /api/demo` da su id. Barra guía en `apps/web/src/misiones/` (avance por escrituras reales de `api()`, clics y pantalla). _Pendiente:_ misión 6 sin simulador (usa el Historial real); el avance de misiones vive en `localStorage` (D13). `materiales` 2.000 filas y `presupuesto-rubros` fallan también sin este cambio.
 
 - [ ] **F5-03** · Prueba de volumen · S · F4-03
   Generador de oferta de 5.000 rubros; medir recálculo, scroll y guardado.

@@ -31,6 +31,7 @@ export function BotonExportar({ ofertaId, nombre }: { ofertaId: string; nombre: 
       )}
       <button
         type="button"
+        data-guia="btn-exportar"
         disabled={estado === 'generando'}
         onClick={exportar}
         className="rounded border border-slate-300 px-2 py-0.5"

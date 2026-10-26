@@ -69,7 +69,11 @@ export function Versiones({ data, soloLectura }: Props) {
   const sel = versiones.find((v) => v.id === elegida);
 
   return (
-    <section aria-label="Versiones" className="mt-3 max-w-4xl rounded border p-3 text-sm">
+    <section
+      aria-label="Versiones"
+      data-guia="panel-versiones"
+      className="mt-3 max-w-4xl rounded border p-3 text-sm"
+    >
       <p className="mb-2 text-slate-600">
         Guarde una foto de la oferta antes de ajustar precios o cantidades; luego compárela con lo
         que tiene hoy, rubro por rubro. Al emitir, esa foto queda congelada y la oferta sigue
@@ -107,9 +111,10 @@ export function Versiones({ data, soloLectura }: Props) {
         <p className="text-slate-500">Aún no hay versiones guardadas.</p>
       ) : (
         <ul className="mb-2 flex flex-wrap gap-2">
-          {versiones.map((v) => (
+          {versiones.map((v, i) => (
             <li key={v.id}>
               <button
+                data-guia={i === 0 ? 'version-comparar' : undefined}
                 type="button"
                 aria-pressed={elegida === v.id}
                 onClick={() => setElegida(elegida === v.id ? null : v.id)}

@@ -30,6 +30,8 @@ type Props<T> = {
   alHistorial?: (fila: T) => void;
   /** Alt+A o doble clic en una celda de solo lectura: abrir el registro de la fila. */
   alAbrir?: (fila: T) => void;
+  /** Marca para la barra guía de las misiones (`data-guia`). */
+  guia?: string;
 };
 
 const ALTO_FILA = 28;
@@ -45,6 +47,7 @@ export function TablaEditable<T>({
   alEliminar,
   alHistorial,
   alAbrir,
+  guia,
 }: Props<T>) {
   const contenedor = useRef<HTMLDivElement>(null);
   const [foco, setFoco] = useState({ f: 0, c: 0 });
@@ -126,7 +129,7 @@ export function TablaEditable<T>({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" data-guia={guia}>
       <div
         role="grid"
         aria-label={nombre}

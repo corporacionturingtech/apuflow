@@ -38,7 +38,7 @@ export function Historial() {
       <p className="mb-4 text-sm text-slate-600">
         Todo lo que cambió su equipo: quién, qué, cuándo, y de cuánto a cuánto.
       </p>
-      <div className="mb-4 flex flex-wrap items-end gap-3 text-sm">
+      <div data-guia="historial-filtros" className="mb-4 flex flex-wrap items-end gap-3 text-sm">
         <label className="flex flex-col gap-1">
           Qué cambió
           <select value={entidad} onChange={(e) => setEntidad(e.target.value)} className={CAMPO}>

@@ -51,6 +51,7 @@ export function PanelImpacto({
         {data && data.d.rubros > 0 && (
           <button
             type="button"
+            data-guia="ver-cambio"
             aria-expanded={detalle}
             onClick={() => setDetalle((v) => !v)}
             className="font-medium text-blue-700 underline"

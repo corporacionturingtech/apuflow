@@ -105,7 +105,7 @@ export function Bloques() {
         </p>
       )}
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {(data?.items ?? []).map((b) => (
+        {(data?.items ?? []).map((b, i) => (
           <article
             key={b.id}
             aria-label={b.nombre}
@@ -136,6 +136,7 @@ export function Bloques() {
               <div className="mt-2 flex items-center gap-3 text-sm">
                 <button
                   type="button"
+                  data-guia={i === 0 ? 'bloque-anadir' : undefined}
                   disabled={!destino || anadir.isPending}
                   onClick={() => anadir.mutate(b.id)}
                   className="rounded border border-slate-300 px-2 py-0.5"

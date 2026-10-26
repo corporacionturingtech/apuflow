@@ -206,6 +206,7 @@ export function Presupuesto() {
         </div>
         <button
           type="button"
+          data-guia="btn-indirectos"
           aria-expanded={verIndirectos}
           onClick={() => setVerIndirectos((v) => !v)}
           className="rounded border border-slate-300 px-2 py-0.5 text-sm"
@@ -214,6 +215,7 @@ export function Presupuesto() {
         </button>
         <button
           type="button"
+          data-guia="btn-objetivo"
           aria-expanded={verObjetivo}
           onClick={() => setVerObjetivo((v) => !v)}
           className="rounded border border-slate-300 px-2 py-0.5 text-sm"
@@ -222,6 +224,7 @@ export function Presupuesto() {
         </button>
         <button
           type="button"
+          data-guia="btn-versiones"
           aria-expanded={verVersiones}
           onClick={() => setVerVersiones((v) => !v)}
           className="rounded border border-slate-300 px-2 py-0.5 text-sm"
@@ -328,6 +331,7 @@ export function Presupuesto() {
         <div className="mt-3">
           <TablaEditable
             nombre="Presupuesto"
+            guia="tabla-presupuesto"
             columnas={columnas}
             filas={filas}
             editadas={editadas}

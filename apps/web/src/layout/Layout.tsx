@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import { api } from '../lib/api';
 import { consultaYo } from '../sesion';
 import { AvisoLicencia } from './AvisoLicencia';
+import { BarraGuia } from '../misiones/BarraGuia';
 import { BarraTotales } from './BarraTotales';
 
 const LISTAS = [
@@ -31,30 +32,28 @@ export function Layout() {
         className="flex w-52 flex-col bg-slate-900 p-3 text-sm text-slate-200"
       >
         <span className="mb-4 px-2 text-lg font-semibold text-white">APUflow</span>
-        <Link to="/" className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700">
+        <Link to="/" data-guia="nav-inicio" className={ENLACE}>
           Inicio
         </Link>
         <span className="mt-2 px-2 text-xs uppercase text-slate-500">Listas de precios</span>
         {LISTAS.map(([to, texto]) => (
-          <Link
-            key={to}
-            to={to}
-            className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
-          >
+          <Link key={to} to={to} data-guia={`nav-${to.slice(1)}`} className={ENLACE}>
             {texto}
           </Link>
         ))}
         <Link
           to="/ofertas"
+          data-guia="nav-ofertas"
           className="mt-2 rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
         >
           Ofertas
         </Link>
-        <Link to="/apus" className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700">
+        <Link to="/apus" data-guia="nav-apus" className={ENLACE}>
           APUs
         </Link>
         <Link
           to="/bloques"
+          data-guia="nav-bloques"
           className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
         >
           Bloques
@@ -64,7 +63,7 @@ export function Layout() {
             Usuarios
           </Link>
         )}
-        <Link to="/historial" className={ENLACE}>
+        <Link to="/historial" data-guia="nav-historial" className={ENLACE}>
           Historial
         </Link>
         {usuario?.rol === 'admin' && (
@@ -81,6 +80,7 @@ export function Layout() {
         </div>
       </nav>
       <main className="flex-1 p-6 pb-16">
+        <BarraGuia />
         <AvisoLicencia />
         <Outlet />
       </main>

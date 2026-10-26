@@ -251,6 +251,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
       {data && !verPapelera && (
         <TablaEditable
           nombre={config.tabla}
+          guia="tabla-lista"
           columnas={columnas}
           filas={filas}
           editadas={editadas}

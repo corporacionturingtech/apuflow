@@ -12,6 +12,7 @@ import { rutasUsuarios } from './modulos/usuarios/rutas';
 import { rutasBitacora } from './modulos/bitacora/rutas';
 import { rutasSalud } from './modulos/salud/rutas';
 import { rutasTiempoReal } from './modulos/tiempo-real/rutas';
+import { rutasDemo } from './modulos/demo/rutas';
 import { rutasLicencia, type OpcionesLicencia } from './modulos/licencia/rutas';
 import { estadoLicencia } from './licencia/servicio';
 
@@ -48,5 +49,6 @@ export function crearApp(db: Bd, opciones: Pick<OpcionesLicencia, 'clavePublica'
   app.register(rutasImportacion, { db });
   app.register(rutasBitacora, { db });
   app.register(rutasTiempoReal, { db });
+  app.register(rutasDemo, { db });
   return app;
 }

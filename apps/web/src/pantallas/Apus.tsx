@@ -50,6 +50,7 @@ export function Apus() {
                 <Link
                   to="/apus/$id"
                   params={{ id: a.id }}
+                  data-guia={a.id === data?.items[0]?.id ? 'apu-primero' : undefined}
                   className="block rounded border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
                 >
                   <code className="mr-2 text-xs">{a.codigo}</code>

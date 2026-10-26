@@ -78,6 +78,7 @@ export function Ofertas() {
             <Link
               to="/ofertas/$id"
               params={{ id: o.id }}
+              data-guia={`oferta-${o.id}`}
               className="block rounded border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
             >
               <b>{o.nombre}</b>

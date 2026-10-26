@@ -1,3 +1,5 @@
+import { avisarApi } from '../misiones/guia';
+
 export class ErrorApi extends Error {
   constructor(
     public estado: number,
@@ -23,6 +25,7 @@ export async function api<T>(ruta: string, opciones: { metodo?: string; cuerpo?:
     const j = (await res.json().catch(() => null)) as { mensaje?: string } | null;
     throw new ErrorApi(res.status, j?.mensaje ?? 'Algo salió mal. Intente de nuevo.');
   }
+  avisarApi(opciones.metodo ?? 'GET', ruta);
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
 

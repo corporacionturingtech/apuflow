@@ -1,0 +1,906 @@
+{
+  "datosGenerales": {
+    "proyecto": "Subestación ilustrativa 69/13,8 kV",
+    "cliente": "Cliente ilustrativo",
+    "ubicacion": "Quito, Pichincha",
+    "fecha": "2026-10-19",
+    "plazo": "120",
+    "tipo": "Público"
+  },
+  "factor": 1,
+  "herramientaMenor": 5,
+  "iva": 15,
+  "indirectos": [
+    {
+      "id": "gg",
+      "n": "Gastos generales y administrativos",
+      "p": 12
+    },
+    {
+      "id": "campo",
+      "n": "Gastos de campo (residencia de obra)",
+      "p": 5
+    },
+    {
+      "id": "imp",
+      "n": "Imprevistos",
+      "p": 2
+    },
+    {
+      "id": "gar",
+      "n": "Garantías, pólizas y seguros",
+      "p": 1
+    },
+    {
+      "id": "util",
+      "n": "Utilidad",
+      "p": 8
+    }
+  ],
+  "materiales": [
+    {
+      "id": "e01",
+      "n": "Breaker riel 2P-63 A",
+      "u": "u",
+      "pu": 12.5,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e02",
+      "n": "Riel DIN 35 mm × 1 m",
+      "u": "u",
+      "pu": 4.9,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e03",
+      "n": "Gabinete metálico 40×40×20 cm",
+      "u": "u",
+      "pu": 85,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 60
+    },
+    {
+      "id": "e04",
+      "n": "Multiconductor de cobre XHHW 2×8 AWG",
+      "u": "m",
+      "pu": 3.95,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 45
+    },
+    {
+      "id": "e05",
+      "n": "Multiconductor de cobre XHHW 3×2 AWG",
+      "u": "m",
+      "pu": 21.4,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 45
+    },
+    {
+      "id": "e06",
+      "n": "Cable de cobre desnudo 2/0 AWG",
+      "u": "m",
+      "pu": 9.6,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 40
+    },
+    {
+      "id": "e07",
+      "n": "Varilla copperweld 5/8\" × 1,8 m",
+      "u": "u",
+      "pu": 18.5,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e08",
+      "n": "Soldadura exotérmica, carga 90 g",
+      "u": "u",
+      "pu": 9.8,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e09",
+      "n": "Conductor de aluminio ACSR para barras",
+      "u": "m",
+      "pu": 6.4,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e10",
+      "n": "Conectores y herrajes de alta tensión",
+      "u": "u",
+      "pu": 38,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e11",
+      "n": "Cadena de aisladores de suspensión",
+      "u": "u",
+      "pu": 42,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e12",
+      "n": "Luminaria LED 150 W para exterior",
+      "u": "u",
+      "pu": 310,
+      "sec": "ELÉCTRICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "e13",
+      "n": "Poste metálico galvanizado 9 m",
+      "u": "u",
+      "pu": 640,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 70
+    },
+    {
+      "id": "e14",
+      "n": "Cable de control 12×14 AWG",
+      "u": "m",
+      "pu": 5.6,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 45
+    },
+    {
+      "id": "e15",
+      "n": "Tubo PVC 3\"",
+      "u": "m",
+      "pu": 12.8,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 80
+    },
+    {
+      "id": "e16",
+      "n": "Crucetas y accesorios para luminarias",
+      "u": "u",
+      "pu": 185,
+      "sec": "ELÉCTRICO",
+      "o": "P",
+      "vae": 70
+    },
+    {
+      "id": "c01",
+      "n": "Hormigón premezclado f'c = 210 kg/cm²",
+      "u": "m³",
+      "pu": 128,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 90
+    },
+    {
+      "id": "c02",
+      "n": "Acero de refuerzo fy = 4.200 kg/cm²",
+      "u": "kg",
+      "pu": 1.25,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 75
+    },
+    {
+      "id": "c03",
+      "n": "Encofrado de madera (tablero y puntales)",
+      "u": "m²",
+      "pu": 7.8,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 90
+    },
+    {
+      "id": "c04",
+      "n": "Material de mejoramiento (lastre)",
+      "u": "m³",
+      "pu": 14,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 100
+    },
+    {
+      "id": "c05",
+      "n": "Grava triturada para patio",
+      "u": "m³",
+      "pu": 22,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 100
+    },
+    {
+      "id": "c06",
+      "n": "Cemento Portland, saco 50 kg",
+      "u": "saco",
+      "pu": 8.3,
+      "sec": "CIVIL",
+      "o": "P",
+      "vae": 90
+    },
+    {
+      "id": "m01",
+      "n": "Acero estructural galvanizado A36",
+      "u": "kg",
+      "pu": 2.1,
+      "sec": "MECÁNICO",
+      "o": "P",
+      "vae": 55
+    },
+    {
+      "id": "m02",
+      "n": "Pernos y anclajes galvanizados",
+      "u": "kg",
+      "pu": 4.5,
+      "sec": "MECÁNICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "m03",
+      "n": "Electrodo E6011",
+      "u": "kg",
+      "pu": 3.4,
+      "sec": "MECÁNICO",
+      "o": "I",
+      "vae": 0
+    },
+    {
+      "id": "m04",
+      "n": "Pintura anticorrosiva",
+      "u": "gl",
+      "pu": 24,
+      "sec": "MECÁNICO",
+      "o": "P",
+      "vae": 70
+    },
+    {
+      "id": "m05",
+      "n": "Malla de cerramiento galvanizada",
+      "u": "m²",
+      "pu": 11.5,
+      "sec": "MECÁNICO",
+      "o": "P",
+      "vae": 65
+    }
+  ],
+  "manoObra": [
+    {
+      "id": "peon",
+      "n": "Peón",
+      "p": 4.1
+    },
+    {
+      "id": "ayel",
+      "n": "Ayudante de electricista",
+      "p": 4.1
+    },
+    {
+      "id": "elec",
+      "n": "Electricista",
+      "p": 4.15
+    },
+    {
+      "id": "lin",
+      "n": "Liniero",
+      "p": 4.6
+    },
+    {
+      "id": "alb",
+      "n": "Albañil",
+      "p": 4.15
+    },
+    {
+      "id": "fie",
+      "n": "Fierrero",
+      "p": 4.15
+    },
+    {
+      "id": "pint",
+      "n": "Pintor",
+      "p": 4.15
+    },
+    {
+      "id": "sold",
+      "n": "Soldador",
+      "p": 4.3
+    },
+    {
+      "id": "maes",
+      "n": "Maestro mayor",
+      "p": 4.6
+    },
+    {
+      "id": "opg",
+      "n": "Operador de grúa",
+      "p": 4.65
+    },
+    {
+      "id": "opr",
+      "n": "Operador de retroexcavadora",
+      "p": 4.65
+    },
+    {
+      "id": "inge",
+      "n": "Ingeniero eléctrico",
+      "p": 12
+    },
+    {
+      "id": "ingc",
+      "n": "Ingeniero civil",
+      "p": 12
+    },
+    {
+      "id": "ingm",
+      "n": "Ingeniero mecánico",
+      "p": 12
+    }
+  ],
+  "equipos": [
+    {
+      "id": "grua",
+      "n": "Grúa 10 t",
+      "p": 45
+    },
+    {
+      "id": "canas",
+      "n": "Camión canasta",
+      "p": 28
+    },
+    {
+      "id": "retro",
+      "n": "Retroexcavadora",
+      "p": 30
+    },
+    {
+      "id": "compa",
+      "n": "Compactador tipo plancha",
+      "p": 4
+    },
+    {
+      "id": "concr",
+      "n": "Concretera de 1 saco",
+      "p": 5
+    },
+    {
+      "id": "vibra",
+      "n": "Vibrador de hormigón",
+      "p": 3.5
+    },
+    {
+      "id": "tend",
+      "n": "Equipo de tendido de conductor",
+      "p": 18
+    },
+    {
+      "id": "solde",
+      "n": "Soldadora eléctrica 300 A",
+      "p": 2.5
+    },
+    {
+      "id": "andam",
+      "n": "Andamios",
+      "p": 1.2
+    },
+    {
+      "id": "prueb",
+      "n": "Equipo de pruebas eléctricas",
+      "p": 6
+    }
+  ],
+  "transporte": [
+    {
+      "id": "cama",
+      "n": "Camión plataforma",
+      "u": "viaje",
+      "p": 180
+    },
+    {
+      "id": "volq",
+      "n": "Volqueta 8 m³",
+      "u": "viaje",
+      "p": 65
+    },
+    {
+      "id": "tkm",
+      "n": "Transporte de material",
+      "u": "t-km",
+      "p": 0.35
+    }
+  ],
+  "apus": [
+    {
+      "id": "C01",
+      "n": "Excavación a máquina para cimentaciones",
+      "d": "Civil",
+      "u": "m³",
+      "r": 0.1,
+      "eq": [["retro", 1]],
+      "mo": [
+        ["opr", 1],
+        ["peon", 2]
+      ],
+      "ma": [],
+      "tr": [["volq", 0.12]]
+    },
+    {
+      "id": "C02",
+      "n": "Relleno compactado con material de mejoramiento",
+      "d": "Civil",
+      "u": "m³",
+      "r": 0.5,
+      "eq": [["compa", 1]],
+      "mo": [
+        ["peon", 2],
+        ["maes", 0.1]
+      ],
+      "ma": [["c04", 1.25]],
+      "tr": [["volq", 0.1]]
+    },
+    {
+      "id": "C03",
+      "n": "Hormigón f'c = 210 kg/cm² en cimentaciones de equipos",
+      "d": "Civil",
+      "u": "m³",
+      "r": 2,
+      "eq": [
+        ["concr", 1],
+        ["vibra", 1]
+      ],
+      "mo": [
+        ["peon", 4],
+        ["alb", 2],
+        ["maes", 0.2],
+        ["ingc", 0.1]
+      ],
+      "ma": [
+        ["c01", 1.05],
+        ["c03", 2.5]
+      ],
+      "tr": []
+    },
+    {
+      "id": "C04",
+      "n": "Acero de refuerzo fy = 4.200 kg/cm²",
+      "d": "Civil",
+      "u": "kg",
+      "r": 0.03,
+      "eq": [],
+      "mo": [
+        ["fie", 1],
+        ["peon", 1]
+      ],
+      "ma": [["c02", 1.05]],
+      "tr": [["tkm", 0.05]]
+    },
+    {
+      "id": "C05",
+      "n": "Grava triturada en patio de maniobras, e = 10 cm",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.04,
+      "eq": [],
+      "mo": [["peon", 2]],
+      "ma": [["c05", 0.11]],
+      "tr": [["volq", 0.015]]
+    },
+    {
+      "id": "C06",
+      "n": "Canaleta de hormigón para cables",
+      "d": "Civil",
+      "u": "m",
+      "r": 0.8,
+      "eq": [
+        ["concr", 1],
+        ["vibra", 1]
+      ],
+      "mo": [
+        ["peon", 2],
+        ["alb", 1],
+        ["maes", 0.1]
+      ],
+      "ma": [
+        ["c01", 0.12],
+        ["c02", 8],
+        ["c03", 0.8]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E01",
+      "n": "Montaje de poste metálico de 9 m con grúa",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 1.5,
+      "eq": [["grua", 1]],
+      "mo": [
+        ["opg", 1],
+        ["lin", 1],
+        ["ayel", 2],
+        ["inge", 0.25]
+      ],
+      "ma": [
+        ["m02", 3],
+        ["e06", 3]
+      ],
+      "tr": [["cama", 0.1]]
+    },
+    {
+      "id": "E02",
+      "n": "Suministro e instalación de luminaria LED 150 W",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 0.75,
+      "eq": [["canas", 1]],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 1]
+      ],
+      "ma": [
+        ["e12", 1],
+        ["e16", 1]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E03",
+      "n": "Tendido de multiconductor XHHW 2×8 AWG en ducto",
+      "d": "Eléctrico",
+      "u": "m",
+      "r": 0.05,
+      "eq": [],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 2]
+      ],
+      "ma": [["e04", 1.05]],
+      "tr": []
+    },
+    {
+      "id": "E04",
+      "n": "Tendido de multiconductor XHHW 3×2 AWG en ducto",
+      "d": "Eléctrico",
+      "u": "m",
+      "r": 0.08,
+      "eq": [["tend", 0.5]],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 2]
+      ],
+      "ma": [
+        ["e05", 1.05],
+        ["e15", 1]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E05",
+      "n": "Tablero de iluminación perimetral",
+      "d": "Eléctrico",
+      "u": "glb",
+      "r": 8,
+      "eq": [["prueb", 0.5]],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 1],
+        ["inge", 0.25]
+      ],
+      "ma": [
+        ["e01", 6],
+        ["e02", 2],
+        ["e03", 1],
+        ["e14", 12],
+        ["e06", 2]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E06",
+      "n": "Malla de puesta a tierra con cable 2/0 AWG",
+      "d": "Eléctrico",
+      "u": "m",
+      "r": 0.15,
+      "eq": [],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 2],
+        ["peon", 1]
+      ],
+      "ma": [
+        ["e06", 1.05],
+        ["e08", 0.08],
+        ["e07", 0.05]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E07",
+      "n": "Montaje de interruptor de potencia 69 kV",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 24,
+      "eq": [
+        ["grua", 0.3],
+        ["prueb", 0.2]
+      ],
+      "mo": [
+        ["opg", 0.3],
+        ["lin", 2],
+        ["elec", 1],
+        ["ayel", 3],
+        ["inge", 0.5]
+      ],
+      "ma": [
+        ["e10", 6],
+        ["m02", 12],
+        ["e06", 12]
+      ],
+      "tr": [["cama", 1]]
+    },
+    {
+      "id": "E08",
+      "n": "Montaje de seccionador tripolar 69 kV",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 12,
+      "eq": [["grua", 0.3]],
+      "mo": [
+        ["opg", 0.3],
+        ["lin", 2],
+        ["ayel", 2],
+        ["inge", 0.25]
+      ],
+      "ma": [
+        ["e10", 6],
+        ["m02", 8],
+        ["e06", 9]
+      ],
+      "tr": [["cama", 0.5]]
+    },
+    {
+      "id": "E09",
+      "n": "Montaje de transformador de corriente o de potencial",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 4,
+      "eq": [["grua", 0.25]],
+      "mo": [
+        ["opg", 0.25],
+        ["lin", 1],
+        ["elec", 1],
+        ["ayel", 2],
+        ["inge", 0.25]
+      ],
+      "ma": [
+        ["e10", 2],
+        ["m02", 4],
+        ["e06", 4]
+      ],
+      "tr": [["cama", 0.2]]
+    },
+    {
+      "id": "E10",
+      "n": "Barras y conexiones de alta tensión en ACSR",
+      "d": "Eléctrico",
+      "u": "m",
+      "r": 0.4,
+      "eq": [["canas", 0.5]],
+      "mo": [
+        ["lin", 2],
+        ["ayel", 2]
+      ],
+      "ma": [
+        ["e09", 1.05],
+        ["e10", 0.15],
+        ["e11", 0.05]
+      ],
+      "tr": []
+    },
+    {
+      "id": "E11",
+      "n": "Cableado de control 12×14 AWG en canaleta",
+      "d": "Eléctrico",
+      "u": "m",
+      "r": 0.06,
+      "eq": [],
+      "mo": [
+        ["elec", 1],
+        ["ayel", 1]
+      ],
+      "ma": [["e14", 1.1]],
+      "tr": []
+    },
+    {
+      "id": "E12",
+      "n": "Ingeniería y planos eléctricos",
+      "d": "Eléctrico",
+      "u": "glb",
+      "r": 80,
+      "eq": [],
+      "mo": [["inge", 1]],
+      "ma": [],
+      "tr": []
+    },
+    {
+      "id": "E13",
+      "n": "Suministro de poste metálico galvanizado 9 m",
+      "d": "Eléctrico",
+      "u": "u",
+      "r": 0,
+      "eq": [],
+      "mo": [],
+      "ma": [["e13", 1]],
+      "tr": []
+    },
+    {
+      "id": "M01",
+      "n": "Estructura metálica galvanizada para pórticos",
+      "d": "Mecánico",
+      "u": "kg",
+      "r": 0.035,
+      "eq": [
+        ["grua", 0.4],
+        ["solde", 1]
+      ],
+      "mo": [
+        ["opg", 0.4],
+        ["sold", 1],
+        ["peon", 2],
+        ["ingm", 0.05]
+      ],
+      "ma": [
+        ["m01", 1.03],
+        ["m02", 0.03],
+        ["m03", 0.01]
+      ],
+      "tr": [["tkm", 0.05]]
+    },
+    {
+      "id": "M02",
+      "n": "Soportes metálicos galvanizados para equipos",
+      "d": "Mecánico",
+      "u": "kg",
+      "r": 0.045,
+      "eq": [
+        ["grua", 0.2],
+        ["solde", 1]
+      ],
+      "mo": [
+        ["opg", 0.2],
+        ["sold", 1],
+        ["peon", 1],
+        ["ingm", 0.05]
+      ],
+      "ma": [
+        ["m01", 1.05],
+        ["m02", 0.05],
+        ["m03", 0.015]
+      ],
+      "tr": [["tkm", 0.05]]
+    },
+    {
+      "id": "M03",
+      "n": "Cerramiento con malla galvanizada",
+      "d": "Mecánico",
+      "u": "m²",
+      "r": 0.3,
+      "eq": [["solde", 1]],
+      "mo": [
+        ["sold", 1],
+        ["peon", 1]
+      ],
+      "ma": [
+        ["m05", 1.05],
+        ["m01", 2.5],
+        ["m04", 0.02]
+      ],
+      "tr": []
+    },
+    {
+      "id": "M04",
+      "n": "Pintura anticorrosiva en estructuras",
+      "d": "Mecánico",
+      "u": "m²",
+      "r": 0.12,
+      "eq": [["andam", 1]],
+      "mo": [
+        ["pint", 1],
+        ["peon", 1]
+      ],
+      "ma": [["m04", 0.08]],
+      "tr": []
+    }
+  ],
+  "bloques": [
+    {
+      "id": "b69",
+      "n": "Bahía de 69 kV",
+      "r": [
+        ["C01", 70],
+        ["C02", 45],
+        ["C03", 38],
+        ["C04", 2900],
+        ["C05", 420],
+        ["C06", 60],
+        ["M01", 5200],
+        ["M02", 2400],
+        ["M04", 260],
+        ["E07", 1],
+        ["E08", 3],
+        ["E09", 6],
+        ["E10", 120],
+        ["E06", 320],
+        ["E11", 520]
+      ]
+    },
+    {
+      "id": "b230",
+      "n": "Bahía de 230 kV",
+      "r": [
+        ["C01", 180],
+        ["C02", 110],
+        ["C03", 95],
+        ["C04", 7400],
+        ["C05", 950],
+        ["C06", 140],
+        ["M01", 14500],
+        ["M02", 6200],
+        ["M04", 690],
+        ["E07", 1],
+        ["E08", 3],
+        ["E09", 6],
+        ["E10", 240],
+        ["E06", 650],
+        ["E11", 900]
+      ]
+    },
+    {
+      "id": "btr",
+      "n": "Bahía de transformador",
+      "r": [
+        ["C01", 110],
+        ["C03", 64],
+        ["C04", 4800],
+        ["C06", 40],
+        ["M02", 3100],
+        ["E08", 2],
+        ["E09", 3],
+        ["E10", 90],
+        ["E06", 280],
+        ["E11", 460]
+      ]
+    },
+    {
+      "id": "bilu",
+      "n": "Iluminación perimetral con postes",
+      "r": [
+        ["E13", 12],
+        ["E02", 12],
+        ["E01", 12],
+        ["E03", 1500],
+        ["E05", 1],
+        ["E12", 1],
+        ["C01", 8]
+      ]
+    }
+  ],
+  "inicial": ["b69"]
+}

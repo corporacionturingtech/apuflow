@@ -38,6 +38,7 @@ const CUBIERTAS: Record<string, string> = {
   'POST /api/ofertas/:id/bloques': 'bloques/rutas.test.ts',
   'DELETE /api/bloques/:id': 'bloques/rutas.test.ts',
   'POST /api/importar/confirmar': 'importacion/rutas.test.ts',
+  'POST /api/demo/cargar': 'demo/rutas.test.ts',
   'POST /api/importar/precios/confirmar': 'importacion/rutas.test.ts',
   'PATCH /api/usuarios/:id': 'usuarios/rutas.test.ts',
   'PUT /api/licencia': 'licencia/rutas.test.ts',

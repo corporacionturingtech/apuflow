@@ -3,3 +3,21 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+/* Barra guía de misiones: un único elemento resaltado por paso. */
+.guia-objetivo {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 4px;
+  animation: guia-pulso 1.6s ease-in-out infinite;
+}
+@keyframes guia-pulso {
+  50% {
+    outline-color: #fcd34d;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guia-objetivo {
+    animation: none;
+  }
+}

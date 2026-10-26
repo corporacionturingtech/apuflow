@@ -55,7 +55,11 @@ export function Objetivo({ data, calculo, cambios, soloLectura }: Props) {
   const marca = g ? (g.llego ? 100 : (objetivo / sub) * 100) : 0;
 
   return (
-    <section aria-label="Costo objetivo" className="mt-3 max-w-4xl rounded border p-3 text-sm">
+    <section
+      aria-label="Costo objetivo"
+      data-guia="panel-objetivo"
+      className="mt-3 max-w-4xl rounded border p-3 text-sm"
+    >
       <p className="mb-2 text-slate-600">
         Cuando el cliente dice «esto tengo», escriba ese costo referencial. Verá cuánto falta y qué
         rubros pesan más para decidir dónde ajustar: menos gente, menos horas o un mejor precio.

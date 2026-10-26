@@ -46,6 +46,7 @@ export function Indirectos({ data, calculo, cambios, soloLectura }: Props) {
   return (
     <section
       aria-label="Indirectos y utilidad"
+      data-guia="panel-indirectos"
       className="mt-3 max-w-xl rounded border p-3 text-sm"
     >
       <p className="mb-2 text-slate-600">

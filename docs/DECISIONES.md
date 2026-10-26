@@ -52,3 +52,8 @@ siendo la misma fila editable (el «borrador nuevo»). No hay estado de oferta n
 `config_empresa.ajustes.restringirPorDisciplina` (apagado por defecto). Con él activo, un `cotizador` no puede crear, editar,
 copiar el APU ni quitar rubros (ni crear capítulos) cuyo capítulo tenga una disciplina que no está entre las suyas; capítulos
 sin disciplina quedan libres. `admin`, `precios` y `lector` no cambian (el lector ya no escribe). Respuesta 403 con el nombre de la disciplina.
+
+**D13 · 2026-10-25 · Las misiones guiadas avanzan por eventos reales y su progreso vive en el navegador.**
+La barra guía no simula clics: un paso termina cuando `api()` confirma una escritura (o un clic en el objetivo, o llegar a la
+pantalla). El avance de misiones cumplidas se guarda en `localStorage` por usuario; es solo onboarding, no un dato del negocio. La empresa demo
+se carga con `POST /api/demo/cargar` reutilizando la importación del libro (sin lógica de cálculo nueva).
