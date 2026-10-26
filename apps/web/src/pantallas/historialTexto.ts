@@ -47,6 +47,20 @@ const CAMPOS: Record<string, string> = {
   rol: 'el rol',
   activo: 'el estado',
   disciplinas: 'las disciplinas',
+  parametrosValor: 'los minutos de ahorro',
+  iva: 'el IVA',
+  moneda: 'la moneda',
+  formatoNumero: 'el formato de números',
+  acento: 'el color de acento',
+  logo: 'el logo',
+  tipoOfertaDefecto: 'el tipo de oferta por defecto',
+  apuId: 'el APU',
+};
+
+// Valores compuestos (p. ej. `parametrosValor`): cada clave con su etiqueta y unidad.
+const PARTES: Record<string, [string, string]> = {
+  minutosPorRubro: ['por rubro', ' min'],
+  minutosPorRecalculo: ['por recálculo', ' min'],
 };
 
 const fila = (v: unknown): Record<string, unknown> | null =>
@@ -58,13 +72,27 @@ const nombreDe = (f: BitacoraFila) => {
   return typeof n === 'string' ? ` «${n}»` : '';
 };
 
-const valor = (v: unknown) => {
-  const x = fila(v)?.valor;
+const simple = (x: unknown): string => {
   if (x === null || x === undefined || x === '') return '—';
   if (typeof x === 'boolean') return x ? 'activo' : 'inactivo';
+  if (typeof x === 'number') return qty(x);
   if (typeof x === 'string' && /^-?\d+(\.\d+)?$/.test(x)) return qty(Number(x));
-  if (Array.isArray(x)) return x.length ? x.join(', ') : '—';
+  if (Array.isArray(x)) return x.length ? x.map(simple).join(', ') : '—';
+  const o = fila(x);
+  if (o) {
+    const partes = Object.entries(o).map(([k, v]) => {
+      const [etiqueta, unidad] = PARTES[k] ?? [k, ''];
+      return `${etiqueta} ${simple(v)}${unidad}`;
+    });
+    return partes.length ? partes.join(', ') : '—';
+  }
   return String(x);
+};
+
+// Casi todo se guarda como `{ valor }`; Configuración › Empresa guarda `{ [campo]: valor }`.
+const valor = (v: unknown, campo: string) => {
+  const f = fila(v);
+  return simple(f && 'valor' in f ? f.valor : f?.[campo]);
 };
 
 /** Frase legible de un movimiento de la bitácora (ux.md: nada de «entidad» ni «registro»). */
@@ -79,7 +107,7 @@ export function describir(f: BitacoraFila): { que: string; cambio?: string } {
     const campo = CAMPOS[f.campo] ?? `«${f.campo}»`;
     return {
       que: `cambió ${campo} de ${sujeto}${nombreDe(f)}`,
-      cambio: `${valor(f.antes)} → ${valor(f.despues)}`,
+      cambio: `${valor(f.antes, f.campo)} → ${valor(f.despues, f.campo)}`,
     };
   }
   if (f.despues === null || f.despues === undefined) {

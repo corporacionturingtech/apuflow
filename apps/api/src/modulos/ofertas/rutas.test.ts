@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
 import { eq, like } from 'drizzle-orm';
+import { calcularDetalle } from 'motor';
 import { crearApp } from '../../app';
 import { crearBd } from '../../db/conexion';
 import { urlBdPruebas } from '../../db/url';
@@ -76,8 +77,11 @@ const pedir = (
 
 test('lista y detalle traen capítulos, rubros y APUs con sus líneas', async () => {
   const lista = await pedir('GET', '/api/ofertas', galletaLector);
-  expect(lista.json().items.find((x: { id: string }) => x.id === ofertaId).rubros).toBe(1);
+  const item = lista.json().items.find((x: { id: string }) => x.id === ofertaId);
+  expect(item.rubros).toBe(1);
   const d = (await pedir('GET', `/api/ofertas/${ofertaId}`, galletaLector)).json();
+  expect(item.total).toBe(calcularDetalle(d).totales.total.toFixed(2));
+  expect(Number(item.total)).toBeGreaterThan(0);
   expect(d.tipo).toBe('publico');
   expect(d.capitulos).toHaveLength(1);
   expect(d.rubros[0]).toMatchObject({ codigo: 'C01', cantidad: '10.000000' });

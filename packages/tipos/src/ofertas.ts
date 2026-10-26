@@ -14,6 +14,8 @@ export const esquemaOferta = z.object({
   tipo: esquemaTipoOferta,
   estado: z.enum(['borrador', 'emitida']),
   rubros: z.number().int(),
+  /** Total con IVA, calculado por el motor. */
+  total: z.string(),
   version: z.number().int(),
 });
 export type Oferta = z.infer<typeof esquemaOferta>;
@@ -110,7 +112,7 @@ const esquemaApuDeOferta = z.object({
 });
 export type ApuDeOferta = z.infer<typeof esquemaApuDeOferta>;
 
-export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true }).extend({
+export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true, total: true }).extend({
   iva: decimal,
   factor: decimal,
   costoObjetivo: z.string().nullable(),

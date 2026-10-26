@@ -22,6 +22,7 @@ import { Empresa } from './pantallas/Empresa';
 import { Licencia } from './pantallas/Licencia';
 import { ResumenMensual } from './pantallas/ResumenMensual';
 import { Login } from './pantallas/Login';
+import { ErrorRuta, NoEncontrada } from './pantallas/ErrorRuta';
 import { usuarioActual } from './sesion';
 
 export function crearRouter(cliente: QueryClient) {
@@ -142,6 +143,8 @@ export function crearRouter(cliente: QueryClient) {
   });
 
   return createRouter({
+    defaultErrorComponent: ErrorRuta,
+    defaultNotFoundComponent: NoEncontrada,
     routeTree: raiz.addChildren([
       login,
       protegida.addChildren([

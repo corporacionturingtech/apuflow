@@ -6,6 +6,11 @@ import { ErrorApi, api } from '../lib/api';
 import { money, qty } from '../lib/formato';
 import { consultaYo } from '../sesion';
 import { calcularPresupuesto, costoDirectoBloque } from './presupuesto/calculo';
+import { Blocks, Plus, Trash2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Cargando, Vacio } from '../ui/estado';
+import { Select } from '../ui/select';
 
 interface Insertado {
   nombre: string;
@@ -72,26 +77,27 @@ export function Bloques() {
       {puedeEscribir && (
         <label className="mt-3 block text-sm">
           Añadir a la oferta{' '}
-          <select
-            value={destino}
-            onChange={(e) => setOfertaId(e.target.value)}
-            className="rounded border border-slate-300 px-1 py-0.5"
-          >
+          <Select value={destino} onChange={(e) => setOfertaId(e.target.value)} className="ml-1">
             {borradores.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.nombre}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       )}
       {insertado && (
-        <p role="status" className="mt-3 rounded border border-green-300 bg-green-50 p-2 text-sm">
+        <p
+          role="status"
+          className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 p-2 text-sm text-emerald-900"
+        >
           Se añadió «{insertado.nombre}» a {insertado.oferta.nombre}: {insertado.rubros} rubros,
           subtotal {money(insertado.subtotal)}.{' '}
-          <Link to="/ofertas/$id" params={{ id: insertado.oferta.id }} className="underline">
-            Ver en el presupuesto
-          </Link>
+          <Button variant="link" asChild>
+            <Link to="/ofertas/$id" params={{ id: insertado.oferta.id }}>
+              Ver en el presupuesto
+            </Link>
+          </Button>
         </p>
       )}
       {error && (
@@ -99,63 +105,74 @@ export function Bloques() {
           {error}
         </p>
       )}
+      {!data && <Cargando />}
       {data && data.items.length === 0 && (
-        <p className="mt-4 text-slate-600">
-          Aún no hay bloques. Abra un presupuesto y use «Guardar como bloque» en un capítulo.
-        </p>
+        <Vacio
+          icono={Blocks}
+          titulo="Aún no hay bloques"
+          className="mt-4 max-w-2xl"
+          acciones={
+            <Button variant="outline" asChild>
+              <Link to="/ofertas">Ir a las ofertas</Link>
+            </Button>
+          }
+        >
+          Abra un presupuesto y use «Guardar como bloque» en un capítulo.
+        </Vacio>
       )}
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {(data?.items ?? []).map((b, i) => (
-          <article
-            key={b.id}
-            aria-label={b.nombre}
-            className="rounded border border-slate-300 bg-white p-3"
-          >
-            <h2 className="font-semibold">{b.nombre}</h2>
-            <p className="text-xs text-slate-500">
-              {b.disciplina ?? 'Sin disciplina'} · {b.lineas.length} rubros
-            </p>
-            <p className="mt-2 text-lg tabular-nums">
-              {money(costoDirectoBloque(data!, b))}{' '}
-              <small className="text-xs text-slate-500">costo directo del bloque</small>
-            </p>
-            <details className="mt-1 text-sm">
-              <summary className="cursor-pointer">Ver rubros y cantidades</summary>
-              <ul>
-                {b.lineas.map((l, i) => (
-                  <li key={i} className="flex justify-between gap-2">
-                    <span>{apus.get(l.apuId)?.descripcion}</span>
-                    <b className="tabular-nums">
-                      {qty(Number(l.cantidad))} {apus.get(l.apuId)?.unidad}
-                    </b>
-                  </li>
-                ))}
-              </ul>
-            </details>
-            {puedeEscribir && (
-              <div className="mt-2 flex items-center gap-3 text-sm">
-                <button
-                  type="button"
-                  data-guia={i === 0 ? 'bloque-anadir' : undefined}
-                  disabled={!destino || anadir.isPending}
-                  onClick={() => anadir.mutate(b.id)}
-                  className="rounded border border-slate-300 px-2 py-0.5"
-                >
-                  Añadir a la oferta
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm(`¿Borrar el bloque «${b.nombre}»?`))
-                      borrar.mutate({ id: b.id, version: b.version });
-                  }}
-                  className="ml-auto text-slate-500 underline"
-                >
-                  Borrar
-                </button>
-              </div>
-            )}
-          </article>
+          <Card asChild key={b.id}>
+            <article aria-label={b.nombre} className="p-3">
+              <h2 className="font-semibold">{b.nombre}</h2>
+              <p className="text-xs text-slate-500">
+                {b.disciplina ?? 'Sin disciplina'} · {b.lineas.length} rubros
+              </p>
+              <p className="mt-2 text-lg tabular-nums">
+                {money(costoDirectoBloque(data!, b))}{' '}
+                <small className="text-xs text-slate-500">costo directo del bloque</small>
+              </p>
+              <details className="mt-1 text-sm">
+                <summary className="cursor-pointer">Ver rubros y cantidades</summary>
+                <ul>
+                  {b.lineas.map((l, i) => (
+                    <li key={i} className="flex justify-between gap-2">
+                      <span>{apus.get(l.apuId)?.descripcion}</span>
+                      <b className="tabular-nums">
+                        {qty(Number(l.cantidad))} {apus.get(l.apuId)?.unidad}
+                      </b>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              {puedeEscribir && (
+                <div className="mt-2 flex items-center gap-3 text-sm">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    data-guia={i === 0 ? 'bloque-anadir' : undefined}
+                    disabled={!destino || anadir.isPending}
+                    onClick={() => anadir.mutate(b.id)}
+                  >
+                    <Plus aria-hidden />
+                    Añadir a la oferta
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      if (window.confirm(`¿Borrar el bloque «${b.nombre}»?`))
+                        borrar.mutate({ id: b.id, version: b.version });
+                    }}
+                    className="ml-auto"
+                  >
+                    <Trash2 aria-hidden />
+                    Borrar
+                  </Button>
+                </div>
+              )}
+            </article>
+          </Card>
         ))}
       </div>
     </div>

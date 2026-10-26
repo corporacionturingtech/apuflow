@@ -4,6 +4,11 @@ import { useState } from 'react';
 import type { Empresa as DatosEmpresa } from 'tipos';
 import { api } from '../lib/api';
 import { parseNum } from '../lib/formato';
+import { Button } from '../ui/button';
+import { Cargando } from '../ui/estado';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select } from '../ui/select';
 
 type Ficha = DatosEmpresa & { version: number };
 
@@ -14,11 +19,10 @@ export const consultaEmpresa = {
 };
 
 const MAX_LOGO = 150_000;
-const CAMPO = 'mt-1 block w-full rounded border border-slate-300 px-2 py-1 text-sm';
 
 export function Empresa() {
   const { data } = useQuery(consultaEmpresa);
-  if (!data) return <p className="text-sm text-slate-500">Cargando…</p>;
+  if (!data) return <Cargando />;
   return <Formulario inicial={data} />;
 }
 
@@ -61,61 +65,61 @@ function Formulario({ inicial }: { inicial: Ficha }) {
     <section className="max-w-2xl">
       <h1 className="text-xl font-semibold">Configuración › Empresa</h1>
       <form
-        className="mt-4 grid grid-cols-2 gap-4"
+        className="mt-4 grid grid-cols-2 gap-4 rounded-lg border border-borde bg-white p-4 shadow-xs"
         onSubmit={(e) => {
           e.preventDefault();
           guardar.mutate();
         }}
       >
-        <label className="col-span-2 text-sm font-medium">
+        <Label className="col-span-2">
           Nombre de la empresa
-          <input
-            className={CAMPO}
+          <Input
+            className="mt-1"
             value={f.nombre}
             onChange={(e) => poner('nombre', e.target.value)}
           />
-        </label>
-        <label className="text-sm font-medium">
+        </Label>
+        <Label className="block">
           IVA (%)
-          <input
-            className={CAMPO}
+          <Input
+            className="mt-1"
             inputMode="decimal"
             value={f.iva}
             onChange={(e) => poner('iva', e.target.value)}
           />
-        </label>
-        <label className="text-sm font-medium">
+        </Label>
+        <Label className="block">
           Moneda (código)
-          <input
-            className={CAMPO}
+          <Input
+            className="mt-1"
             maxLength={3}
             value={f.moneda}
             onChange={(e) => poner('moneda', e.target.value.toUpperCase())}
           />
-        </label>
-        <label className="text-sm font-medium">
+        </Label>
+        <Label className="block">
           Formato de números
-          <select
-            className={CAMPO}
+          <Select
+            className="mt-1 block w-full"
             value={f.formatoNumero}
             onChange={(e) => poner('formatoNumero', e.target.value as 'es' | 'en')}
           >
             <option value="es">1.313,64 (punto de miles, coma decimal)</option>
             <option value="en">1,313.64 (coma de miles, punto decimal)</option>
-          </select>
-        </label>
-        <label className="text-sm font-medium">
+          </Select>
+        </Label>
+        <Label className="block">
           Tipo de oferta por defecto
-          <select
-            className={CAMPO}
+          <Select
+            className="mt-1 block w-full"
             value={f.tipoOfertaDefecto}
             onChange={(e) => poner('tipoOfertaDefecto', e.target.value as 'publico' | 'privado')}
           >
             <option value="privado">Privada</option>
             <option value="publico">Pública</option>
-          </select>
-        </label>
-        <label className="text-sm font-medium">
+          </Select>
+        </Label>
+        <Label className="block">
           Color de acento
           <input
             type="color"
@@ -123,8 +127,8 @@ function Formulario({ inicial }: { inicial: Ficha }) {
             value={f.acento}
             onChange={(e) => poner('acento', e.target.value)}
           />
-        </label>
-        <div className="text-sm font-medium">
+        </Label>
+        <div className="text-sm font-medium text-slate-700">
           Logo
           <div className="mt-1 flex items-center gap-3">
             {f.logo && (
@@ -137,13 +141,9 @@ function Formulario({ inicial }: { inicial: Ficha }) {
               onChange={(e) => leerLogo(e.target.files?.[0])}
             />
             {f.logo && (
-              <button
-                type="button"
-                className="text-xs underline"
-                onClick={() => poner('logo', null)}
-              >
+              <Button type="button" size="sm" variant="ghost" onClick={() => poner('logo', null)}>
                 Quitar
-              </button>
+              </Button>
             )}
           </div>
           {errorLogo && (
@@ -154,21 +154,17 @@ function Formulario({ inicial }: { inicial: Ficha }) {
         </div>
         <p className="col-span-2 text-sm text-slate-600">
           Las disciplinas se administran en{' '}
-          <Link to="/usuarios" className="underline">
-            Usuarios
-          </Link>
+          <Button variant="link" asChild>
+            <Link to="/usuarios">Usuarios</Link>
+          </Button>
           .
         </p>
         <div className="col-span-2 flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={guardar.isPending}
-            className="rounded bg-slate-900 px-4 py-1.5 text-sm text-white disabled:opacity-50"
-          >
+          <Button type="submit" disabled={guardar.isPending}>
             Guardar cambios
-          </button>
+          </Button>
           {guardar.isSuccess && (
-            <span role="status" className="text-sm text-green-700">
+            <span role="status" className="text-sm text-emerald-700">
               Cambios guardados
             </span>
           )}

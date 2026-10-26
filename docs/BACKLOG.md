@@ -253,13 +253,23 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   `materiales` (2.000 filas) se acota a su semilla con el buscador: otros e2e dejan materiales que
   se ordenan después de `VOL-2000`.
 
-- [ ] **F5-10** · Resto de pantallas y detalles · S · F5-09
+- [x] **F5-10** · Resto de pantallas y detalles · S · F5-09
   **Leer:** producto/ux.md (reglas 8–9). Inicio con KPIs destacados; Ofertas como tabla con
   buscador, total y estado; Historial legible (hoy muestra `[object Object]` en
   `parametrosValor`: `historialTexto.ts`); Bloques, Usuarios, Empresa, Licencia, Importar y
   Papelera desde `ui/`; estados vacíos y de carga.
   **Hecho cuando:** ninguna fila del Historial muestra `[object Object]` (e2e `historial`) y la
   suite e2e completa pasa.
+  _Medido:_ e2e `historial` (nuevo caso: reescribe los minutos de ahorro y ninguna fila muestra
+  `[object Object]`) y `ofertas` (nuevo) verdes; suite completa 36/36 en serie (en paralelo fallan
+  a veces `materiales`, `impacto`, `misiones`… por semillas; en serie pasan); 38 pruebas de web, 92
+  de API. `GET /api/ofertas` trae `total` (motor, en pocas consultas: `ofertas/totales.ts`): 206
+  ofertas / 6.624 rubros en ~0,45 s. El Historial también leía «— → —» en los cambios de Empresa
+  (guardan `{ [campo]: v }`, no `{ valor }`). `ui/` suma `estado` (Cargando, Vacio), `select` y
+  `cifra`; el error y el 404 de ruta tienen pantalla propia en español (`ErrorRuta.tsx`). Usuarios
+  se dividió (`UsuarioFormulario.tsx`). _Pendiente:_ quedan botones sueltos en pantallas fuera del
+  ticket (Apus, HerramientaMenor, FormularioInsumo, ResumenMensual, PanelImpacto y paneles del
+  presupuesto).
 
 - [ ] **F5-06** · Instalador y respaldos · M · F5-01
   **Leer:** arquitectura.md (despliegue). Dockerfile, compose, Caddy, `instalar.sh`, respaldo

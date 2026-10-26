@@ -13,6 +13,7 @@ import { exportarLibro } from 'excel';
 import type { Bd } from '../../db/conexion';
 import { armarLibro } from './exportar';
 import * as repo from './repo';
+import { totalesOfertas } from './totales';
 import {
   SinPermisoDisciplina,
   exigirDisciplinaCapitulo,
@@ -126,17 +127,25 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
 
   const detalle = (id: string) => detalleOferta(db, id);
 
-  app.get('/api/ofertas', { preHandler: app.autenticar }, async () => ({
-    items: (await repo.listar(db)).map(({ oferta: o, rubros }) => ({
-      id: o.id,
-      nombre: o.nombre,
-      cliente: o.cliente,
-      tipo: o.tipo,
-      estado: o.estado,
-      rubros,
-      version: o.version,
-    })),
-  }));
+  app.get('/api/ofertas', { preHandler: app.autenticar }, async () => {
+    const filas = await repo.listar(db);
+    const totales = await totalesOfertas(
+      db,
+      filas.map((f) => f.oferta.id),
+    );
+    return {
+      items: filas.map(({ oferta: o, rubros }) => ({
+        id: o.id,
+        nombre: o.nombre,
+        cliente: o.cliente,
+        tipo: o.tipo,
+        estado: o.estado,
+        rubros,
+        total: totales.get(o.id) ?? '0.00',
+        version: o.version,
+      })),
+    };
+  });
 
   app.post('/api/ofertas', { preHandler: puedeEscribir }, async (req, res) => {
     const d = esquemaOfertaCrear.safeParse(req.body);

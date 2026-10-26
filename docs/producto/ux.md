@@ -77,6 +77,8 @@ Configuración (empresa, disciplinas, usuarios, licencia).
 - Pestañas (`ui/tabs`) y tooltips (`ui/tooltip`) también desde `ui/`. Los atajos de una tabla van
   en `componentes/Atajos` (tooltip), no como texto suelto. En `TablaEditable` una columna
   `flexible` (la descripción) absorbe el ancho: a 1366×768 ninguna tabla tiene scroll horizontal.
+- Cargas y listas vacías con `ui/estado` (`Cargando`, `Vacio` con el siguiente paso), selectores con
+  `ui/select` y cifras destacadas (KPI) con `ui/cifra`; nunca un «Cargando…» suelto ni una lista en blanco.
 - Avisos que no deben empujar la tabla (panel de impacto) flotan sobre la barra de totales.
 - Navegación agrupada (trabajo, listas de precios, control, configuración); la página activa
   se marca con una barra de acento. La barra de totales muestra el total en 18px y la variación

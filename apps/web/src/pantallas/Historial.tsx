@@ -2,10 +2,15 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { PaginaBitacora } from 'tipos';
 import { api } from '../lib/api';
+import { History } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Cargando, Vacio } from '../ui/estado';
+import { Input } from '../ui/input';
+import { Select } from '../ui/select';
 import { describir, ENTIDADES } from './historialTexto';
 
 const LIMITE = 50;
-const CAMPO = 'rounded border border-slate-300 px-2 py-1 text-sm';
 
 const fecha = (iso: string) =>
   new Date(iso).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' });
@@ -39,34 +44,24 @@ export function Historial() {
         Todo lo que cambió su equipo: quién, qué, cuándo, y de cuánto a cuánto.
       </p>
       <div data-guia="historial-filtros" className="mb-4 flex flex-wrap items-end gap-3 text-sm">
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 font-medium text-slate-700">
           Qué cambió
-          <select value={entidad} onChange={(e) => setEntidad(e.target.value)} className={CAMPO}>
+          <Select value={entidad} onChange={(e) => setEntidad(e.target.value)}>
             <option value="">Todo</option>
             {ENTIDADES.map(([v, t]) => (
               <option key={v} value={v}>
                 {t}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 font-medium text-slate-700">
           Desde
-          <input
-            type="date"
-            value={desde}
-            onChange={(e) => setDesde(e.target.value)}
-            className={CAMPO}
-          />
+          <Input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 font-medium text-slate-700">
           Hasta
-          <input
-            type="date"
-            value={hasta}
-            onChange={(e) => setHasta(e.target.value)}
-            className={CAMPO}
-          />
+          <Input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
         </label>
       </div>
       {q.error ? (
@@ -74,38 +69,39 @@ export function Historial() {
           No pudimos cargar el historial. Intente de nuevo.
         </p>
       ) : q.isLoading ? (
-        <p className="text-slate-500">Cargando…</p>
+        <Cargando />
       ) : items.length === 0 ? (
-        <p className="rounded border border-dashed p-6 text-center text-slate-500">
-          Aún no hay cambios que mostrar con estos filtros. Cuando alguien edite un precio, un APU o
-          una oferta, aparecerá aquí.
-        </p>
+        <Vacio icono={History} titulo="Aún no hay cambios que mostrar con estos filtros">
+          Cuando alguien edite un precio, un APU o una oferta, aparecerá aquí.
+        </Vacio>
       ) : (
-        <ul className="divide-y rounded border bg-white">
-          {items.map((f) => {
-            const { que, cambio } = describir(f);
-            return (
-              <li key={f.id} className="flex flex-wrap items-baseline gap-x-2 px-3 py-2 text-sm">
-                <span className="font-medium">{f.usuario ?? 'Alguien'}</span>
-                <span>{que}</span>
-                {cambio && <span className="font-mono text-slate-700">{cambio}</span>}
-                <time className="ml-auto text-xs text-slate-500" dateTime={f.fecha}>
-                  {fecha(f.fecha)}
-                </time>
-              </li>
-            );
-          })}
-        </ul>
+        <Card asChild>
+          <ul className="divide-y divide-borde">
+            {items.map((f) => {
+              const { que, cambio } = describir(f);
+              return (
+                <li key={f.id} className="flex flex-wrap items-baseline gap-x-2 px-3 py-2 text-sm">
+                  <span className="font-medium">{f.usuario ?? 'Alguien'}</span>
+                  <span>{que}</span>
+                  {cambio && <span className="text-slate-700 tabular-nums">{cambio}</span>}
+                  <time className="ml-auto text-xs text-slate-500" dateTime={f.fecha}>
+                    {fecha(f.fecha)}
+                  </time>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
       )}
       {q.hasNextPage && (
-        <button
-          type="button"
+        <Button
+          variant="outline"
           onClick={() => q.fetchNextPage()}
           disabled={q.isFetchingNextPage}
-          className="mt-3 rounded bg-slate-800 px-3 py-1.5 text-sm text-white disabled:opacity-50"
+          className="mt-3"
         >
           Ver más
-        </button>
+        </Button>
       )}
     </section>
   );
