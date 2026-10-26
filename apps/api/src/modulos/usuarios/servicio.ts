@@ -8,7 +8,10 @@ import type {
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import type { usuario } from '../../db/esquema';
+import { LimiteUsuarios, exigirCupo } from '../../licencia/servicio';
 import * as repo from './repo';
+
+export { LimiteUsuarios };
 
 export class ConflictoVersion extends Error {}
 export class NoExiste extends Error {}
@@ -32,6 +35,7 @@ export async function crear(db: Bd, adminId: string, d: UsuarioCrear) {
   const claveHash = await argon2.hash(clave);
   return db.transaction(async (tx) => {
     if (await repo.buscarPorNombre(tx, resto.nombreUsuario)) throw new NombreEnUso();
+    await exigirCupo(tx);
     const u = await repo.insertar(tx, { ...resto, claveHash, actualizadoPor: adminId });
     await repo.registrarBitacora(tx, [
       {
@@ -53,6 +57,7 @@ export async function cambiar(db: Bd, adminId: string, id: string, d: UsuarioCam
   return db.transaction(async (tx) => {
     const actual = await repo.buscar(tx, id);
     if (!actual) throw new NoExiste();
+    if (campos.activo && !actual.activo) await exigirCupo(tx);
     // Un admin no puede quitarse a sí mismo el acceso: la instalación quedaría sin administrador.
     if (id === adminId && (campos.activo === false || (campos.rol && campos.rol !== 'admin'))) {
       throw new SinPermiso();

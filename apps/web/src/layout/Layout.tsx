@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import { api } from '../lib/api';
 import { consultaYo } from '../sesion';
+import { AvisoLicencia } from './AvisoLicencia';
 import { BarraTotales } from './BarraTotales';
 
 const LISTAS = [
@@ -10,7 +11,6 @@ const LISTAS = [
   ['/mano-de-obra', 'Mano de obra'],
   ['/transporte', 'Transporte'],
 ] as const;
-const PANTALLAS = ['Configuración'];
 const ENLACE = 'rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700';
 
 export function Layout() {
@@ -67,11 +67,11 @@ export function Layout() {
         <Link to="/historial" className={ENLACE}>
           Historial
         </Link>
-        {PANTALLAS.map((p) => (
-          <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">
-            {p}
-          </span>
-        ))}
+        {usuario?.rol === 'admin' && (
+          <Link to="/configuracion/licencia" className={ENLACE}>
+            Configuración
+          </Link>
+        )}
         <div className="mt-auto px-2 text-xs">
           <p className="text-slate-300">{usuario?.nombre}</p>
           <button onClick={salir} className="mt-1 text-slate-400 underline">
@@ -81,6 +81,7 @@ export function Layout() {
         </div>
       </nav>
       <main className="flex-1 p-6 pb-16">
+        <AvisoLicencia />
         <Outlet />
       </main>
       <BarraTotales />

@@ -73,6 +73,7 @@ Regla de dependencias: `web → tipos, motor` · `api → tipos, motor, excel` �
 - La API valida al arrancar y cada 24 h:
   - vigente → normal; ≤ 10 días para vencer → aviso al admin;
   - vencida → 15 días de gracia con aviso → **modo solo lectura** (ver y exportar, no editar).
+- Variables: `LICENCIA_CLAVE_PUBLICA` (PEM, reemplaza la embebida) y `LICENCIA_OBLIGATORIA=1` (sin licencia cargada → solo lectura; sin ella la instalación corre en modo desarrollo). El hook de solo lectura bloquea todo método no-GET salvo `/api/auth/*` y `/api/licencia*`, por eso exportar (GET) sigue andando.
 - Sin conexión obligatoria. En instancias gestionadas por Turingtech la renovación copia el
   archivo nuevo; on-premise, el admin lo sube en Configuración › Licencia.
 - `instalacion` = ID generado en la primera instalación, para que una licencia no se copie a

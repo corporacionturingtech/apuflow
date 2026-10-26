@@ -198,10 +198,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 
 ## F5 · Vendible (momento: "esto me ahorró N horas")
 
-- [ ] **F5-01** · Licencia · M · F4-01
+- [x] **F5-01** · Licencia · M · F4-01
   **Leer:** arquitectura.md (licencias). Validación Ed25519, avisos, gracia, solo lectura,
   límite de usuarios, pantalla Configuración › Licencia. Clave privada de prueba solo en tests.
   **Hecho cuando:** tests de vigente, por vencer, en gracia, vencida (exportar sigue funcionando).
+  _Medido:_ 89 pruebas de API verdes (+10: firma, estados por fecha en los límites 10/15 días, límite de usuarios, solo lectura 403, exportar 200) y e2e `licencia` verde. Sin licencia = modo desarrollo salvo `LICENCIA_OBLIGATORIA=1`. _Pendiente:_ la clave pública embebida es de ejemplo; se reemplaza por la real (o `LICENCIA_CLAVE_PUBLICA`) al armar `emitir-licencia`.
 
 - [ ] **F5-02** · Empresa demo y misiones guiadas · M · F2-01, F3-01
   **Leer:** ux.md (regla 9), INDICE (1241–1364). Cargar la empresa demo y las 7 misiones con la

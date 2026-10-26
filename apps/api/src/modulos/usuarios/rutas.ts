@@ -3,6 +3,7 @@ import { esquemaDisciplinasCambio, esquemaUsuarioCambio, esquemaUsuarioCrear } f
 import type { Bd } from '../../db/conexion';
 import {
   ConflictoVersion,
+  LimiteUsuarios,
   NoExiste,
   NombreEnUso,
   SinPermiso,
@@ -25,6 +26,11 @@ function responderError(e: unknown, res: FastifyReply) {
     return res
       .code(403)
       .send({ mensaje: 'No puede quitarse a sí mismo el rol de administrador ni desactivarse' });
+  }
+  if (e instanceof LimiteUsuarios) {
+    return res.code(409).send({
+      mensaje: 'Su licencia no permite más usuarios activos. Desactive uno o amplíe la licencia.',
+    });
   }
   if (e instanceof ConflictoVersion) {
     return res.code(409).send({
