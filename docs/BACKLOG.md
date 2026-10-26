@@ -279,9 +279,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   TLS interno, respaldo, borrado de usuarios y `restaurar.sh` → login de vuelta); API 93 pruebas verdes.
   _Pendiente:_ repetirlo en una VM Ubuntu LTS real antes de entregar a SEDEMI (no hay VM en este equipo).
 
-- [ ] **F5-07** · Manual de usuario y guía de implementación · S · F5-06
+- [x] **F5-07** · Manual de usuario y guía de implementación · S · F5-06
   Guía corta por rol y checklist de implementación (importar libros, bloques, usuarios).
   **Hecho cuando:** existe `docs/manual/` y la checklist se usó en la instalación de SEDEMI.
+  _Medido:_ `docs/manual/` con guías por rol y `checklist-implementacion.md`.
+  _Pendiente:_ usar la checklist en la instalación real de SEDEMI.
 
 ## F6 · Crecer (no entra en la entrega a SEDEMI)
 
