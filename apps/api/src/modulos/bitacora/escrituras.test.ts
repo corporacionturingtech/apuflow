@@ -42,6 +42,7 @@ const CUBIERTAS: Record<string, string> = {
   'POST /api/importar/precios/confirmar': 'importacion/rutas.test.ts',
   'PATCH /api/usuarios/:id': 'usuarios/rutas.test.ts',
   'PUT /api/licencia': 'licencia/rutas.test.ts',
+  'PUT /api/valor/parametros': 'valor/rutas.test.ts',
 };
 
 const CASOS: Record<string, (id: string, version: number) => { url: string; payload: object }> = {

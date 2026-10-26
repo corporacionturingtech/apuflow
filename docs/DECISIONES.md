@@ -57,3 +57,6 @@ sin disciplina quedan libres. `admin`, `precios` y `lector` no cambian (el lecto
 La barra guía no simula clics: un paso termina cuando `api()` confirma una escritura (o un clic en el objetivo, o llegar a la
 pantalla). El avance de misiones cumplidas se guarda en `localStorage` por usuario; es solo onboarding, no un dato del negocio. La empresa demo
 se carga con `POST /api/demo/cargar` reutilizando la importación del libro (sin lógica de cálculo nueva).
+
+**D14 · 2026-10-25 · El resumen mensual se «descarga» con la impresión del navegador.**
+`/resumen` tiene estilos `@media print` (A4) y el botón llama `window.print()`; la persona elige «Guardar como PDF». Evita una librería de PDF para una página; si un cliente exige archivo generado en el servidor, se revisa. Las horas ahorradas son `(rubros por bloque × min + rubros recalculados × min) ÷ 60` con minutos editables en `config_empresa.ajustes.valor` (3 y 2 por defecto).

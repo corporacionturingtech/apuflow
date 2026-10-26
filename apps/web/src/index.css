@@ -21,3 +21,16 @@ body {
     animation: none;
   }
 }
+
+/* Resumen mensual: al imprimir queda solo la página, para «Guardar como PDF». */
+@media print {
+  nav,
+  footer,
+  .no-imprimir {
+    display: none !important;
+  }
+  @page {
+    size: A4;
+    margin: 18mm;
+  }
+}

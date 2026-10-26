@@ -6,6 +6,7 @@ import { ErrorApi, api } from '../lib/api';
 import { iniciarMision, useGuia } from '../misiones/guia';
 import { MISIONES } from '../misiones/misiones';
 import { consultaYo } from '../sesion';
+import { PanelValor } from './PanelValor';
 
 export function Inicio() {
   const cliente = useQueryClient();
@@ -30,6 +31,7 @@ export function Inicio() {
   return (
     <section>
       <h1 className="text-xl font-semibold">Inicio</h1>
+      {yo?.rol === 'admin' && <PanelValor />}
       {data && !hayOfertas && (
         <div className="mt-4 max-w-2xl rounded border border-slate-300 bg-white p-4">
           <h2 className="font-semibold">Empiece con una empresa de ejemplo</h2>

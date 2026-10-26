@@ -19,6 +19,7 @@ import { Presupuesto } from './pantallas/Presupuesto';
 import { Historial } from './pantallas/Historial';
 import { Usuarios } from './pantallas/Usuarios';
 import { Licencia } from './pantallas/Licencia';
+import { ResumenMensual } from './pantallas/ResumenMensual';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -110,6 +111,16 @@ export function crearRouter(cliente: QueryClient) {
     },
     component: Licencia,
   });
+  const resumen = createRoute({
+    getParentRoute: () => protegida,
+    path: '/resumen',
+    validateSearch: (s: Record<string, unknown>): { mes?: string } =>
+      typeof s.mes === 'string' ? { mes: s.mes } : {},
+    beforeLoad: async () => {
+      if ((await usuarioActual(cliente))?.rol !== 'admin') throw redirect({ to: '/' });
+    },
+    component: ResumenMensual,
+  });
   const historial = createRoute({
     getParentRoute: () => protegida,
     path: '/historial',
@@ -139,6 +150,7 @@ export function crearRouter(cliente: QueryClient) {
         usuarios,
         licencia,
         historial,
+        resumen,
         oferta,
       ]),
     ]),

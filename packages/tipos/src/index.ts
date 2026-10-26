@@ -9,3 +9,4 @@ export * from './bloques';
 export * from './usuarios';
 export * from './bitacora';
 export * from './licencia';
+export * from './valor';

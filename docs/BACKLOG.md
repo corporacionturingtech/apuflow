@@ -214,9 +214,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** recálculo < 300 ms en navegador y scroll sin saltos; cifras en este ticket.
   _Medido:_ e2e `volumen` verde con 5.000 rubros (`pnpm --filter api db:seed-volumen-oferta`, prefijo `OFE-VOL`): recálculo al editar una cantidad 84 ms (umbral 300), scroll de 80.000 px con peor cuadro 33 ms y 44 filas en el DOM (virtualizado), guardado PATCH + recarga correctos.
 
-- [ ] **F5-04** · Panel de valor · M · F4-02
+- [x] **F5-04** · Panel de valor · M · F4-02
   **Leer:** ux.md (panel de valor). Métricas del mes desde la bitácora, horas ahorradas con
   fórmula editable, resumen PDF de una página. **Hecho cuando:** e2e ve cifras tras usar la demo.
+  _Medido:_ e2e `valor` verde (cifras > 0 tras demo + bloque + emisión; al poner los minutos en 0 las horas pasan a 0 h; abre `/resumen`), 1 prueba de API nueva (91 en total), 1 de web (33). `GET /api/valor?mes=` y `PUT /api/valor/parametros` (admin); panel en Inicio (`PanelValor.tsx`). _Pendiente:_ el PDF es la impresión del navegador (D14); `materiales` (2) y `tiempo-real` (presencia) fallan intermitentes también sin este cambio.
 
 - [ ] **F5-05** · Configuración de empresa y país · S · F4-01
   Logo, color de acento, IVA, moneda, formato numérico, disciplinas, tipo público/privado.
