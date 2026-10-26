@@ -13,6 +13,12 @@ import { exportarLibro } from 'excel';
 import type { Bd } from '../../db/conexion';
 import { armarLibro } from './exportar';
 import * as repo from './repo';
+import {
+  SinPermisoDisciplina,
+  exigirDisciplinaCapitulo,
+  exigirDisciplinaNueva,
+  exigirDisciplinaRubro,
+} from './permisos';
 import type { Tx } from './repo';
 import {
   ConflictoVersion,
@@ -32,6 +38,11 @@ const datosInvalidos = { mensaje: 'Revise los datos: hay un valor que no es vál
 const esUuid = (s: string) => /^[0-9a-f-]{36}$/i.test(s);
 
 function responderError(e: unknown, res: FastifyReply) {
+  if (e instanceof SinPermisoDisciplina) {
+    return res
+      .code(403)
+      .send({ mensaje: `No tiene permiso para editar rubros de ${e.disciplina}` });
+  }
   if (e instanceof NoExiste) return res.code(404).send({ mensaje: 'Esa oferta ya no existe' });
   if (e instanceof ConflictoVersion) {
     return res.code(409).send({
@@ -182,6 +193,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       const d = esquemaCapituloCrear.safeParse(req.body);
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaNueva(db, req.usuario!, d.data.disciplina);
         await agregarCapitulo(db, req.usuario!.id, req.params.id, d.data);
         return res.code(201).send(await detalle(req.params.id));
       } catch (e) {
@@ -221,6 +233,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       const d = esquemaRubroCambio.safeParse(req.body);
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaRubro(db, req.usuario!, req.params.id);
         const r = await cambiarRubro(db, req.usuario!.id, req.params.id, d.data);
         return {
           id: r.id,
@@ -245,6 +258,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       const d = esquemaRubroCrear.safeParse(req.body);
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaCapitulo(db, req.usuario!, d.data.capituloId);
         const { rubro: r, apu: a } = await agregarRubro(db, req.usuario!.id, req.params.id, d.data);
         return res.code(201).send({ rubro: rubroDto(r), apu: apuDto(a) });
       } catch (e) {
@@ -260,6 +274,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       const d = esquemaVersionRubro.safeParse(req.body);
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaRubro(db, req.usuario!, req.params.id);
         const { rubro: r, apu: a } = await copiarApuDeRubro(
           db,
           req.usuario!.id,
@@ -283,6 +298,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       if (!Number.isInteger(version) || !esUuid(req.params.id))
         return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaRubro(db, req.usuario!, req.params.id);
         await quitarRubro(db, req.usuario!.id, req.params.id, version);
         return res.code(204).send();
       } catch (e) {
@@ -299,6 +315,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
       if (!Number.isInteger(version) || !esUuid(req.params.id))
         return res.code(400).send(datosInvalidos);
       try {
+        await exigirDisciplinaCapitulo(db, req.usuario!, req.params.id);
         await quitarCapitulo(db, req.usuario!.id, req.params.id, version);
         return res.code(204).send();
       } catch (e) {

@@ -103,7 +103,12 @@ test('logout invalida la sesión', async () => {
 test('sesión expirada o de usuario desactivado: 401', async () => {
   const res = await login(app, 'ana');
   const headers = { cookie: galleta(res) };
-  await db.update(sesion).set({ expira: new Date(Date.now() - 1000) });
+  // Solo las sesiones de ana: otros archivos de prueba corren en paralelo con las suyas.
+  const [ana] = await db.select().from(usuario).where(eq(usuario.nombreUsuario, 'ana'));
+  await db
+    .update(sesion)
+    .set({ expira: new Date(Date.now() - 1000) })
+    .where(eq(sesion.usuarioId, ana!.id));
   expect((await app.inject({ method: 'GET', url: '/api/auth/yo', headers })).statusCode).toBe(401);
 
   const res2 = await login(app, 'ana');

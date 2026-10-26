@@ -175,9 +175,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 
 ## F4 · Equipo (momento: "trabajamos los tres a la vez")
 
-- [ ] **F4-01** · Usuarios, roles y disciplinas · M · F0-06
+- [x] **F4-01** · Usuarios, roles y disciplinas · M · F0-06
   Admin crea usuarios, asigna rol y disciplinas; disciplinas configurables con color.
   **Hecho cuando:** un cotizador Civil no puede editar rubros Eléctricos (si se configura).
+  _Medido:_ 4 pruebas de API nuevas (71 en total, estables en 3 corridas), e2e `usuarios` verde. Pantalla «Usuarios» (solo admin) con disciplinas y color. Se acotó la expiración de sesiones en `auth/rutas.test.ts` (afectaba a otros archivos en paralelo).
+  _Decisión:_ D12.
 
 - [ ] **F4-02** · Bitácora · S · F4-01
   Toda escritura registra quién, qué, antes, después. Pantalla Historial con filtros.

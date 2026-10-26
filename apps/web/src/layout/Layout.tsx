@@ -11,6 +11,7 @@ const LISTAS = [
   ['/transporte', 'Transporte'],
 ] as const;
 const PANTALLAS = ['Historial', 'Configuración'];
+const ENLACE = 'rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700';
 
 export function Layout() {
   const cliente = useQueryClient();
@@ -58,6 +59,11 @@ export function Layout() {
         >
           Bloques
         </Link>
+        {usuario?.rol === 'admin' && (
+          <Link to="/usuarios" className={ENLACE}>
+            Usuarios
+          </Link>
+        )}
         {PANTALLAS.map((p) => (
           <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">
             {p}

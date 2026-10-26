@@ -47,3 +47,8 @@ La comparación (`comparar.ts`) cruza rubros por id: cambió / nuevo / quitado.
 **D11 · 2026-10-25 · Emitir es guardar una versión con `emitida = true`.**
 `POST /api/ofertas/:id/versiones` acepta `emitir: true`; la versión es inmutable como cualquier otra y la oferta sigue
 siendo la misma fila editable (el «borrador nuevo»). No hay estado de oferta ni bloqueo de edición.
+
+**D12 · 2026-10-25 · La restricción por disciplina es un ajuste de la empresa y se mide por el capítulo.**
+`config_empresa.ajustes.restringirPorDisciplina` (apagado por defecto). Con él activo, un `cotizador` no puede crear, editar,
+copiar el APU ni quitar rubros (ni crear capítulos) cuyo capítulo tenga una disciplina que no está entre las suyas; capítulos
+sin disciplina quedan libres. `admin`, `precios` y `lector` no cambian (el lector ya no escribe). Respuesta 403 con el nombre de la disciplina.

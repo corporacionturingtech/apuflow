@@ -16,6 +16,7 @@ import { Importar } from './pantallas/Importar';
 import { ImportarPrecios } from './pantallas/ImportarPrecios';
 import { Ofertas } from './pantallas/Ofertas';
 import { Presupuesto } from './pantallas/Presupuesto';
+import { Usuarios } from './pantallas/Usuarios';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
 
@@ -91,6 +92,14 @@ export function crearRouter(cliente: QueryClient) {
     path: '/importar/precios',
     component: ImportarPrecios,
   });
+  const usuarios = createRoute({
+    getParentRoute: () => protegida,
+    path: '/usuarios',
+    beforeLoad: async () => {
+      if ((await usuarioActual(cliente))?.rol !== 'admin') throw redirect({ to: '/' });
+    },
+    component: Usuarios,
+  });
   const oferta = createRoute({
     getParentRoute: () => protegida,
     path: '/ofertas/$id',
@@ -112,6 +121,7 @@ export function crearRouter(cliente: QueryClient) {
         ofertas,
         importar,
         importarPrecios,
+        usuarios,
         oferta,
       ]),
     ]),
