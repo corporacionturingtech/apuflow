@@ -35,7 +35,7 @@ test('un cambio de una persona aparece en el navegador de otra en menos de 1 s',
   await entrar(b, OTRO);
 
   await a.getByRole('link', { name: 'Ofertas' }).click();
-  await a.getByLabel('Nombre de la oferta').fill(`OFE-TR ${Date.now()}`);
+  await a.getByLabel('Nombre de la oferta').fill(`OFE-RUB-TR ${Date.now()}`);
   await a.getByRole('button', { name: 'Crear oferta' }).click();
   await expect(a.getByLabel('Nombre del capítulo nuevo')).toBeVisible();
 

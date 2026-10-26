@@ -59,3 +59,26 @@ test('una escritura llega por SSE', async () => {
   expect(texto).toContain('"entidad":"oferta"');
   ctl.abort();
 });
+
+test('el latido de presencia llega por SSE con nombre y capítulo', async () => {
+  const ctl = new AbortController();
+  const r = await fetch(`${base}/api/ofertas/p1/eventos`, {
+    headers: { cookie: galleta },
+    signal: ctl.signal,
+  });
+  const lector = r.body!.getReader();
+  await lector.read(); // ": conectado"
+  await lector.read(); // presencia inicial (vacía)
+  const l = await app.inject({
+    method: 'POST',
+    url: '/api/ofertas/p1/presencia',
+    headers: { cookie: galleta },
+    payload: { capituloId: 'c1', capitulo: 'Obra civil' },
+  });
+  expect(l.statusCode).toBe(204);
+  const texto = new TextDecoder().decode((await lector.read()).value);
+  expect(texto).toContain('event: presencia');
+  expect(texto).toContain('"nombre":"TR"');
+  expect(texto).toContain('"capitulo":"Obra civil"');
+  ctl.abort();
+});

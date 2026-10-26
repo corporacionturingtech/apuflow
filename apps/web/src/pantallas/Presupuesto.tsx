@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type SyntheticEvent } from 'react';
 import type { OfertaDetalle } from 'tipos';
 import { TablaEditable, type FilaTabla } from '../componentes/TablaEditable';
 import { fijarTotales } from '../layout/totales';
@@ -33,7 +33,6 @@ export function Presupuesto() {
   const [verObjetivo, setVerObjetivo] = useState(false);
   const [verVersiones, setVerVersiones] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
-  useEventosOferta(id, yo?.id);
   const cambios = useCambiosOferta(id);
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
 
@@ -41,6 +40,25 @@ export function Presupuesto() {
     queryKey: clave,
     queryFn: () => api<OfertaDetalle>(`/api/ofertas/${id}`),
   });
+
+  const [ubicacion, setUbicacion] = useState<{
+    capituloId: string | null;
+    capitulo: string | null;
+  }>({
+    capituloId: null,
+    capitulo: null,
+  });
+  const presentes = useEventosOferta(id, yo?.id, ubicacion);
+  // El capítulo en el que estoy es el de la última fila que toqué.
+  function alTocarFila(e: SyntheticEvent) {
+    if (!data) return;
+    const k = (e.target as HTMLElement).closest<HTMLElement>('[data-clave]')?.dataset.clave;
+    if (!k) return;
+    const capId = k.startsWith('c-') ? k.slice(2) : data.rubros.find((r) => r.id === k)?.capituloId;
+    const cap = data.capitulos.find((c) => c.id === capId);
+    if (cap && cap.id !== ubicacion.capituloId)
+      setUbicacion({ capituloId: cap.id, capitulo: cap.nombre });
+  }
 
   const calculo = useMemo(() => (data ? calcularPresupuesto(data) : null), [data]);
 
@@ -159,7 +177,7 @@ export function Presupuesto() {
   }
 
   return (
-    <div>
+    <div onClickCapture={alTocarFila} onFocusCapture={alTocarFila}>
       <Link to="/ofertas" className="text-sm underline">
         ← Todas las ofertas
       </Link>
@@ -211,6 +229,20 @@ export function Presupuesto() {
           Versiones
         </button>
       </div>
+      {presentes.length > 0 && (
+        <ul aria-label="Quién más está en la oferta" className="mt-1 flex flex-wrap gap-2 text-sm">
+          {presentes.map((p) => (
+            <li
+              key={p.usuarioId}
+              className="rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-900"
+            >
+              {p.nombre}
+              {p.disciplina ? ` (${p.disciplina})` : ''} está
+              {p.capitulo ? ` en el capítulo «${p.capitulo}»` : ' en esta oferta'}
+            </li>
+          ))}
+        </ul>
+      )}
       {verVersiones && (
         <Versiones data={data} soloLectura={!puedeEscribir || data.estado === 'emitida'} />
       )}

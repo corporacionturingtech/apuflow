@@ -17,6 +17,7 @@ const CUBIERTAS: Record<string, string> = {
   'POST /api/importar/precios/revisar': 'solo lectura: no escribe',
   'POST /api/auth/login': 'sesión, no datos',
   'POST /api/auth/logout': 'sesión, no datos',
+  'POST /api/ofertas/:id/presencia': 'efímera, en memoria; no es un dato',
   'PATCH /api/insumos/:id': 'insumos/rutas.test.ts',
   'POST /api/insumos/:id/eliminar': 'insumos/rutas.test.ts',
   'POST /api/insumos/:id/restaurar': 'insumos/rutas.test.ts',

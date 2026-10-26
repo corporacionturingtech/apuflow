@@ -86,6 +86,7 @@ No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. For
 - Semilla de impacto parametrizada por prefijo (`seed-impacto.ts DES`): un e2e nuevo con precios fijos copia ese patrón. Hay dos botones «Deshacer» (papelera y panel de impacto): en e2e acotar por su aviso.
 - Trampa de tablas editables: tras guardar, la fila tiene `version` vieja hasta que responde el PATCH; acciones sobre la misma fila (Supr) deben esperar o dan 409 falso.
 - e2e: tras el clic de «Ingresar», esperar un elemento de la app (p. ej. el enlace «Ofertas») antes de un `page.goto`; si no, la navegación corta el login y el test falla a veces.
+- e2e que usan `seed-rubros` (RUB-E2E): nombrar sus ofertas `OFE-RUB…`; la semilla solo borra esas y, si queda otra oferta con el APU, falla por clave foránea.
 - **Un ticket por sesión:** `/siguiente` → implementar → `/cerrar` → `/clear`. No arrastrar
   contexto de un ticket al siguiente.
 - **Leer lo mínimo:** solo los docs del campo **Leer** del ticket. Nunca abrir

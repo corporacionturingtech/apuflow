@@ -191,9 +191,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** e2e con dos navegadores: un cambio aparece en el otro en < 1 s.
   _Medido:_ e2e `tiempo-real` verde con timeout de 1 s (pasa en ~1,5 s total); 2 pruebas de API nuevas (79 en total). Trigger en `bitacora` (migración 0004) → `LISTEN cambios` → `GET /api/ofertas/:id/eventos`. _Pendiente:_ el 409 sigue sin nombrar a quien cambió ni ofrece «quedarse con uno u otro»; la pantalla se refresca sola, lo que reduce los 409.
 
-- [ ] **F4-04** · Presencia · S · F4-03
+- [x] **F4-04** · Presencia · S · F4-03
   "Ana (Eléctrico) está en el capítulo 3"; celdas cambiadas por otros destellan.
   **Hecho cuando:** e2e con dos sesiones ve la presencia.
+  _Medido:_ e2e `presencia` verde (dos sesiones ven «Ana Presencia está en el capítulo «Obra civil»»); 1 prueba de API nueva (80 en total). Latido `POST /api/ofertas/:id/presencia` en memoria, difundido por el mismo SSE (evento `presencia`). _Pendiente:_ las celdas cambiadas por otros aún no destellan.
 
 ## F5 · Vendible (momento: "esto me ahorró N horas")
 

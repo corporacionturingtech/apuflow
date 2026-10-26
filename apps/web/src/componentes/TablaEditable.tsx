@@ -156,6 +156,7 @@ export function TablaEditable<T>({
               return (
                 <div
                   key={fila.clave}
+                  data-clave={fila.clave}
                   role="row"
                   aria-rowindex={v.index + 1}
                   style={estilo}
@@ -187,6 +188,7 @@ export function TablaEditable<T>({
             return (
               <div
                 key={fila.clave}
+                data-clave={fila.clave}
                 role="row"
                 aria-rowindex={v.index + 1}
                 style={estilo}
