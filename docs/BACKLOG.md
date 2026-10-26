@@ -238,13 +238,20 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   F5-09 cuando una pantalla los use). Acento por defecto `#2563eb` (D16). _Pendiente:_ el error
   de ruta de TanStack sale en inglés («Something went wrong!»): darle pantalla propia en F5-10.
 
-- [ ] **F5-09** · Pantallas núcleo premium · M · F5-08
+- [x] **F5-09** · Pantallas núcleo premium · M · F5-08
   **Leer:** producto/ux.md (reglas 1–5). Presupuesto con encabezado en dos niveles y pestañas
   (Indirectos, Costo objetivo, Versiones); `TablaEditable` con encabezado pegajoso, hover, foco
   con acento y números tabulares; APU con componentes con ícono y pie de cálculo destacado;
   barra de Listas de precios con buscador, contador y atajos en tooltip; panel de impacto flotante.
   **Hecho cuando:** a 1366×768 el Presupuesto no tiene scroll horizontal ni botones cortados y
   los e2e `presupuesto`, `apu`, `materiales`, `impacto` y `volumen` pasan.
+  _Medido:_ a 1366×768 la oferta pública (10 columnas) mide 1.062 px de grid sin scroll horizontal
+  (`scrollWidth === clientWidth`), ningún botón ni encabezado cortado; e2e del ticket verdes y suite
+  completa 34/34 (en paralelo `materiales`, `presencia` y `tiempo-real` fallan a veces; en serie
+  pasan); 34 pruebas de web. `ui/` suma `tabs`, `tooltip` y `Card asChild`. Indirectos, Costo
+  objetivo y Versiones son pestañas junto a «Rubros» (reemplazan a la tabla, no se apilan).
+  `materiales` (2.000 filas) se acota a su semilla con el buscador: otros e2e dejan materiales que
+  se ordenan después de `VOL-2000`.
 
 - [ ] **F5-10** · Resto de pantallas y detalles · S · F5-09
   **Leer:** producto/ux.md (reglas 8–9). Inicio con KPIs destacados; Ofertas como tabla con

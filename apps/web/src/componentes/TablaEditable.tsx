@@ -1,10 +1,17 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { cn } from '../lib/cn';
+import { EditorCelda } from './EditorCelda';
 
 export type Columna<T> = {
   id: string;
   titulo: string;
+  /** Ancho en px; en la columna flexible es el mínimo. */
   ancho: number;
+  /** Ocupa el ancho que sobra (una por tabla, normalmente la descripción). */
+  flexible?: true;
   alinear?: 'der';
   /** Texto que se ve en la celda. */
   ver: (fila: T) => string;
@@ -13,7 +20,14 @@ export type Columna<T> = {
 };
 
 export type Plegable = { plegado: boolean; alAlternar: () => void; alQuitar?: () => void };
-export type FilaTabla<T> = { clave: string; seccion?: string; plegable?: Plegable; dato?: T };
+export type FilaTabla<T> = {
+  clave: string;
+  seccion?: string;
+  /** Resumen de la sección, a la derecha (p. ej. subtotal del capítulo). */
+  detalle?: string;
+  plegable?: Plegable;
+  dato?: T;
+};
 
 type Props<T> = {
   nombre: string;
@@ -35,6 +49,9 @@ type Props<T> = {
 };
 
 const ALTO_FILA = 28;
+
+const anchoColumna = (c: { ancho: number; flexible?: true }): CSSProperties =>
+  c.flexible ? { flex: `1 0 ${c.ancho}px`, minWidth: c.ancho } : { width: c.ancho };
 
 // Molde de las tablas tipo Excel (ux.md regla 3): foco por celda, teclado y virtualización.
 export function TablaEditable<T>({
@@ -78,6 +95,7 @@ export function TablaEditable<T>({
     if (!esDato(foco.f)) mover(1, 0);
   }, [filas.length]);
 
+  const anchoMinimo = columnas.reduce((s, c) => s + c.ancho, 0);
   const actual = filas[foco.f]?.dato;
   const col = columnas[foco.c]!;
   const puedeEditar = !soloLectura && !!col.editar && !!actual;
@@ -137,25 +155,77 @@ export function TablaEditable<T>({
         tabIndex={0}
         ref={contenedor}
         onKeyDown={alTeclear}
-        className="h-[calc(100vh-15rem)] overflow-auto rounded border border-slate-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-400"
+        className="h-[calc(100vh-15rem)] overflow-auto rounded-lg border border-borde bg-white text-[13px] shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-primario/30"
       >
-        <div role="row" className="sticky top-0 z-10 flex bg-slate-100 font-medium">
-          {columnas.map((c) => (
-            <div
-              key={c.id}
-              role="columnheader"
-              style={{ width: c.ancho }}
-              className={`shrink-0 border-b border-r border-slate-300 px-2 py-1 ${c.alinear ? 'text-right' : ''}`}
-            >
-              {c.titulo}
-            </div>
-          ))}
-        </div>
-        <div style={{ height: virtual.getTotalSize(), position: 'relative' }}>
-          {virtual.getVirtualItems().map((v) => {
-            const fila = filas[v.index]!;
-            const estilo = { height: ALTO_FILA, transform: `translateY(${v.start}px)` };
-            if (!fila.dato) {
+        <div style={{ minWidth: anchoMinimo }}>
+          <div
+            role="row"
+            className="sticky top-0 z-10 flex border-b border-borde bg-slate-50 text-xs font-semibold text-slate-500"
+          >
+            {columnas.map((c) => (
+              <div
+                key={c.id}
+                role="columnheader"
+                style={anchoColumna(c)}
+                className={cn(
+                  'shrink-0 truncate border-r border-borde px-2 py-1.5 last:border-r-0',
+                  c.alinear && 'text-right',
+                )}
+              >
+                {c.titulo}
+              </div>
+            ))}
+          </div>
+          <div style={{ height: virtual.getTotalSize(), position: 'relative' }}>
+            {virtual.getVirtualItems().map((v) => {
+              const fila = filas[v.index]!;
+              const estilo = { height: ALTO_FILA, transform: `translateY(${v.start}px)` };
+              if (!fila.dato) {
+                return (
+                  <div
+                    key={fila.clave}
+                    data-clave={fila.clave}
+                    role="row"
+                    aria-rowindex={v.index + 1}
+                    style={estilo}
+                    className="absolute flex w-full items-center gap-1.5 border-b border-borde bg-slate-100 px-2 font-semibold text-slate-800"
+                  >
+                    {fila.plegable && (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="-ml-1 size-6"
+                        aria-expanded={!fila.plegable.plegado}
+                        aria-label={`${fila.plegable.plegado ? 'Mostrar' : 'Ocultar'} rubros`}
+                        onClick={fila.plegable.alAlternar}
+                      >
+                        {fila.plegable.plegado ? (
+                          <ChevronRight aria-hidden />
+                        ) : (
+                          <ChevronDown aria-hidden />
+                        )}
+                      </Button>
+                    )}
+                    <span className="truncate">{fila.seccion}</span>
+                    {fila.detalle && (
+                      <span className="ml-auto shrink-0 font-medium tabular-nums text-slate-600">
+                        {fila.detalle}
+                      </span>
+                    )}
+                    {fila.plegable?.alQuitar && !soloLectura && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn('h-6 font-normal', !fila.detalle && 'ml-auto')}
+                        onClick={fila.plegable.alQuitar}
+                      >
+                        <Trash2 aria-hidden />
+                        Quitar capítulo
+                      </Button>
+                    )}
+                  </div>
+                );
+              }
               return (
                 <div
                   key={fila.clave}
@@ -163,125 +233,56 @@ export function TablaEditable<T>({
                   role="row"
                   aria-rowindex={v.index + 1}
                   style={estilo}
-                  className="absolute flex w-full items-center gap-2 bg-slate-200 px-2 py-1 font-semibold"
+                  className="absolute flex w-full border-b border-slate-100 hover:bg-slate-50"
                 >
-                  {fila.plegable && (
-                    <button
-                      type="button"
-                      aria-expanded={!fila.plegable.plegado}
-                      aria-label={`${fila.plegable.plegado ? 'Mostrar' : 'Ocultar'} rubros`}
-                      onClick={fila.plegable.alAlternar}
-                    >
-                      {fila.plegable.plegado ? '▸' : '▾'}
-                    </button>
-                  )}
-                  <span>{fila.seccion}</span>
-                  {fila.plegable?.alQuitar && !soloLectura && (
-                    <button
-                      type="button"
-                      onClick={fila.plegable.alQuitar}
-                      className="ml-auto text-xs font-normal underline"
-                    >
-                      Quitar capítulo
-                    </button>
-                  )}
+                  {columnas.map((c, ci) => {
+                    const activa = foco.f === v.index && foco.c === ci;
+                    const editando = activa && editor !== null;
+                    return (
+                      <div
+                        key={c.id}
+                        role="gridcell"
+                        aria-selected={activa}
+                        onClick={() => setFoco({ f: v.index, c: ci })}
+                        onDoubleClick={() => {
+                          if (c.editar && !soloLectura) setEditor(c.editar(fila.dato!));
+                          else if (!c.editar) alAbrir?.(fila.dato!);
+                        }}
+                        style={anchoColumna(c)}
+                        className={cn(
+                          'shrink-0 truncate border-r border-slate-100 px-2 py-1 last:border-r-0',
+                          c.alinear && 'text-right tabular-nums',
+                          editadas.has(fila.clave) && c.editar && 'bg-yellow-100',
+                          activa &&
+                            'bg-primario/5 outline outline-2 -outline-offset-2 outline-primario',
+                        )}
+                      >
+                        {editando ? (
+                          <EditorCelda
+                            inicial={editor!}
+                            alinear={c.alinear}
+                            alCancelar={() => {
+                              setEditor(null);
+                              setAviso('');
+                              contenedor.current?.focus();
+                            }}
+                            alConfirmar={confirmar}
+                          />
+                        ) : (
+                          c.ver(fila.dato!)
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               );
-            }
-            return (
-              <div
-                key={fila.clave}
-                data-clave={fila.clave}
-                role="row"
-                aria-rowindex={v.index + 1}
-                style={estilo}
-                className="absolute flex w-full border-b border-slate-100"
-              >
-                {columnas.map((c, ci) => {
-                  const activa = foco.f === v.index && foco.c === ci;
-                  const editando = activa && editor !== null;
-                  return (
-                    <div
-                      key={c.id}
-                      role="gridcell"
-                      aria-selected={activa}
-                      onClick={() => setFoco({ f: v.index, c: ci })}
-                      onDoubleClick={() => {
-                        if (c.editar && !soloLectura) setEditor(c.editar(fila.dato!));
-                        else if (!c.editar) alAbrir?.(fila.dato!);
-                      }}
-                      style={{ width: c.ancho }}
-                      className={`shrink-0 truncate border-r border-slate-100 px-2 py-1 ${
-                        c.alinear ? 'text-right tabular-nums' : ''
-                      } ${editadas.has(fila.clave) && c.editar ? 'bg-yellow-100' : ''} ${
-                        activa ? 'outline outline-2 -outline-offset-2 outline-blue-500' : ''
-                      }`}
-                    >
-                      {editando ? (
-                        <Editor
-                          inicial={editor!}
-                          alinear={c.alinear}
-                          alCancelar={() => {
-                            setEditor(null);
-                            setAviso('');
-                            contenedor.current?.focus();
-                          }}
-                          alConfirmar={confirmar}
-                        />
-                      ) : (
-                        c.ver(fila.dato!)
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+            })}
+          </div>
         </div>
       </div>
       <p role="status" className="mt-1 h-5 text-sm text-red-700">
         {aviso}
       </p>
     </div>
-  );
-}
-
-function Editor({
-  inicial,
-  alinear,
-  alCancelar,
-  alConfirmar,
-}: {
-  inicial: string;
-  alinear?: 'der';
-  alCancelar: () => void;
-  alConfirmar: (texto: string, df: number, dc: number) => void;
-}) {
-  const ref = useRef<HTMLInputElement>(null);
-  const [texto, setTexto] = useState(inicial);
-  useEffect(() => {
-    ref.current?.focus();
-    ref.current?.setSelectionRange(inicial.length, inicial.length);
-  }, []);
-  return (
-    <input
-      ref={ref}
-      aria-label="Editar celda"
-      value={texto}
-      onChange={(e) => setTexto(e.target.value)}
-      onBlur={alCancelar}
-      onKeyDown={(e) => {
-        e.stopPropagation();
-        if (e.key === 'Escape') alCancelar();
-        else if (e.key === 'Enter') {
-          e.preventDefault();
-          alConfirmar(texto, 1, 0);
-        } else if (e.key === 'Tab') {
-          e.preventDefault();
-          alConfirmar(texto, 0, e.shiftKey ? -1 : 1);
-        }
-      }}
-      className={`-my-1 h-7 w-full bg-white outline-none ${alinear ? 'text-right' : ''}`}
-    />
   );
 }

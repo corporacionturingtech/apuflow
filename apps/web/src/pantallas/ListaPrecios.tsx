@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { ArrowLeft, Plus, Search, Trash2 } from 'lucide-react';
 import { precioMaterial } from 'motor';
 import type { Insumo, InsumoCambio, ListaInsumos } from 'tipos';
 import { FormularioInsumo } from './FormularioInsumo';
@@ -9,10 +10,14 @@ import { clavePapelera, PapeleraInsumos } from './PapeleraInsumos';
 import { PanelImpacto, type CambioPrecio } from './PanelImpacto';
 import { precioATexto } from './precio';
 import { useDeshacerPrecio } from './useDeshacerPrecio';
+import { Atajos } from '../componentes/Atajos';
 import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
 import { money, n2 } from '../lib/formato';
 import { consultaYo } from '../sesion';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 import { type ConfigLista } from './configListas';
 
@@ -23,6 +28,18 @@ const variacion = (i: Insumo) => {
   const d = Number(i.pu) - Number(i.precioAnterior);
   return `${money(Number(i.precioAnterior))} ${d > 0 ? '↑' : d < 0 ? '↓' : ''}`.trim();
 };
+
+const ATAJOS_LECTURA: [string, string][] = [
+  ['Flechas', 'Moverse por la tabla'],
+  ['Alt+H', 'Historial del precio'],
+];
+const ATAJOS: [string, string][] = [
+  ['F2 / Enter', 'Editar la celda'],
+  ['Esc', 'Cancelar la edición'],
+  ['Supr', 'Mandar a la papelera'],
+  ['Ctrl+Z', 'Deshacer el último precio'],
+  ...ATAJOS_LECTURA,
+];
 
 export function ListaPrecios({ config }: { config: ConfigLista }) {
   const CLAVE = ['insumos', config.tipo] as const;
@@ -117,7 +134,8 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
       {
         id: 'descripcion',
         titulo: 'Descripción',
-        ancho: 420,
+        ancho: 320,
+        flexible: true,
         ver: (i) => i.descripcion,
         editar: (i) => i.descripcion,
       },
@@ -173,56 +191,59 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
 
   return (
     <section>
-      <div className="mb-3 flex items-center gap-4">
-        <h1 className="text-xl font-semibold">{config.titulo}</h1>
-        <input
-          type="search"
-          aria-label={config.buscar}
-          placeholder="Buscar por código o descripción"
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="w-80 rounded border border-slate-300 px-2 py-1 text-sm"
-        />
-        <span className="text-sm text-slate-500">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <h1 className="mr-2 text-xl font-semibold tracking-tight">{config.titulo}</h1>
+        <div className="relative">
+          <Search
+            className="pointer-events-none absolute left-2 top-2 size-4 text-slate-400"
+            aria-hidden
+          />
+          <Input
+            type="search"
+            aria-label={config.buscar}
+            placeholder="Buscar por código o descripción"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-80 pl-8"
+          />
+        </div>
+        <Badge className="tabular-nums">
           {data?.items.length ?? 0} {config.plural}
-        </span>
-        {puedeEscribir && (
-          <button
-            type="button"
-            onClick={() => setAgregando(true)}
-            className="rounded bg-blue-700 px-3 py-1 text-sm text-white"
+        </Badge>
+        <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost"
+            aria-pressed={verPapelera}
+            onClick={() => setVerPapelera((v) => !v)}
           >
-            Agregar
-          </button>
-        )}
-        <button
-          type="button"
-          aria-pressed={verPapelera}
-          onClick={() => setVerPapelera((v) => !v)}
-          className="text-sm text-slate-600 underline"
-        >
-          {verPapelera ? 'Volver a la lista' : 'Ver papelera'}
-        </button>
-        {puedeEscribir && (
-          <span className="ml-auto text-xs text-slate-500">
-            F2 o Enter para editar · Supr elimina · Alt+H historial · Ctrl+Z deshace el precio · Esc
-            cancela
-          </span>
-        )}
+            {verPapelera ? <ArrowLeft aria-hidden /> : <Trash2 aria-hidden />}
+            {verPapelera ? 'Volver a la lista' : 'Ver papelera'}
+          </Button>
+          <Atajos atajos={puedeEscribir ? ATAJOS : ATAJOS_LECTURA} />
+          {puedeEscribir && (
+            <Button onClick={() => setAgregando(true)}>
+              <Plus aria-hidden />
+              Agregar
+            </Button>
+          )}
+        </div>
       </div>
       {agregando && puedeEscribir && (
         <FormularioInsumo tipo={config.tipo} alCerrar={() => setAgregando(false)} />
       )}
       {deshacer && (
-        <p role="status" className="mb-2 rounded bg-slate-100 px-3 py-1 text-sm">
-          «{deshacer.descripcion}» pasó a la papelera ·{' '}
-          <button
-            type="button"
-            className="font-medium text-blue-700 underline"
+        <p
+          role="status"
+          className="mb-2 flex items-center gap-2 rounded-md bg-slate-100 px-3 py-1 text-sm"
+        >
+          «{deshacer.descripcion}» pasó a la papelera ·
+          <Button
+            variant="link"
+            size="sm"
             onClick={() => moverPapelera.mutate({ i: deshacer, accion: 'restaurar' })}
           >
             Deshacer
-          </button>
+          </Button>
         </p>
       )}
       {impacto && (

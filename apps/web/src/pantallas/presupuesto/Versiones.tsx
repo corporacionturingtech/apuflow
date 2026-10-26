@@ -72,7 +72,7 @@ export function Versiones({ data, soloLectura }: Props) {
     <section
       aria-label="Versiones"
       data-guia="panel-versiones"
-      className="mt-3 max-w-4xl rounded border p-3 text-sm"
+      className="mt-4 max-w-4xl rounded-lg border border-borde bg-white p-4 text-sm shadow-xs"
     >
       <p className="mb-2 text-slate-600">
         Guarde una foto de la oferta antes de ajustar precios o cantidades; luego compárela con lo

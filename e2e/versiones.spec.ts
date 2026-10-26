@@ -15,13 +15,14 @@ test('versiones: guardar, ajustar una cantidad y comparar por rubro y total', as
   await page.getByRole('link', { name: 'Ofertas' }).click();
   await page.getByRole('link', { name: /VER-E2E Oferta de versiones/ }).click();
 
-  await page.getByRole('button', { name: 'Versiones' }).click();
+  await page.getByRole('tab', { name: 'Versiones' }).click();
   const panel = page.getByRole('region', { name: 'Versiones' });
   await panel.getByLabel('Nombre de la versión').fill('Antes de negociar');
   await panel.getByRole('button', { name: 'Guardar versión' }).click();
   await expect(panel.getByRole('status')).toContainText('Versión V1 «Antes de negociar» guardada');
 
   // Cantidad del primer rubro: 1 → 3 (el rubro de $ 10 pasa a $ 30).
+  await page.getByRole('tab', { name: 'Rubros' }).click();
   await page.getByRole('grid', { name: 'Presupuesto' }).focus();
   for (let i = 0; i < 7; i++) await page.keyboard.press('ArrowRight');
   const guardado = page.waitForResponse((r) => r.request().method() === 'PATCH' && r.ok());
@@ -29,6 +30,7 @@ test('versiones: guardar, ajustar una cantidad y comparar por rubro y total', as
   await page.getByLabel('Editar celda').fill('3');
   await page.getByLabel('Editar celda').press('Enter');
   await guardado;
+  await page.getByRole('tab', { name: 'Versiones' }).click();
 
   await panel.getByRole('button', { name: /V1 · Antes de negociar/ }).click();
   const tabla = panel.getByRole('table', { name: /Comparación V1/ });

@@ -17,7 +17,7 @@ test('cambiar la utilidad cambia el subtotal y persiste', async ({ page }) => {
 
   const barra = page.getByRole('contentinfo');
   await expect(barra).toContainText('$ 22,00');
-  await page.getByRole('button', { name: 'Indirectos y utilidad' }).click();
+  await page.getByRole('tab', { name: 'Indirectos y utilidad' }).click();
   const guardado = page.waitForResponse(
     (r) => r.request().method() === 'PATCH' && r.url().includes('/indirectos/') && r.ok(),
   );

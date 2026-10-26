@@ -47,7 +47,7 @@ export function Indirectos({ data, calculo, cambios, soloLectura }: Props) {
     <section
       aria-label="Indirectos y utilidad"
       data-guia="panel-indirectos"
-      className="mt-3 max-w-xl rounded border p-3 text-sm"
+      className="mt-4 max-w-xl rounded-lg border border-borde bg-white p-4 text-sm shadow-xs"
     >
       <p className="mb-2 text-slate-600">
         Cada porcentaje se aplica sobre el costo directo de cada APU y cambia el precio unitario

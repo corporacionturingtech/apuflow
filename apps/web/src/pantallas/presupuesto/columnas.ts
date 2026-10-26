@@ -21,7 +21,7 @@ export interface FilaRubro {
 
 export function columnasPresupuesto(publico: boolean, ofertado: boolean): Columna<FilaRubro>[] {
   return [
-    { id: 'numero', titulo: 'Número', ancho: 70, ver: (f) => f.numero },
+    { id: 'numero', titulo: 'N.º', ancho: 56, ver: (f) => f.numero },
     {
       id: 'codigo',
       titulo: 'Código',
@@ -29,48 +29,54 @@ export function columnasPresupuesto(publico: boolean, ofertado: boolean): Column
       ver: (f) => f.codigo,
       editar: (f) => f.codigo,
     },
-    { id: 'descripcion', titulo: 'Descripción del rubro', ancho: 380, ver: (f) => f.descripcion },
+    {
+      id: 'descripcion',
+      titulo: 'Descripción del rubro',
+      ancho: 220,
+      flexible: true,
+      ver: (f) => f.descripcion,
+    },
     ...(publico
       ? [
           {
             id: 'cpc',
             titulo: 'CPC',
-            ancho: 100,
+            ancho: 90,
             ver: (f: FilaRubro) => f.cpc,
             editar: (f: FilaRubro) => f.cpc,
           },
           {
             id: 'origen',
             titulo: 'Origen',
-            ancho: 70,
+            ancho: 60,
             ver: (f: FilaRubro) => f.origen,
             editar: (f: FilaRubro) => f.origen,
           },
           {
             id: 'vae',
             titulo: 'VAE %',
-            ancho: 80,
+            ancho: 70,
             alinear: 'der' as const,
             ver: (f: FilaRubro) => (f.vae ? qty(Number(f.vae)) : ''),
             editar: (f: FilaRubro) => (f.vae ? qty(Number(f.vae)).replace(/\./g, '') : ''),
           },
         ]
       : []),
-    { id: 'unidad', titulo: 'Unidad', ancho: 70, ver: (f) => f.unidad },
+    { id: 'unidad', titulo: 'Unidad', ancho: 60, ver: (f) => f.unidad },
     {
       id: 'cantidad',
       titulo: 'Cantidad',
-      ancho: 110,
+      ancho: 96,
       alinear: 'der',
       ver: (f) => qty(Number(f.cantidad)),
       editar: (f) => qty(Number(f.cantidad)).replace(/\./g, ''),
     },
     ofertado
-      ? { id: 'pu', titulo: 'P.U. ofertado', ancho: 130, alinear: 'der', ver: (f) => money(f.pu) }
+      ? { id: 'pu', titulo: 'P.U. ofertado', ancho: 120, alinear: 'der', ver: (f) => money(f.pu) }
       : {
           id: 'cu',
           titulo: 'CU (costo directo)',
-          ancho: 140,
+          ancho: 120,
           alinear: 'der',
           ver: (f) => money(f.cu),
         },
@@ -78,17 +84,17 @@ export function columnasPresupuesto(publico: boolean, ofertado: boolean): Column
       ? {
           id: 'total',
           titulo: 'Total ofertado',
-          ancho: 140,
+          ancho: 130,
           alinear: 'der',
           ver: (f) => money(f.total),
         }
       : {
           id: 'cuTotal',
           titulo: 'CU total',
-          ancho: 140,
+          ancho: 130,
           alinear: 'der',
           ver: (f) => money(f.cuTotal),
         },
-    { id: 'peso', titulo: 'Peso', ancho: 80, alinear: 'der', ver: (f) => pct(f.peso) },
+    { id: 'peso', titulo: 'Peso', ancho: 64, alinear: 'der', ver: (f) => pct(f.peso) },
   ];
 }

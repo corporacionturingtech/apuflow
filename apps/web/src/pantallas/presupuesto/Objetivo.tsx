@@ -58,7 +58,7 @@ export function Objetivo({ data, calculo, cambios, soloLectura }: Props) {
     <section
       aria-label="Costo objetivo"
       data-guia="panel-objetivo"
-      className="mt-3 max-w-4xl rounded border p-3 text-sm"
+      className="mt-4 max-w-4xl rounded-lg border border-borde bg-white p-4 text-sm shadow-xs"
     >
       <p className="mb-2 text-slate-600">
         Cuando el cliente dice «esto tengo», escriba ese costo referencial. Verá cuánto falta y qué

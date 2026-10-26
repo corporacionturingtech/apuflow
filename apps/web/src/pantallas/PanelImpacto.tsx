@@ -42,7 +42,8 @@ export function PanelImpacto({
   return (
     <div
       role="status"
-      className="aparecer mb-3 rounded-lg border border-primario/25 bg-white px-3 py-2.5 text-sm shadow-sm ring-4 ring-primario/5"
+      // Flota sobre la barra de totales: avisa sin empujar la tabla que se está editando.
+      className="aparecer fixed bottom-16 right-6 z-30 w-[min(36rem,calc(100vw-17rem))] rounded-lg border border-primario/25 bg-white px-3 py-2.5 text-sm shadow-lg ring-4 ring-primario/5"
     >
       <div className="flex items-start gap-3">
         <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primario/10 text-primario">
@@ -88,7 +89,7 @@ export function PanelImpacto({
         </button>
       </div>
       {detalle && data && (
-        <ul className="ml-9 mt-2 space-y-1 border-t border-borde pt-2 text-slate-600">
+        <ul className="ml-9 mt-2 max-h-48 space-y-1 overflow-y-auto border-t border-borde pt-2 text-slate-600">
           {data.d.ofertas.map((o) => (
             <li key={o.id}>
               <b>{o.nombre}</b>: {o.apus} APUs, {o.rubros} rubros · subtotal{' '}

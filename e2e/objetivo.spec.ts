@@ -17,7 +17,7 @@ test('misión 5: costo objetivo, brecha y rubros que más pesan', async ({ page 
 
   const barra = page.getByRole('contentinfo');
   await expect(barra).not.toContainText('Brecha');
-  await page.getByRole('button', { name: 'Costo objetivo' }).click();
+  await page.getByRole('tab', { name: 'Costo objetivo' }).click();
   const panel = page.getByRole('region', { name: 'Costo objetivo' });
   const campo = page.getByLabel('Costo referencial del cliente (sin IVA)');
   await campo.fill('90,00');
@@ -37,7 +37,7 @@ test('misión 5: costo objetivo, brecha y rubros que más pesan', async ({ page 
   await page.reload();
   await expect(page.getByRole('contentinfo')).toContainText('Dentro por $ 50,00');
 
-  await page.getByRole('button', { name: 'Costo objetivo' }).click();
+  await page.getByRole('tab', { name: 'Costo objetivo' }).click();
   await page.getByRole('link', { name: 'Abrir APU' }).first().click();
   await expect(page).toHaveURL(/\/apus\//);
 });

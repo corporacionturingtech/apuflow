@@ -14,12 +14,13 @@ test('emitir congela la versión y la oferta sigue editable', async ({ page }) =
   await page.getByRole('link', { name: 'Ofertas' }).click();
   await page.getByRole('link', { name: /EMI-E2E Oferta de versiones/ }).click();
 
-  await page.getByRole('button', { name: 'Versiones' }).click();
+  await page.getByRole('tab', { name: 'Versiones' }).click();
   const panel = page.getByRole('region', { name: 'Versiones' });
   await panel.getByLabel('Nombre de la versión').fill('Entrega al cliente');
   await panel.getByRole('button', { name: 'Emitir oferta' }).click();
   await expect(panel.getByRole('status')).toContainText('Oferta emitida como V1');
 
+  await page.getByRole('tab', { name: 'Rubros' }).click();
   await page.getByRole('grid', { name: 'Presupuesto' }).focus();
   for (let i = 0; i < 7; i++) await page.keyboard.press('ArrowRight');
   const guardado = page.waitForResponse((r) => r.request().method() === 'PATCH' && r.ok());
@@ -27,6 +28,7 @@ test('emitir congela la versión y la oferta sigue editable', async ({ page }) =
   await page.getByLabel('Editar celda').fill('3');
   await page.getByLabel('Editar celda').press('Enter');
   await guardado;
+  await page.getByRole('tab', { name: 'Versiones' }).click();
 
   const emitida = panel.getByRole('button', { name: /V1 · Entrega al cliente.*Emitida/ });
   await emitida.click();

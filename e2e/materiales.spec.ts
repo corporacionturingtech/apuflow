@@ -42,6 +42,9 @@ test('edita un precio con el teclado y persiste', async ({ page }) => {
 test('2.000 filas: solo se pinta una ventana y el final es alcanzable', async ({ page }) => {
   await entrar(page);
   const grid = page.getByRole('grid', { name: 'Lista de materiales' });
+  // Otros e2e dejan materiales que se ordenan después de VOL-2000: se acota a la semilla.
+  await page.getByLabel('Buscar material').fill('VOL-');
+  await expect(grid.getByRole('row').filter({ hasText: 'MAT-' })).toHaveCount(0);
   await expect(grid.getByRole('row').nth(5)).toBeVisible();
   const pintadas = await grid.getByRole('row').count();
   expect(pintadas).toBeLessThan(80);

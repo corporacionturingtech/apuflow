@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { FileDown } from 'lucide-react';
+import { Button } from '../../ui/button';
 
 /** Descarga el libro de la oferta. Siempre disponible: exportar no depende de la licencia. */
 export function BotonExportar({ ofertaId, nombre }: { ofertaId: string; nombre: string }) {
@@ -23,21 +25,21 @@ export function BotonExportar({ ofertaId, nombre }: { ofertaId: string; nombre: 
   }
 
   return (
-    <span className="ml-auto flex items-baseline gap-2 text-sm">
+    <span className="flex items-center gap-2 text-sm">
       {estado === 'error' && (
         <span role="alert" className="text-red-700">
           No se pudo generar el Excel. Intente de nuevo.
         </span>
       )}
-      <button
-        type="button"
+      <Button
+        variant="outline"
         data-guia="btn-exportar"
         disabled={estado === 'generando'}
         onClick={exportar}
-        className="rounded border border-slate-300 px-2 py-0.5"
       >
+        <FileDown aria-hidden />
         {estado === 'generando' ? 'Generando…' : 'Exportar a Excel'}
-      </button>
+      </Button>
     </span>
   );
 }

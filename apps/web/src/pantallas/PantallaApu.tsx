@@ -1,10 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import type { ApuDetalle } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
 import { money, parseNum, qty } from '../lib/formato';
 import { consultaYo } from '../sesion';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Input } from '../ui/input';
 import { ComponenteApu } from './apu/ComponenteApu';
 import { COMPONENTES, calcular } from './apu/calculo';
 import { precioATexto } from './precio';
@@ -102,31 +107,28 @@ export function PantallaApu() {
   const cu = calculado.cu.toNumber();
   const pof = calculado.puOfertado.toNumber();
   return (
-    <div className="max-w-4xl">
-      <Link to="/apus" className="text-sm underline">
-        ← Todos los APUs
-      </Link>
-      <p className="mt-3 text-xs uppercase text-slate-500">
+    <div className="max-w-5xl">
+      <Button variant="link" size="sm" asChild className="text-slate-500">
+        <Link to="/apus">
+          <ChevronLeft aria-hidden />
+          Todos los APUs
+        </Link>
+      </Button>
+      <p className="mt-2 text-[11px] font-medium uppercase tracking-wider text-slate-500">
         Análisis de precio unitario · {data.codigo}
       </p>
-      <h1 className="text-xl font-semibold">{data.descripcion}</h1>
-      <div className="mt-2 flex flex-wrap items-center gap-6 text-sm">
-        <span>
-          Unidad: <b>{data.unidad}</b>
-        </span>
-        {data.disciplina && (
-          <span>
-            Disciplina: <b>{data.disciplina}</b>
-          </span>
-        )}
-        <label className="flex items-center gap-2">
+      <h1 className="text-xl font-semibold tracking-tight">{data.descripcion}</h1>
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+        <Badge>Unidad: {data.unidad}</Badge>
+        {data.disciplina && <Badge variant="primario">{data.disciplina}</Badge>}
+        <label className="ml-2 flex items-center gap-2 text-slate-600">
           Rendimiento R (h/{data.unidad})
-          <input
+          <Input
             key={data.rendimiento}
             aria-label="Rendimiento"
             defaultValue={qty(Number(data.rendimiento))}
             disabled={!puedeEditar}
-            className="w-20 rounded border border-slate-300 px-1 text-right tabular-nums"
+            className="h-7 w-20 text-right tabular-nums"
             onBlur={(e) => {
               const t = precioATexto(e.target.value);
               if (t === null) e.target.value = qty(Number(data.rendimiento));
@@ -156,33 +158,40 @@ export function PantallaApu() {
         />
       ))}
 
-      <dl aria-label="Cálculo del APU" className="mt-6 ml-auto w-96 space-y-1 text-sm">
-        <div className="flex justify-between">
-          <dt>Costo directo (M + N + O + P)</dt>
-          <dd className="font-semibold tabular-nums">{money(cu)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt>
-            <label>
-              Indirectos y utilidad (%){' '}
-              <input
-                aria-label="Indirectos"
-                defaultValue={qty(indirectos)}
-                className="w-16 rounded border border-slate-300 px-1 text-right"
-                onBlur={(e) => setIndirectos(Math.max(0, parseNum(e.target.value) || 0))}
-                onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-              />
-            </label>
-          </dt>
-          <dd className="tabular-nums">{money(pof - cu)}</dd>
-        </div>
-        <div className="flex justify-between rounded bg-amber-100 px-2 py-1 font-semibold">
-          <dt>P.U. ofertado</dt>
-          <dd className="tabular-nums">{money(pof)}</dd>
-        </div>
-      </dl>
+      {/* Pegado sobre la barra de totales: el resultado del APU siempre a la vista (regla 5). */}
+      <Card asChild className="sticky bottom-16 z-10 ml-auto mt-4 w-full max-w-md shadow-md">
+        <dl aria-label="Cálculo del APU" className="divide-y divide-slate-100 text-sm">
+          <div className="flex items-center justify-between px-4 py-2">
+            <dt className="text-slate-600">Costo directo (M + N + O + P)</dt>
+            <dd className="font-semibold tabular-nums">{money(cu)}</dd>
+          </div>
+          <div className="flex items-center justify-between px-4 py-2">
+            <dt>
+              <label className="flex items-center gap-2 text-slate-600">
+                Indirectos y utilidad (%)
+                <Input
+                  aria-label="Indirectos"
+                  defaultValue={qty(indirectos)}
+                  className="h-7 w-16 text-right tabular-nums"
+                  onBlur={(e) => setIndirectos(Math.max(0, parseNum(e.target.value) || 0))}
+                  onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                />
+              </label>
+            </dt>
+            <dd className="tabular-nums">{money(pof - cu)}</dd>
+          </div>
+          <div className="flex items-baseline justify-between rounded-b-lg bg-primario/5 px-4 py-2.5">
+            <dt className="text-xs font-medium uppercase tracking-wider text-slate-600">
+              P.U. ofertado
+            </dt>
+            <dd className="text-lg font-semibold tabular-nums tracking-tight text-slate-900">
+              {money(pof)}
+            </dd>
+          </div>
+        </dl>
+      </Card>
       <p className="mt-3 text-xs text-slate-500">
-        Los precios subrayados viven en las listas: se cambian allí y llegan a todos los APUs. Los
+        Los precios en color viven en las listas: se cambian allí y llegan a todos los APUs. Los
         indirectos de la oferta se aplicarán desde la oferta.
       </p>
     </div>

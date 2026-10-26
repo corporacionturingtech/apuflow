@@ -74,6 +74,10 @@ Configuración (empresa, disciplinas, usuarios, licencia).
 - Botones, campos, insignias y tarjetas solo desde `apps/web/src/ui/` (`Button`/`variantesBoton`
   con `default` = acción principal, una por zona; `outline` secundarias; `ghost` terciarias y
   «Cerrar»; `destructive` para borrar). Íconos `lucide-react` de 16px con `aria-hidden`.
+- Pestañas (`ui/tabs`) y tooltips (`ui/tooltip`) también desde `ui/`. Los atajos de una tabla van
+  en `componentes/Atajos` (tooltip), no como texto suelto. En `TablaEditable` una columna
+  `flexible` (la descripción) absorbe el ancho: a 1366×768 ninguna tabla tiene scroll horizontal.
+- Avisos que no deben empujar la tabla (panel de impacto) flotan sobre la barra de totales.
 - Navegación agrupada (trabajo, listas de precios, control, configuración); la página activa
   se marca con una barra de acento. La barra de totales muestra el total en 18px y la variación
   tras cada cambio durante 4 s.
