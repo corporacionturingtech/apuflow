@@ -17,6 +17,7 @@ import { Indirectos } from './presupuesto/Indirectos';
 import { GuardarBloque } from './presupuesto/GuardarBloque';
 import { columnasPresupuesto, type FilaRubro } from './presupuesto/columnas';
 import { useCambiosOferta } from './presupuesto/mutaciones';
+import { useEventosOferta } from '../lib/useEventosOferta';
 import { precioATexto } from './precio';
 
 export function Presupuesto() {
@@ -32,6 +33,7 @@ export function Presupuesto() {
   const [verObjetivo, setVerObjetivo] = useState(false);
   const [verVersiones, setVerVersiones] = useState(false);
   const [nuevoCapitulo, setNuevoCapitulo] = useState('');
+  useEventosOferta(id, yo?.id);
   const cambios = useCambiosOferta(id);
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
 

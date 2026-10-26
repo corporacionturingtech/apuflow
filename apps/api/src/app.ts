@@ -11,6 +11,7 @@ import { rutasVersiones } from './modulos/ofertas/versiones';
 import { rutasUsuarios } from './modulos/usuarios/rutas';
 import { rutasBitacora } from './modulos/bitacora/rutas';
 import { rutasSalud } from './modulos/salud/rutas';
+import { rutasTiempoReal } from './modulos/tiempo-real/rutas';
 
 export function crearApp(db: Bd) {
   const app = Fastify({ logger: false });
@@ -25,5 +26,6 @@ export function crearApp(db: Bd) {
   app.register(rutasBloques, { db });
   app.register(rutasImportacion, { db });
   app.register(rutasBitacora, { db });
+  app.register(rutasTiempoReal, { db });
   return app;
 }

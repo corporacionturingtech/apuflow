@@ -48,7 +48,7 @@ Regla de dependencias: `web → tipos, motor` · `api → tipos, motor, excel` �
 
 ## Tiempo real (varias disciplinas a la vez)
 
-- Cada escritura hace `NOTIFY oferta_<id>` con `{entidad, id, campos, version, usuario}`.
+- Un trigger en `bitacora` (migración 0004) hace `pg_notify('cambios', {entidad, entidadId, campo, usuarioId, fecha})`: cubre toda escritura. El canal es global (no por oferta); el filtro lo hace el cliente, que ignora sus propios cambios y refetch la oferta. `pg_notify` solo sale al commit.
 - La API mantiene un `LISTEN` y reenvía por **SSE** (`GET /api/ofertas/:id/eventos`) a los
   navegadores de esa oferta. Sin WebSocket ni Redis: menos piezas para instalar on-premise.
 - Conflictos: si `version` no coincide, la API devuelve 409 con el valor actual; la UI muestra

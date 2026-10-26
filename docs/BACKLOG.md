@@ -186,9 +186,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   **Hecho cuando:** test de que cada endpoint de escritura deja registro.
   _Medido:_ `bitacora/escrituras.test.ts` enumera las rutas de escritura (hook `onRoute`) y falla si una no está cubierta; no hubo huecos. `GET /api/bitacora` (filtros entidad/usuario/fechas, paginación) y pantalla Historial; 6 pruebas de API nuevas (77 en total), e2e `historial` verde. `materiales.spec.ts` (2.000 filas) falla desde antes de este ticket, con la BD actual.
 
-- [ ] **F4-03** · Tiempo real (SSE) y conflictos · M · F4-02
+- [x] **F4-03** · Tiempo real (SSE) y conflictos · M · F4-02
   **Leer:** arquitectura.md (tiempo real). NOTIFY/SSE, aplicar cambios remotos, 409 con aviso.
   **Hecho cuando:** e2e con dos navegadores: un cambio aparece en el otro en < 1 s.
+  _Medido:_ e2e `tiempo-real` verde con timeout de 1 s (pasa en ~1,5 s total); 2 pruebas de API nuevas (79 en total). Trigger en `bitacora` (migración 0004) → `LISTEN cambios` → `GET /api/ofertas/:id/eventos`. _Pendiente:_ el 409 sigue sin nombrar a quien cambió ni ofrece «quedarse con uno u otro»; la pantalla se refresca sola, lo que reduce los 409.
 
 - [ ] **F4-04** · Presencia · S · F4-03
   "Ana (Eléctrico) está en el capítulo 3"; celdas cambiadas por otros destellan.
