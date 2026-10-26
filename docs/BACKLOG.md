@@ -181,9 +181,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 4 pruebas de API nuevas (71 en total, estables en 3 corridas), e2e `usuarios` verde. Pantalla «Usuarios» (solo admin) con disciplinas y color. Se acotó la expiración de sesiones en `auth/rutas.test.ts` (afectaba a otros archivos en paralelo).
   _Decisión:_ D12.
 
-- [ ] **F4-02** · Bitácora · S · F4-01
+- [x] **F4-02** · Bitácora · S · F4-01
   Toda escritura registra quién, qué, antes, después. Pantalla Historial con filtros.
   **Hecho cuando:** test de que cada endpoint de escritura deja registro.
+  _Medido:_ `bitacora/escrituras.test.ts` enumera las rutas de escritura (hook `onRoute`) y falla si una no está cubierta; no hubo huecos. `GET /api/bitacora` (filtros entidad/usuario/fechas, paginación) y pantalla Historial; 6 pruebas de API nuevas (77 en total), e2e `historial` verde. `materiales.spec.ts` (2.000 filas) falla desde antes de este ticket, con la BD actual.
 
 - [ ] **F4-03** · Tiempo real (SSE) y conflictos · M · F4-02
   **Leer:** arquitectura.md (tiempo real). NOTIFY/SSE, aplicar cambios remotos, 409 con aviso.

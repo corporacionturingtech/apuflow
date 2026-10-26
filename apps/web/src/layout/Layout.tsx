@@ -10,7 +10,7 @@ const LISTAS = [
   ['/mano-de-obra', 'Mano de obra'],
   ['/transporte', 'Transporte'],
 ] as const;
-const PANTALLAS = ['Historial', 'Configuración'];
+const PANTALLAS = ['Configuración'];
 const ENLACE = 'rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700';
 
 export function Layout() {
@@ -64,6 +64,9 @@ export function Layout() {
             Usuarios
           </Link>
         )}
+        <Link to="/historial" className={ENLACE}>
+          Historial
+        </Link>
         {PANTALLAS.map((p) => (
           <span key={p} aria-disabled="true" className="rounded px-2 py-1.5 text-slate-500">
             {p}

@@ -16,6 +16,7 @@ import { Importar } from './pantallas/Importar';
 import { ImportarPrecios } from './pantallas/ImportarPrecios';
 import { Ofertas } from './pantallas/Ofertas';
 import { Presupuesto } from './pantallas/Presupuesto';
+import { Historial } from './pantallas/Historial';
 import { Usuarios } from './pantallas/Usuarios';
 import { Login } from './pantallas/Login';
 import { usuarioActual } from './sesion';
@@ -100,6 +101,11 @@ export function crearRouter(cliente: QueryClient) {
     },
     component: Usuarios,
   });
+  const historial = createRoute({
+    getParentRoute: () => protegida,
+    path: '/historial',
+    component: Historial,
+  });
   const oferta = createRoute({
     getParentRoute: () => protegida,
     path: '/ofertas/$id',
@@ -122,6 +128,7 @@ export function crearRouter(cliente: QueryClient) {
         importar,
         importarPrecios,
         usuarios,
+        historial,
         oferta,
       ]),
     ]),

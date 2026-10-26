@@ -9,6 +9,7 @@ import { rutasBloques } from './modulos/bloques/rutas';
 import { rutasImportacion } from './modulos/importacion/rutas';
 import { rutasVersiones } from './modulos/ofertas/versiones';
 import { rutasUsuarios } from './modulos/usuarios/rutas';
+import { rutasBitacora } from './modulos/bitacora/rutas';
 import { rutasSalud } from './modulos/salud/rutas';
 
 export function crearApp(db: Bd) {
@@ -23,5 +24,6 @@ export function crearApp(db: Bd) {
   app.register(rutasVersiones, { db });
   app.register(rutasBloques, { db });
   app.register(rutasImportacion, { db });
+  app.register(rutasBitacora, { db });
   return app;
 }
