@@ -15,6 +15,7 @@ import { rutasTiempoReal } from './modulos/tiempo-real/rutas';
 import { rutasDemo } from './modulos/demo/rutas';
 import { rutasValor } from './modulos/valor/rutas';
 import { rutasLicencia, type OpcionesLicencia } from './modulos/licencia/rutas';
+import { rutasEmpresa } from './modulos/empresa/rutas';
 import { estadoLicencia } from './licencia/servicio';
 
 const TTL_ESTADO_MS = 60_000;
@@ -52,5 +53,6 @@ export function crearApp(db: Bd, opciones: Pick<OpcionesLicencia, 'clavePublica'
   app.register(rutasTiempoReal, { db });
   app.register(rutasDemo, { db });
   app.register(rutasValor, { db });
+  app.register(rutasEmpresa, { db });
   return app;
 }

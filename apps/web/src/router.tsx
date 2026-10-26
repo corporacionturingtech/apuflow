@@ -18,6 +18,7 @@ import { Ofertas } from './pantallas/Ofertas';
 import { Presupuesto } from './pantallas/Presupuesto';
 import { Historial } from './pantallas/Historial';
 import { Usuarios } from './pantallas/Usuarios';
+import { Empresa } from './pantallas/Empresa';
 import { Licencia } from './pantallas/Licencia';
 import { ResumenMensual } from './pantallas/ResumenMensual';
 import { Login } from './pantallas/Login';
@@ -103,6 +104,14 @@ export function crearRouter(cliente: QueryClient) {
     },
     component: Usuarios,
   });
+  const empresa = createRoute({
+    getParentRoute: () => protegida,
+    path: '/configuracion/empresa',
+    beforeLoad: async () => {
+      if ((await usuarioActual(cliente))?.rol !== 'admin') throw redirect({ to: '/' });
+    },
+    component: Empresa,
+  });
   const licencia = createRoute({
     getParentRoute: () => protegida,
     path: '/configuracion/licencia',
@@ -148,6 +157,7 @@ export function crearRouter(cliente: QueryClient) {
         importar,
         importarPrecios,
         usuarios,
+        empresa,
         licencia,
         historial,
         resumen,

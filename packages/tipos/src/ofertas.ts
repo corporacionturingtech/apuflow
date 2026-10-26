@@ -21,7 +21,8 @@ export type Oferta = z.infer<typeof esquemaOferta>;
 export const esquemaOfertaCrear = z.object({
   nombre: z.string().trim().min(1),
   cliente: z.string().trim().min(1).nullable().optional(),
-  tipo: esquemaTipoOferta.default('privado'),
+  // sin tipo: se usa el predeterminado de la empresa
+  tipo: esquemaTipoOferta.optional(),
 });
 export type OfertaCrear = z.infer<typeof esquemaOfertaCrear>;
 

@@ -1,15 +1,27 @@
 /** Formatos como en su Excel: $ 1.313,64 (portado del prototipo, líneas 645–674). */
+const SIMBOLOS: Record<string, string> = { USD: '$', PEN: 'S/', EUR: '€', MXN: '$', COP: '$' };
+let miles = '.';
+let decimal = ',';
+let simbolo = '$';
+
+/** La empresa elige moneda y formato (Configuración › Empresa); el valor por defecto es el de Ecuador. */
+export function fijarFormato(moneda: string, formato: 'es' | 'en') {
+  miles = formato === 'es' ? '.' : ',';
+  decimal = formato === 'es' ? ',' : '.';
+  simbolo = SIMBOLOS[moneda] ?? moneda;
+}
+
 export function fmt(v: number, min: number, max: number): string {
   const neg = v < 0;
   const s = Math.abs(v).toFixed(max);
   const [ent = '0', dec0] = s.split('.');
   let dec = dec0 ? dec0.replace(/0+$/, '') : '';
   if (dec0) while (dec.length < min) dec += '0';
-  const miles = ent.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return (neg ? '-' : '') + miles + (dec ? ',' + dec : '');
+  const agrupado = ent.replace(/\B(?=(\d{3})+(?!\d))/g, miles);
+  return (neg ? '-' : '') + agrupado + (dec ? decimal + dec : '');
 }
 
-export const money = (v: number) => (v < 0 ? '-$ ' : '$ ') + fmt(Math.abs(v), 2, 2);
+export const money = (v: number) => (v < 0 ? '-' : '') + simbolo + ' ' + fmt(Math.abs(v), 2, 2);
 export const n2 = (v: number) => fmt(v, 2, 2);
 export const qty = (v: number) => fmt(v, 0, 4);
 export const pct = (v: number, d = 2) => fmt(v, d, d) + ' %';

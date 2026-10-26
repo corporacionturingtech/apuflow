@@ -60,3 +60,6 @@ se carga con `POST /api/demo/cargar` reutilizando la importación del libro (sin
 
 **D14 · 2026-10-25 · El resumen mensual se «descarga» con la impresión del navegador.**
 `/resumen` tiene estilos `@media print` (A4) y el botón llama `window.print()`; la persona elige «Guardar como PDF». Evita una librería de PDF para una página; si un cliente exige archivo generado en el servidor, se revisa. Las horas ahorradas son `(rubros por bloque × min + rubros recalculados × min) ÷ 60` con minutos editables en `config_empresa.ajustes.valor` (3 y 2 por defecto).
+
+**D15 · 2026-10-25 · La configuración de país vive en `config_empresa`, lo visual en `ajustes.empresa`.**
+Nombre, IVA y moneda usan sus columnas; logo (data URL ≤ 200 KB), acento, formato numérico (`es`/`en`) y tipo de oferta por defecto van en `ajustes.empresa` (sin migración). El formato de `lib/formato.ts` es un estado de módulo que fija el `Layout` al cargar `/api/empresa`; el `Layout` no pinta la pantalla hasta que la consulta responde, para no remontarla a mitad de una carga.

@@ -8,7 +8,7 @@ test('el administrador ve el estado de la licencia y su ID de instalación', asy
   await page.getByLabel('Clave').fill(ADMIN.clave);
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await expect(page.getByRole('link', { name: 'Ofertas' })).toBeVisible();
-  await page.getByRole('link', { name: 'Configuración' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: 'Licencia', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Configuración › Licencia' })).toBeVisible();
   await expect(page.getByText('Sin licencia (modo desarrollo)')).toBeVisible();
   await expect(page.getByText(/^apf-[0-9a-f]{16}$/)).toBeVisible();

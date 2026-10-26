@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmt, money, parseNum, pct, qty, sgn } from './formato';
+import { fijarFormato, fmt, money, parseNum, pct, qty, sgn } from './formato';
 
 describe('formato', () => {
   it('moneda como en su Excel', () => {
@@ -27,5 +27,15 @@ describe('formato', () => {
     expect(parseNum('1.234.567')).toBe(1234567);
     expect(parseNum('')).toBeNaN();
     expect(parseNum('-')).toBeNaN();
+  });
+  it('moneda y separadores de la empresa', () => {
+    fijarFormato('PEN', 'en');
+    try {
+      expect(money(1313.64)).toBe('S/ 1,313.64');
+      expect(qty(2.5)).toBe('2.5');
+    } finally {
+      fijarFormato('USD', 'es');
+    }
+    expect(money(1313.64)).toBe('$ 1.313,64');
   });
 });

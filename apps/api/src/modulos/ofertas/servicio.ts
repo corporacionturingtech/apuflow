@@ -7,6 +7,7 @@ import type {
   RubroCrear,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
+import { empresaDe } from '../empresa/servicio';
 import * as repo from './repo';
 
 export class ConflictoVersion extends Error {}
@@ -14,10 +15,11 @@ export class NoExiste extends Error {}
 
 export async function crear(db: Bd, usuarioId: string, d: OfertaCrear) {
   return db.transaction(async (tx) => {
+    const empresa = empresaDe(await repo.configuracion(tx));
     const o = await repo.crear(tx, {
       nombre: d.nombre,
       cliente: d.cliente ?? null,
-      tipo: d.tipo,
+      tipo: d.tipo ?? empresa.tipoOfertaDefecto,
       actualizadoPor: usuarioId,
     });
     await repo.registrarBitacora(tx, [

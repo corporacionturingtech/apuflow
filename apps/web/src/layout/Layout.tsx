@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import { api } from '../lib/api';
+import { fijarFormato } from '../lib/formato';
+import { consultaEmpresa } from '../pantallas/Empresa';
 import { consultaYo } from '../sesion';
 import { AvisoLicencia } from './AvisoLicencia';
 import { BarraGuia } from '../misiones/BarraGuia';
@@ -12,12 +14,14 @@ const LISTAS = [
   ['/mano-de-obra', 'Mano de obra'],
   ['/transporte', 'Transporte'],
 ] as const;
-const ENLACE = 'rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700';
+const ENLACE = 'rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-[var(--acento)]';
 
 export function Layout() {
   const cliente = useQueryClient();
   const navegar = useNavigate();
   const { data: usuario } = useQuery(consultaYo);
+  const { data: empresa, isPending: cargandoEmpresa } = useQuery(consultaEmpresa);
+  if (empresa) fijarFormato(empresa.moneda, empresa.formatoNumero);
 
   async function salir() {
     await api('/api/auth/logout', { metodo: 'POST' });
@@ -26,12 +30,19 @@ export function Layout() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div
+      className="flex min-h-screen"
+      style={{ '--acento': empresa?.acento ?? '#334155' } as React.CSSProperties}
+    >
       <nav
         aria-label="Navegación principal"
         className="flex w-52 flex-col bg-slate-900 p-3 text-sm text-slate-200"
       >
-        <span className="mb-4 px-2 text-lg font-semibold text-white">APUflow</span>
+        {empresa?.logo ? (
+          <img src={empresa.logo} alt={empresa.nombre} className="mb-4 max-h-12 self-start px-2" />
+        ) : (
+          <span className="mb-4 px-2 text-lg font-semibold text-white">APUflow</span>
+        )}
         <Link to="/" data-guia="nav-inicio" className={ENLACE}>
           Inicio
         </Link>
@@ -44,7 +55,7 @@ export function Layout() {
         <Link
           to="/ofertas"
           data-guia="nav-ofertas"
-          className="mt-2 rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
+          className="mt-2 rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-[var(--acento)]"
         >
           Ofertas
         </Link>
@@ -54,7 +65,7 @@ export function Layout() {
         <Link
           to="/bloques"
           data-guia="nav-bloques"
-          className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-slate-700"
+          className="rounded px-2 py-1.5 hover:bg-slate-800 [&.active]:bg-[var(--acento)]"
         >
           Bloques
         </Link>
@@ -67,9 +78,14 @@ export function Layout() {
           Historial
         </Link>
         {usuario?.rol === 'admin' && (
-          <Link to="/configuracion/licencia" className={ENLACE}>
-            Configuración
-          </Link>
+          <>
+            <Link to="/configuracion/empresa" className={ENLACE}>
+              Empresa
+            </Link>
+            <Link to="/configuracion/licencia" className={ENLACE}>
+              Licencia
+            </Link>
+          </>
         )}
         <div className="mt-auto px-2 text-xs">
           <p className="text-slate-300">{usuario?.nombre}</p>
@@ -82,7 +98,8 @@ export function Layout() {
       <main className="flex-1 p-6 pb-16">
         <BarraGuia />
         <AvisoLicencia />
-        <Outlet />
+        {/* sin esperar, el cambio de formato remontaría la pantalla a mitad de una carga */}
+        {!cargandoEmpresa && <Outlet key={`${empresa?.moneda}-${empresa?.formatoNumero}`} />}
       </main>
       <BarraTotales />
     </div>

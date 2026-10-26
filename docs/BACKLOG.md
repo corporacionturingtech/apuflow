@@ -219,9 +219,10 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   fórmula editable, resumen PDF de una página. **Hecho cuando:** e2e ve cifras tras usar la demo.
   _Medido:_ e2e `valor` verde (cifras > 0 tras demo + bloque + emisión; al poner los minutos en 0 las horas pasan a 0 h; abre `/resumen`), 1 prueba de API nueva (91 en total), 1 de web (33). `GET /api/valor?mes=` y `PUT /api/valor/parametros` (admin); panel en Inicio (`PanelValor.tsx`). _Pendiente:_ el PDF es la impresión del navegador (D14); `materiales` (2) y `tiempo-real` (presencia) fallan intermitentes también sin este cambio.
 
-- [ ] **F5-05** · Configuración de empresa y país · S · F4-01
+- [x] **F5-05** · Configuración de empresa y país · S · F4-01
   Logo, color de acento, IVA, moneda, formato numérico, disciplinas, tipo público/privado.
   **Hecho cuando:** cambiar IVA a 18 % (Perú) recalcula el total.
+  _Medido:_ e2e `empresa` verde (oferta de $ 10,00: total $ 11,50 con 15 % → $ 11,80 con 18 %, persiste tras recargar, restaura al final), 1 prueba de API nueva (92 en total), 1 de web (34). `GET/PUT /api/empresa` (PUT solo admin, bitácora por campo, 409 por `version`); pantalla Configuración › Empresa. Las disciplinas siguen en Usuarios (ya existían). _Pendiente:_ `materiales` (2.000 filas) falla también sin este cambio.
 
 - [ ] **F5-06** · Instalador y respaldos · M · F5-01
   **Leer:** arquitectura.md (despliegue). Dockerfile, compose, Caddy, `instalar.sh`, respaldo
