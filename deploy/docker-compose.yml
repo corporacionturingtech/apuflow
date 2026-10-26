@@ -1,0 +1,64 @@
+# Stack de producción (servidor del cliente o VPS de Turingtech). Lo prepara ./instalar.sh.
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: apuflow
+      POSTGRES_PASSWORD: ${BD_CLAVE:?falta BD_CLAVE (ejecute ./instalar.sh)}
+      POSTGRES_DB: apuflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U apuflow']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  apuflow:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: apuflow:${VERSION:-local}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://apuflow:${BD_CLAVE}@postgres:5432/apuflow
+      LICENCIA_OBLIGATORIA: ${LICENCIA_OBLIGATORIA:-0}
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [apuflow]
+    ports:
+      - '${HTTP_PUERTO:-80}:80'
+      - '${HTTPS_PUERTO:-443}:443'
+    environment:
+      DOMINIO: ${DOMINIO:-localhost}
+      CADDY_TLS: ${CADDY_TLS:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+
+  respaldo:
+    image: postgres:16
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: apuflow
+      PGDATABASE: apuflow
+      PGPASSWORD: ${BD_CLAVE}
+      RESPALDOS_A_GUARDAR: ${RESPALDOS_A_GUARDAR:-14}
+    volumes:
+      - ./respaldo.sh:/respaldo.sh:ro
+      - ./respaldos:/respaldos
+    entrypoint: ['bash', '/respaldo.sh']
+
+volumes:
+  pgdata:
+  caddy_datos:

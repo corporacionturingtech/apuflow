@@ -84,6 +84,7 @@ Regla de dependencias: `web → tipos, motor` · `api → tipos, motor, excel` �
 - `deploy/docker-compose.yml`: `apuflow` (API que también sirve el build de web), `postgres`,
   `caddy` (HTTPS automático o certificado interno), `respaldo` (pg_dump diario, 14 rotaciones).
 - `deploy/instalar.sh`: pide dominio/IP, genera secretos, levanta el stack, crea el admin.
+- Variables de la API: `WEB_DIST` (carpeta del build de web a servir, con vuelta a `index.html`) y `MIGRAR_AL_ARRANCAR=1`. Pasos en `deploy/LEEME.md`.
 - Actualizaciones: imagen versionada (`apuflow:1.4.2`), migraciones automáticas al arrancar.
 - Turingtech gestionado: un stack por cliente en un VPS, cada uno con su base. Sin
   multi-empresa en una misma base (aislamiento simple, mismo código que on-premise).

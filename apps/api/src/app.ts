@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import type { Bd } from './db/conexion';
 import cookie from '@fastify/cookie';
+import estatico from '@fastify/static';
 import { instalarAuth } from './modulos/auth/rutas';
 import { rutasInsumos } from './modulos/insumos/rutas';
 import { rutasApus } from './modulos/apus/rutas';
@@ -22,7 +23,11 @@ const TTL_ESTADO_MS = 60_000;
 const MENSAJE_SOLO_LECTURA =
   'La licencia está vencida: puede ver y exportar, pero no editar. Renueve la licencia.';
 
-export function crearApp(db: Bd, opciones: Pick<OpcionesLicencia, 'clavePublica'> = {}) {
+export function crearApp(
+  db: Bd,
+  opciones: Pick<OpcionesLicencia, 'clavePublica'> & { webDist?: string } = {},
+) {
+  const { webDist, ...opcionesLicencia } = opciones;
   const app = Fastify({ logger: false });
   app.register(cookie);
   instalarAuth(app, db);
@@ -41,7 +46,7 @@ export function crearApp(db: Bd, opciones: Pick<OpcionesLicencia, 'clavePublica'
     if (enCache.solo) return res.code(403).send({ mensaje: MENSAJE_SOLO_LECTURA });
   });
   app.register(rutasSalud, { db });
-  app.register(rutasLicencia, { db, ...opciones, alCargar: () => (enCache = null) });
+  app.register(rutasLicencia, { db, ...opcionesLicencia, alCargar: () => (enCache = null) });
   app.register(rutasUsuarios, { db });
   app.register(rutasInsumos, { db });
   app.register(rutasApus, { db });
@@ -54,5 +59,13 @@ export function crearApp(db: Bd, opciones: Pick<OpcionesLicencia, 'clavePublica'
   app.register(rutasDemo, { db });
   app.register(rutasValor, { db });
   app.register(rutasEmpresa, { db });
+  if (webDist) {
+    // Instalación en servidor: la API también sirve el build de web (con vuelta a index.html para el router).
+    app.register(estatico, { root: webDist });
+    app.setNotFoundHandler((req, res) => {
+      if (req.url.startsWith('/api')) return res.code(404).send({ mensaje: 'No encontrado' });
+      return res.sendFile('index.html');
+    });
+  }
   return app;
 }

@@ -5,3 +5,5 @@ coverage
 *.tsbuildinfo
 test-results/
 playwright-report/
+deploy/.env
+deploy/respaldos/

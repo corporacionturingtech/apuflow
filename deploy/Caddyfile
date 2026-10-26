@@ -1,0 +1,5 @@
+{$DOMINIO:localhost} {
+	{$CADDY_TLS}
+	encode gzip
+	reverse_proxy apuflow:3000
+}

@@ -271,10 +271,13 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   ticket (Apus, HerramientaMenor, FormularioInsumo, ResumenMensual, PanelImpacto y paneles del
   presupuesto).
 
-- [ ] **F5-06** · Instalador y respaldos · M · F5-01
+- [x] **F5-06** · Instalador y respaldos · M · F5-01
   **Leer:** arquitectura.md (despliegue). Dockerfile, compose, Caddy, `instalar.sh`, respaldo
   diario con rotación, `restaurar.sh`. **Hecho cuando:** instalación limpia en una VM Ubuntu LTS
   y restauración de un respaldo probadas, pasos en `deploy/LEEME.md`.
+  _Medido:_ probado en Docker local (`instalar.sh` desde cero con imagen construida, login vía Caddy con
+  TLS interno, respaldo, borrado de usuarios y `restaurar.sh` → login de vuelta); API 93 pruebas verdes.
+  _Pendiente:_ repetirlo en una VM Ubuntu LTS real antes de entregar a SEDEMI (no hay VM en este equipo).
 
 - [ ] **F5-07** · Manual de usuario y guía de implementación · S · F5-06
   Guía corta por rol y checklist de implementación (importar libros, bloques, usuarios).
