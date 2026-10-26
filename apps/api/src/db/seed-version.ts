@@ -5,15 +5,15 @@ import { urlBd } from './url';
 
 // Oferta ficticia para el e2e de F3-02: tres rubros de CU 10, 20 y 70 sin indirectos → subtotal
 // $ 100,00; sin indirectos. Prefijo propio (VER-E2E) por los e2e en paralelo.
-export const NOMBRE_OFERTA_VER = 'VER-E2E Oferta de versiones';
 
-export async function sembrarVersionE2e(db: ReturnType<typeof crearBd>['db']) {
-  await db.delete(oferta).where(like(oferta.nombre, 'VER-E2E%'));
-  await db.delete(apu).where(like(apu.codigo, 'VER-E2E%'));
-  await db.delete(insumo).where(like(insumo.codigo, 'VER-E2E%'));
+export async function sembrarVersionE2e(db: ReturnType<typeof crearBd>['db'], pre = 'VER') {
+  const nombreOferta = `${pre}-E2E Oferta de versiones`;
+  await db.delete(oferta).where(like(oferta.nombre, `${pre}-E2E%`));
+  await db.delete(apu).where(like(apu.codigo, `${pre}-E2E%`));
+  await db.delete(insumo).where(like(insumo.codigo, `${pre}-E2E%`));
   const [o] = await db
     .insert(oferta)
-    .values({ nombre: NOMBRE_OFERTA_VER, cliente: 'Cliente ficticio', tipo: 'publico' })
+    .values({ nombre: nombreOferta, cliente: 'Cliente ficticio', tipo: 'publico' })
     .returning();
   const [cap] = await db
     .insert(capitulo)
@@ -25,7 +25,7 @@ export async function sembrarVersionE2e(db: ReturnType<typeof crearBd>['db']) {
       .insert(insumo)
       .values({
         tipo: 'MA',
-        codigo: `VER-E2E-MA${n}`,
+        codigo: `${pre}-E2E-MA${n}`,
         descripcion: 'Material ficticio',
         unidad: 'u',
         pu: String(pu),
@@ -33,14 +33,14 @@ export async function sembrarVersionE2e(db: ReturnType<typeof crearBd>['db']) {
       .returning();
     const [a] = await db
       .insert(apu)
-      .values({ codigo: `VER-E2E-${n}`, descripcion: `Rubro ficticio ${n}`, unidad: 'u' })
+      .values({ codigo: `${pre}-E2E-${n}`, descripcion: `Rubro ficticio ${n}`, unidad: 'u' })
       .returning();
     await db.insert(lineaApu).values({ apuId: a!.id, insumoId: m!.id, cantidad: '1' });
     await db.insert(rubro).values({
       ofertaId: o!.id,
       capituloId: cap!.id,
       apuId: a!.id,
-      codigo: `VER-E2E-${n}`,
+      codigo: `${pre}-E2E-${n}`,
       cantidad: '1',
       orden: n,
     });
@@ -52,7 +52,7 @@ export async function sembrarVersionE2e(db: ReturnType<typeof crearBd>['db']) {
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
   const { db, pool } = crearBd(urlBd());
-  await sembrarVersionE2e(db);
+  await sembrarVersionE2e(db, process.argv[2] ?? 'VER');
   console.log('Oferta de versiones E2E sembrada');
   await pool.end();
 }

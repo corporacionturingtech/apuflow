@@ -135,7 +135,10 @@ export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true }).extend(
 });
 export type OfertaDetalle = z.infer<typeof esquemaOfertaDetalle>;
 
-export const esquemaVersionOfertaCrear = z.object({ nombre: z.string().trim().min(1).max(80) });
+export const esquemaVersionOfertaCrear = z.object({
+  nombre: z.string().trim().min(1).max(80),
+  emitir: z.boolean().optional(),
+});
 export type VersionOfertaCrear = z.infer<typeof esquemaVersionOfertaCrear>;
 
 export const esquemaVersionOfertaResumen = z.object({

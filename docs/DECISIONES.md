@@ -43,3 +43,7 @@ de uso (`GET /api/apus/:id/uso`). Se abre con doble clic en una celda de solo le
 `POST /api/ofertas/:id/versiones` guarda el detalle (cantidades y PU de ese momento) y su total con IVA; las versiones
 no se editan ni se borran. La entrada del motor se arma en `calcularDetalle` (`packages/motor`), compartida por web y API.
 La comparación (`comparar.ts`) cruza rubros por id: cambió / nuevo / quitado.
+
+**D11 · 2026-10-25 · Emitir es guardar una versión con `emitida = true`.**
+`POST /api/ofertas/:id/versiones` acepta `emitir: true`; la versión es inmutable como cualquier otra y la oferta sigue
+siendo la misma fila editable (el «borrador nuevo»). No hay estado de oferta ni bloqueo de edición.

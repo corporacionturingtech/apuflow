@@ -44,13 +44,17 @@ export function Versiones({ data, soloLectura }: Props) {
     enabled: !!elegida,
   });
   const guardar = useMutation({
-    mutationFn: () =>
+    mutationFn: (emitir: boolean) =>
       api<VersionOfertaResumen>(`/api/ofertas/${data.id}/versiones`, {
         metodo: 'POST',
-        cuerpo: { nombre },
+        cuerpo: { nombre, emitir },
       }),
     onSuccess: (v) => {
-      setMensaje(`Versión V${v.numero} «${v.nombre}» guardada.`);
+      setMensaje(
+        v.emitida
+          ? `Oferta emitida como V${v.numero} «${v.nombre}»: sus valores quedan congelados.`
+          : `Versión V${v.numero} «${v.nombre}» guardada.`,
+      );
       setNombre('');
       void cliente.invalidateQueries({ queryKey: clave });
     },
@@ -68,7 +72,8 @@ export function Versiones({ data, soloLectura }: Props) {
     <section aria-label="Versiones" className="mt-3 max-w-4xl rounded border p-3 text-sm">
       <p className="mb-2 text-slate-600">
         Guarde una foto de la oferta antes de ajustar precios o cantidades; luego compárela con lo
-        que tiene hoy, rubro por rubro.
+        que tiene hoy, rubro por rubro. Al emitir, esa foto queda congelada y la oferta sigue
+        editable.
       </p>
       {!soloLectura && (
         <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -82,10 +87,18 @@ export function Versiones({ data, soloLectura }: Props) {
           <button
             type="button"
             disabled={!nombre.trim() || guardar.isPending}
-            onClick={() => guardar.mutate()}
+            onClick={() => guardar.mutate(false)}
             className="rounded border border-slate-300 px-2 py-0.5"
           >
             Guardar versión
+          </button>
+          <button
+            type="button"
+            disabled={!nombre.trim() || guardar.isPending}
+            onClick={() => guardar.mutate(true)}
+            className="rounded border border-slate-900 bg-slate-900 px-2 py-0.5 text-white disabled:opacity-50"
+          >
+            Emitir oferta
           </button>
           {mensaje && <span role="status">{mensaje}</span>}
         </div>
@@ -103,6 +116,7 @@ export function Versiones({ data, soloLectura }: Props) {
                 className={`rounded border px-2 py-0.5 ${elegida === v.id ? 'bg-slate-900 text-white' : 'border-slate-300'}`}
               >
                 V{v.numero} · {v.nombre} · {money(Number(v.total))}
+                {v.emitida && ' · Emitida'}
               </button>
             </li>
           ))}

@@ -167,9 +167,11 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
   _Medido:_ 2 pruebas de API nuevas (66 en total), 3 de web (`comparar`), 2 del motor (`calcularDetalle`), e2e `versiones` verde (24 en total; `materiales` 2.000 filas falla también sin este cambio). Panel `Versiones.tsx` (botón «Versiones» en el presupuesto). Semilla propia: `pnpm --filter api db:seed-version` (`VER-E2E*`).
   _Decisión:_ D10.
 
-- [ ] **F3-03** · Emitir oferta · S · F3-02
+- [x] **F3-03** · Emitir oferta · S · F3-02
   Congela una versión emitida; la oferta sigue editable como borrador nuevo.
   **Hecho cuando:** cambiar un precio después no altera la versión emitida.
+  _Medido:_ 1 prueba de API nueva (67 en total), e2e `emitir` verde (25 en total; `materiales` 2.000 filas falla también sin este cambio). Botón «Emitir oferta» en el panel Versiones. Semilla `pnpm --filter api db:seed-version EMI` (prefijo por argumento).
+  _Decisión:_ D11.
 
 ## F4 · Equipo (momento: "trabajamos los tres a la vez")
 

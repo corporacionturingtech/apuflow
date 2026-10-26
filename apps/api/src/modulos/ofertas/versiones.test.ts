@@ -109,3 +109,21 @@ test('pide rol de escritura, nombre válido y oferta existente', async () => {
   const otra = await pedir('GET', `/api/ofertas/${ofertaId}/versiones/${nada}`, galletaLector);
   expect(otra.statusCode).toBe(404);
 });
+
+test('emitir congela la versión: cambiar la cantidad después no la altera', async () => {
+  const url = `/api/ofertas/${ofertaId}/versiones`;
+  expect((await pedir('POST', url, galletaLector, { nombre: 'x', emitir: true })).statusCode).toBe(
+    403,
+  );
+  const e = await pedir('POST', url, galletaCotizador, { nombre: 'Entrega', emitir: true });
+  expect(e.json()).toMatchObject({ emitida: true, nombre: 'Entrega' });
+  const patch = await pedir('PATCH', `/api/rubros/${rubroId}`, galletaCotizador, {
+    version: 1,
+    cantidad: '99',
+  });
+  expect(patch.statusCode).toBe(200);
+  const det = (await pedir('GET', `${url}/${e.json().id}`, galletaLector)).json();
+  expect(det.snapshot.rubros[0].cantidad).toBe('10.000000');
+  expect(det.total).toBe(e.json().total);
+  expect(det.emitida).toBe(true);
+});
