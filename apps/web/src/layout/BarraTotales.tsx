@@ -18,7 +18,7 @@ export function BarraTotales(props: Props) {
   const { subtotal = 0, iva = 0, total = 0, brecha } = { ...abierta, ...props } as Totales;
   const variacion = useVariacion(abierta ? total : null);
   return (
-    <footer className="fixed bottom-0 left-56 right-0 z-10 flex h-12 items-center justify-end gap-6 border-t border-borde bg-white/95 px-6 shadow-[0_-4px_12px_-6px_rgb(15_23_42/0.08)] backdrop-blur">
+    <footer className="fixed bottom-0 left-0 right-0 z-10 flex h-12 items-center justify-end gap-3 border-t border-borde bg-white/95 px-3 md:left-56 md:gap-6 md:px-6 shadow-[0_-4px_12px_-6px_rgb(15_23_42/0.08)] backdrop-blur">
       {brecha && (
         <div
           className={cn(
@@ -39,9 +39,11 @@ export function BarraTotales(props: Props) {
           </span>
         </div>
       )}
-      <Cifra etiqueta="Subtotal" valor={subtotal} />
-      <Cifra etiqueta="IVA" valor={iva} />
-      <div className="flex items-baseline gap-2 border-l border-borde pl-6">
+      <div className="hidden items-baseline gap-6 md:flex">
+        <Cifra etiqueta="Subtotal" valor={subtotal} />
+        <Cifra etiqueta="IVA" valor={iva} />
+      </div>
+      <div className="flex items-baseline gap-2 md:border-l md:border-borde md:pl-6">
         <span className="text-xs font-medium uppercase tracking-wider text-slate-500">Total</span>
         <span className="text-lg font-semibold tabular-nums tracking-tight">{money(total)}</span>
         {variacion !== null && (

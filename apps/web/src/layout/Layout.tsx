@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import {
   Blocks,
@@ -10,6 +11,7 @@ import {
   KeyRound,
   Layers,
   LogOut,
+  Menu,
   Package,
   Truck,
   Users,
@@ -91,6 +93,14 @@ export function Layout() {
   const { data: empresa, isPending: cargandoEmpresa } = useQuery(consultaEmpresa);
   if (empresa) fijarFormato(empresa.moneda, empresa.formatoNumero);
   const admin = usuario?.rol === 'admin';
+  // En pantallas angostas la navegación es un cajón; en md o más es la columna fija de siempre.
+  const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    if (!menu) return;
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(false);
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
+  }, [menu]);
 
   async function salir() {
     await api('/api/auth/logout', { metodo: 'POST' });
@@ -103,9 +113,33 @@ export function Layout() {
       className="flex min-h-screen"
       style={empresa ? ({ '--acento': empresa.acento } as React.CSSProperties) : undefined}
     >
+      <header className="fixed inset-x-0 top-0 z-20 flex h-12 items-center gap-3 bg-slate-950 px-3 md:hidden">
+        <button
+          type="button"
+          onClick={() => setMenu(true)}
+          aria-label="Abrir menú"
+          aria-expanded={menu}
+          className="grid size-9 place-items-center rounded-md text-slate-300 hover:bg-white/5 hover:text-white"
+        >
+          <Menu className="size-5" aria-hidden />
+        </button>
+        {empresa?.logo ? (
+          <img src={empresa.logo} alt={empresa.nombre} className="max-h-8 max-w-[60%]" />
+        ) : (
+          <LogoTuringApu variante="oscuro" className="text-sm" />
+        )}
+      </header>
+      {menu && (
+        <div
+          aria-hidden
+          onClick={() => setMenu(false)}
+          className="fixed inset-0 z-30 bg-slate-950/60 md:hidden"
+        />
+      )}
       <nav
         aria-label="Navegación principal"
-        className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-slate-950 px-3 pb-14 pt-4 text-[13px]"
+        onClick={(e) => (e.target as HTMLElement).closest('a') && setMenu(false)}
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-56 shrink-0 flex-col bg-slate-950 px-3 pb-14 pt-4 text-[13px] transition-transform md:sticky md:top-0 md:z-auto md:translate-x-0 ${menu ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="mb-5 flex h-9 items-center px-2.5">
           {empresa?.logo ? (
@@ -159,7 +193,7 @@ export function Layout() {
           </p>
         </div>
       </nav>
-      <main className="min-w-0 flex-1 px-6 pb-20 pt-5">
+      <main className="min-w-0 flex-1 px-4 pb-20 pt-16 md:px-6 md:pt-5">
         <BarraGuia />
         <AvisoLicencia />
         {/* sin esperar, el cambio de formato remontaría la pantalla a mitad de una carga */}
