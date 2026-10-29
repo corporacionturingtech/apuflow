@@ -20,6 +20,7 @@ Una función que funciona pero no se nota no está terminada (ver `docs/producto
 | Formato de Excel (importar/exportar) | `docs/producto/excel.md` |
 | Paquetes, BD, tiempo real, licencias, despliegue | `docs/arquitectura.md` |
 | Decisiones ya tomadas | `docs/DECISIONES.md` |
+| Ícono y marca del producto (Turing APU) | `docs/marca/README.md` |
 | Cómo lo hacía el prototipo | `referencia/INDICE.md` → `sed -n A,Bp referencia/prototipo_v2.html` |
 
 ## Stack
