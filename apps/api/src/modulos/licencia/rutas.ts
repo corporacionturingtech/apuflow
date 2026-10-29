@@ -29,7 +29,7 @@ export async function rutasLicencia(
       if (e instanceof OtraInstalacion) {
         return res
           .code(409)
-          .send({ mensaje: 'Esta licencia fue emitida para otra instalación de APUflow' });
+          .send({ mensaje: 'Esta licencia fue emitida para otra instalación de Turing APU' });
       }
       throw e;
     }

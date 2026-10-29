@@ -1,4 +1,4 @@
-# Manual de APUflow
+# Manual de Turing APU
 
 Guías cortas por rol. Cada usuario ve en el menú solo lo que su rol permite.
 

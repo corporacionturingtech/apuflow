@@ -7,6 +7,7 @@ import { api } from '../lib/api';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { LogoTuringApu } from '../ui/LogoTuringApu';
 
 const VENTAJAS = [
   'Cambie un precio y vea al instante qué APUs y rubros se recalcularon.',
@@ -46,12 +47,7 @@ export function Login() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-primario/30 blur-3xl"
         />
-        <span className="relative flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <span className="grid size-7 place-items-center rounded-md bg-primario text-xs font-bold">
-            A
-          </span>
-          APUflow
-        </span>
+        <LogoTuringApu variante="oscuro" descriptor className="relative text-2xl" />
         <div className="relative max-w-md">
           <p className="text-3xl font-semibold leading-tight tracking-tight">
             Sus presupuestos y APUs, siempre cuadrados.
@@ -65,11 +61,12 @@ export function Login() {
             ))}
           </ul>
         </div>
-        <p className="relative text-xs text-slate-500">Corporación Turingtech</p>
+        <p className="relative text-xs text-slate-500">Turing APU · Corporación Turingtech</p>
       </section>
       <section className="flex flex-col items-center justify-center p-6">
         <form onSubmit={entrar} className="w-full max-w-sm">
-          <h1 className="text-2xl font-semibold tracking-tight">Ingresar a APUflow</h1>
+          <LogoTuringApu descriptor className="mb-8 text-xl lg:hidden" />
+          <h1 className="text-2xl font-semibold tracking-tight">Ingresar a Turing APU</h1>
           <p className="mt-1 text-sm text-slate-500">Use el usuario que le asignó su empresa.</p>
           <div className="mt-8 space-y-4">
             <Label className="block">
@@ -99,7 +96,9 @@ export function Login() {
             {enviando ? 'Ingresando…' : 'Ingresar'}
           </Button>
         </form>
-        <p className="mt-10 text-xs text-slate-400 lg:hidden">Corporación Turingtech</p>
+        <p className="mt-10 text-xs text-slate-400 lg:hidden">
+          Turing APU · Corporación Turingtech
+        </p>
       </section>
     </main>
   );

@@ -1,6 +1,6 @@
 # UX y valor percibido
 
-APUflow se paga cada mes. El cliente renueva si **ve** el valor cada vez que lo usa, no solo
+Turing APU se paga cada mes. El cliente renueva si **ve** el valor cada vez que lo usa, no solo
 si el valor existe. Cada pantalla tiene que hacer visible lo que el sistema hizo por él.
 
 ## Las 10 reglas (todo ticket de UI las cumple)
@@ -65,7 +65,7 @@ Configuración (empresa, disciplinas, usuarios, licencia).
 ## Estilo visual
 
 - Componentes `shadcn/ui` + Tailwind. Denso como una hoja de cálculo, no "tarjetas grandes".
-- Color de marca configurable por empresa (logo y un color de acento). APUflow muestra la
+- Color de marca configurable por empresa (logo y un color de acento). Turing APU muestra la
   marca del cliente; la de Turingtech solo en el pie y en el login.
 - Colores fijos por disciplina: Civil, Eléctrico, Mecánico (configurables si cambian).
 - Probar a 1366×768 (la laptop típica del cliente) y 1920×1080. Móvil: solo consulta.

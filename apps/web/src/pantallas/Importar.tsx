@@ -136,13 +136,13 @@ export function Importar() {
                 <>
                   <b>
                     No cuadra con su Excel: {money(revision.cuadra.totalExcel ?? 0)} en su libro,{' '}
-                    {money(revision.cuadra.totalApuflow)} en APUflow.
+                    {money(revision.cuadra.totalApuflow)} en Turing APU.
                   </b>
                   {revision.cuadra.rubrosDistintos.length > 0 && (
                     <ul className="mt-1 list-disc pl-5">
                       {revision.cuadra.rubrosDistintos.map((x) => (
                         <li key={x.fila}>
-                          Fila {x.fila}, {x.descripcion}: su Excel {money(x.excel)}, APUflow{' '}
+                          Fila {x.fila}, {x.descripcion}: su Excel {money(x.excel)}, Turing APU{' '}
                           {money(x.apuflow)} ({sgn(x.apuflow - x.excel)})
                         </li>
                       ))}

@@ -54,7 +54,7 @@ export function PanelValor() {
   return (
     <div className="mt-6 max-w-4xl" aria-label="Panel de valor">
       <div className="flex items-center gap-3">
-        <h2 className="font-semibold">Valor de APUflow en {nombreMes(mes)}</h2>
+        <h2 className="font-semibold">Valor de Turing APU en {nombreMes(mes)}</h2>
         <Input
           type="month"
           aria-label="Mes"

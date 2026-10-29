@@ -1,7 +1,7 @@
 # Modelo de cálculo (fuente de verdad)
 
 Copiado de `apuCalc()` y `calc()` de `referencia/prototipo_v2.html` (líneas 723–785), que a
-su vez copia el Excel real de SEDEMI. **El total de APUflow debe cuadrar al centavo con el
+su vez copia el Excel real de SEDEMI. **El total de Turing APU debe cuadrar al centavo con el
 Excel del cliente.** Ese es el momento de confianza del producto: si no cuadra, no compran.
 
 Todo el cálculo vive en `packages/motor` (funciones puras). Ningún otro paquete calcula.

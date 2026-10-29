@@ -1,4 +1,4 @@
-# APUflow
+# Turing APU
 
 Presupuestos con APUs para empresas que hoy cotizan en Excel: bloques de rubros, un precio
 que actualiza toda la oferta, costo objetivo y varias disciplinas trabajando a la vez.

@@ -1,7 +1,7 @@
 # Excel: importar y exportar
 
 El Excel es la puerta de entrada (importar) y de salida (exportar) del producto. El cliente
-no abandona su Excel de golpe: APUflow tiene que leer su libro y devolverle uno igual.
+no abandona su Excel de golpe: Turing APU tiene que leer su libro y devolverle uno igual.
 
 El formato base es el libro de SEDEMI, visto en la reunión del 5 oct 2026 (no tenemos el
 archivo: solo capturas, y el prototipo lo replica con datos ficticios). Otros clientes
@@ -14,7 +14,7 @@ tendrán variantes: el importador trabaja por **encabezados**, no por posiciones
 | Datos generales | Pares clave/valor: proyecto, cliente, ubicación, fecha, plazo, tipo | |
 | Equipos | ITEM · DESCRIPCIÓN · TARIFA/HORA | Debajo: "Herramienta menor (% de la mano de obra)" |
 | Mano Obra | ITEM · DESCRIPCIÓN · JORNAL/HR | |
-| Materiales | ITEM · DESCRIPCIÓN · UNIDAD · PRECIO REFERENCIAL · PRECIO UNITARIO · PRECIO [· CPC · P / ND / I · VAE] | Celda FACTOR arriba (E1/F1). Filas de sección por disciplina. Las 3 últimas columnas solo en ofertas públicas (APUflow las guarda por rubro y las exporta en `Presupuesto`, ver abajo). `PRECIO = ROUND(PU × FACTOR; 2)` |
+| Materiales | ITEM · DESCRIPCIÓN · UNIDAD · PRECIO REFERENCIAL · PRECIO UNITARIO · PRECIO [· CPC · P / ND / I · VAE] | Celda FACTOR arriba (E1/F1). Filas de sección por disciplina. Las 3 últimas columnas solo en ofertas públicas (Turing APU las guarda por rubro y las exporta en `Presupuesto`, ver abajo). `PRECIO = ROUND(PU × FACTOR; 2)` |
 | Transporte | ITEM · DESCRIPCIÓN · UNIDAD · TARIFA | |
 | Indirectos | CONCEPTO · PORCENTAJE | Total y luego IVA |
 | Presupuesto | NUMERO · DESCRIPCIÓN DEL RUBRO · DESCRIPCIÓN CPC · UNIDAD · CANTIDAD · EQ · CT EQ · MO · CT MO · MA · CT MA · TRA · CT TRA · CU · CU TOTAL · PESO · RENDIMIENTO · P.U. OFERTADO · TOTAL OFERTADO | Fila de total arriba. Capítulos como filas de título |
@@ -41,7 +41,7 @@ Flujo de 3 pasos en la UI: **Subir → Revisar → Confirmar**.
    de 412 rubros") y lo que no entendió, por hoja y fila, en lenguaje llano. Detecta columnas
    por nombre normalizado (sin tildes, mayúsculas, espacios), con alias configurables.
 3. **Confirmar**: carga todo en una oferta nueva y muestra la comprobación
-   **"Total en su Excel vs total en APUflow"**. Si difiere, lista los rubros que no cuadran.
+   **"Total en su Excel vs total en Turing APU"**. Si difiere, lista los rubros que no cuadran.
 
 Modos de importación:
 - **Libro completo** (onboarding): listas + APUs + presupuesto.

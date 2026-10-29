@@ -24,6 +24,7 @@ import { consultaYo } from '../sesion';
 import { AvisoLicencia } from './AvisoLicencia';
 import { BarraGuia } from '../misiones/BarraGuia';
 import { BarraTotales } from './BarraTotales';
+import { LogoTuringApu } from '../ui/LogoTuringApu';
 
 interface Enlace {
   to: string;
@@ -110,12 +111,7 @@ export function Layout() {
           {empresa?.logo ? (
             <img src={empresa.logo} alt={empresa.nombre} className="max-h-9 max-w-full" />
           ) : (
-            <span className="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
-              <span className="grid size-6 place-items-center rounded-md bg-primario text-[11px] font-bold">
-                A
-              </span>
-              APUflow
-            </span>
+            <LogoTuringApu variante="oscuro" className="text-base" />
           )}
         </div>
         <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
@@ -158,7 +154,9 @@ export function Layout() {
               <LogOut className="size-4" aria-hidden />
             </button>
           </div>
-          <p className="mt-3 px-1 text-[11px] text-slate-600">Corporación Turingtech</p>
+          <p className="mt-3 px-1 text-[11px] text-slate-600">
+            Turing APU · Corporación Turingtech
+          </p>
         </div>
       </nav>
       <main className="min-w-0 flex-1 px-6 pb-20 pt-5">

@@ -6,7 +6,7 @@ import { datosGenerales, hojasDeListas } from './hojas/listas';
 import { hojaPresupuesto } from './hojas/presupuesto';
 import type { LibroEntrada } from './tipos';
 
-const NOTA = 'Generado por APUflow.';
+const NOTA = 'Generado por Turing APU.';
 
 /** Entrada del motor desde el libro: el cálculo es el mismo que ve la pantalla. */
 export function aEntradaMotor(l: LibroEntrada): Oferta {
@@ -48,7 +48,7 @@ export function aEntradaMotor(l: LibroEntrada): Oferta {
 export async function exportarLibro(l: LibroEntrada): Promise<Uint8Array> {
   const calc = calcularOferta(aEntradaMotor(l));
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'APUflow';
+  wb.creator = 'Turing APU';
   // Si el cliente edita un precio, Excel recalcula todo al abrir.
   wb.calcProperties.fullCalcOnLoad = true;
 

@@ -89,7 +89,7 @@ export function Inicio() {
           <h2 className="font-semibold">Empiece con una empresa de ejemplo</h2>
           <p className="mt-1 text-sm text-slate-600">
             Cargamos una subestación ficticia con sus listas de precios, APUs y bloques, para que
-            pruebe APUflow sin tocar sus datos. Después puede importar su propio libro de Excel.
+            pruebe Turing APU sin tocar sus datos. Después puede importar su propio libro de Excel.
           </p>
           {yo?.rol === 'admin' ? (
             <Button className="mt-3" disabled={cargar.isPending} onClick={() => cargar.mutate()}>

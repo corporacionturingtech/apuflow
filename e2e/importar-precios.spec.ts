@@ -96,7 +96,7 @@ test('sube una lista de precios, ve qué cambia y su impacto, y confirma', async
     buffer: Buffer.from(lista),
   });
   await expect(page.getByTestId('resumen-precios')).toContainText(
-    'Cambian 1 precios. 0 ya están al día; 1 no existen en APUflow y se omiten.',
+    'Cambian 1 precios. 0 ya están al día; 1 no existen en Turing APU y se omiten.',
   );
   await expect(page.getByRole('row', { name: new RegExp(`${p} Cable`) })).toContainText('$ 3,00');
   await expect(page.getByText(/Afectará 1 APUs, 1 rubros, \+\$ /)).toBeVisible();

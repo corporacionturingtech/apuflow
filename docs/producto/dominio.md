@@ -7,7 +7,7 @@ en el código (en español) y en la BD.
 
 | Término | Qué es | Nombre en código |
 |---|---|---|
-| **Empresa** | La instalación de APUflow. Una instancia = una empresa cliente. | `empresa` (config) |
+| **Empresa** | La instalación de Turing APU. Una instancia = una empresa cliente. | `empresa` (config) |
 | **Insumo** | Cualquier cosa con precio en una lista: material, equipo, mano de obra o transporte. | `insumo` |
 | **Lista de precios** | Las cuatro hojas de su Excel: Materiales, Equipos, Mano Obra, Transporte. | `tipo: 'MA' \| 'EQ' \| 'MO' \| 'TR'` |
 | **Precio unitario (PU)** | Precio escrito a mano en la lista. En materiales se multiplica por el FACTOR. | `pu` |

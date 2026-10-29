@@ -17,7 +17,7 @@ const clave = (tipo: string, descripcion: string) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-/** Compara los precios del libro con los de APUflow, por tipo y descripción (sin escribir nada). */
+/** Compara los precios del libro con los de Turing APU, por tipo y descripción (sin escribir nada). */
 async function comparar(db: Bd, buffer: Uint8Array) {
   const leido = await leerPrecios(buffer);
   const porClave = new Map(

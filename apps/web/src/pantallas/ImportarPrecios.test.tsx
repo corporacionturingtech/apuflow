@@ -63,7 +63,7 @@ it('muestra qué cambia, el impacto y el desglose antes de confirmar', async () 
   montar();
   subir();
   expect((await screen.findByTestId('resumen-precios')).textContent).toContain(
-    'Cambian 1 precios. 3 ya están al día; 1 no existen en APUflow y se omiten.',
+    'Cambian 1 precios. 3 ya están al día; 1 no existen en Turing APU y se omiten.',
   );
   expect(screen.getByText('Cable 2/0 AWG').parentElement?.textContent).toContain('$ 10,40');
   expect(screen.getByText(/Afectará 4 APUs, 12 rubros, \+\$ 1\.240,00/)).toBeTruthy();

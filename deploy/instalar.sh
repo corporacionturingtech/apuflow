@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instala APUflow: pide dominio/IP, genera secretos, levanta el stack y crea el administrador.
+# Instala Turing APU: pide dominio/IP, genera secretos, levanta el stack y crea el administrador.
 # Se puede repetir: no pisa un .env existente.
 set -euo pipefail
 cd "$(dirname "$0")"

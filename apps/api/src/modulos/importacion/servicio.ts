@@ -16,7 +16,7 @@ const clave = (tipo: string, descripcion: string) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-/** Lo que el libro trae frente a lo que APUflow ya tiene (sin escribir nada). */
+/** Lo que el libro trae frente a lo que Turing APU ya tiene (sin escribir nada). */
 async function comparar(db: Bd, leido: LibroLeido) {
   const [existentes, config, apus] = await Promise.all([
     repo.insumosActivos(db),
@@ -31,7 +31,7 @@ async function comparar(db: Bd, leido: LibroLeido) {
       extra.push({
         hoja: 'Listas',
         fila: 0,
-        mensaje: `«${i.descripcion}» ya existe en APUflow con otro precio (${e.pu}, el libro trae ${i.pu}). Se conserva el de APUflow.`,
+        mensaje: `«${i.descripcion}» ya existe en Turing APU con otro precio (${e.pu}, el libro trae ${i.pu}). Se conserva el de Turing APU.`,
         bloqueante: false,
       });
   }

@@ -36,7 +36,9 @@ export function ResumenMensual() {
         </tbody>
       </table>
       <p className="mt-4 text-xs text-slate-600">{fraseFormula(data.parametros)}</p>
-      <p className="mt-6 text-xs text-slate-500">Generado por APUflow · Corporación Turingtech</p>
+      <p className="mt-6 text-xs text-slate-500">
+        Generado por Turing APU · Corporación Turingtech
+      </p>
       <button
         type="button"
         onClick={() => window.print()}

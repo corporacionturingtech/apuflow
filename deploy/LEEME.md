@@ -1,4 +1,4 @@
-# Instalación de APUflow
+# Instalación de Turing APU
 
 Requisitos: Ubuntu LTS con Docker y el plugin `docker compose`, y este repo (o el paquete de la versión) en el servidor.
 

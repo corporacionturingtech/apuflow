@@ -94,7 +94,7 @@ export function ImportarPrecios() {
               : `Cambian ${revision.cambios.length} precios.`}{' '}
             {revision.sinCambio} ya están al día
             {revision.noEncontrados.length > 0 &&
-              `; ${revision.noEncontrados.length} no existen en APUflow y se omiten`}
+              `; ${revision.noEncontrados.length} no existen en Turing APU y se omiten`}
             .
           </p>
           {revision.cambios.length > 0 && (
@@ -153,7 +153,7 @@ export function ImportarPrecios() {
           )}
           {revision.noEncontrados.length > 0 && (
             <p className="mt-3 text-sm text-slate-600">
-              No existen en APUflow: {revision.noEncontrados.slice(0, 8).join(', ')}
+              No existen en Turing APU: {revision.noEncontrados.slice(0, 8).join(', ')}
               {revision.noEncontrados.length > 8 && ` y ${revision.noEncontrados.length - 8} más`}.
             </p>
           )}

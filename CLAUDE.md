@@ -1,9 +1,10 @@
 # CLAUDE.md
 
-APUflow: sistema web de presupuestos con APUs (análisis de precios unitarios) que
+Turing APU: sistema web de presupuestos con APUs (análisis de precios unitarios) que
 **Corporación Turingtech** vende por licencia mensual. Primer cliente: SEDEMI (subestaciones
 eléctricas, Ecuador). Todo el producto, la UI, los docs y los nombres del dominio van en
-**español**.
+**español**. El producto se llama «Turing APU» (así, con espacio); los identificadores técnicos
+(BD, contenedores, respaldos, claves) conservan `apuflow` (ver D17).
 
 Antes de cualquier cosa: el producto se juzga por dos cosas, **valor percibido** y **UX**.
 Una función que funciona pero no se nota no está terminada (ver `docs/producto/ux.md`).

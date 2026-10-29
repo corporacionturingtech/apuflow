@@ -4,7 +4,7 @@ import { ADMIN } from '../playwright.config';
 test('sin sesión redirige al login', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole('heading', { name: 'Ingresar a APUflow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ingresar a Turing APU' })).toBeVisible();
 });
 
 test('clave incorrecta muestra mensaje en español', async ({ page }) => {
