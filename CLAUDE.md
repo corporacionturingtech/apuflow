@@ -22,6 +22,7 @@ Una función que funciona pero no se nota no está terminada (ver `docs/producto
 | Paquetes, BD, tiempo real, licencias, despliegue | `docs/arquitectura.md` |
 | Decisiones ya tomadas | `docs/DECISIONES.md` |
 | Ícono y marca del producto (Turing APU) | `docs/marca/README.md` |
+| Material comercial (manual del equipo, folleto, presentación) | `docs/comercial/` |
 | Cómo lo hacía el prototipo | `referencia/INDICE.md` → `sed -n A,Bp referencia/prototipo_v2.html` |
 
 ## Stack
@@ -49,6 +50,7 @@ En una terminal propia, si `pnpm` no aparece: `eval "$(fnm env)"`.
 e2e (con `--` corre todos los specs, no pasarlo): `pnpm e2e` levanta api+web solo (necesita Postgres dev arriba). Si Playwright no halla Chromium (HOME distinto): `PLAYWRIGHT_BROWSERS_PATH=/home/leonel/.cache/ms-playwright`.
 Docker: `pnpm install` falla por scripts de build sin aprobar (pnpm 12); el Dockerfile usa `--config.strictDepBuilds=false`. Probar `deploy/` sin chocar: `COMPOSE_PROJECT_NAME=x DOMINIO=localhost HTTP_PUERTO=8080 HTTPS_PUERTO=8443 ./instalar.sh`.
 TypeScript va fijado en 6.x: typescript-eslint aún no soporta TS 7.
+Material comercial: `typst compile --root docs/comercial docs/comercial/<archivo>.typ` (el folleto usa `@preview/zebra`, ya en caché); los PDF se versionan. Precios y cifras se repiten a mano en manual, folleto y `presentacion-turing-apu.html` (un solo archivo, sin dependencias: va tal cual a GitHub Pages).
 No correr `pnpm format` sobre todo el repo: reformatea docs y `referencia/`. Formatear solo los archivos tocados (`pnpm prettier --write <archivos>`).
 
 ## Reglas duras
