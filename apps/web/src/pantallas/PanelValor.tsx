@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import type { PanelValor as Panel } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
+import { useSencilla } from '../lib/vista';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Cifra } from '../ui/cifra';
@@ -12,6 +13,7 @@ import { dinero, fraseFormula, horas, minutos, nombreMes } from './valor';
 const hoy = () => new Date().toISOString().slice(0, 7);
 
 export function PanelValor() {
+  const sencilla = useSencilla();
   const cliente = useQueryClient();
   const [mes, setMes] = useState(hoy);
   const [rubro, setRubro] = useState('');
@@ -83,10 +85,12 @@ export function PanelValor() {
           valor={String(data.bloquesAplicados)}
           nota={`${data.rubrosPorBloque} rubros sin copiar a mano`}
         />
-        <Cifra
-          etiqueta="Ofertas en el costo objetivo"
-          valor={`${data.ofertasEnObjetivo} de ${data.ofertasConObjetivo}`}
-        />
+        {!sencilla && (
+          <Cifra
+            etiqueta="Ofertas en el costo objetivo"
+            valor={`${data.ofertasEnObjetivo} de ${data.ofertasConObjetivo}`}
+          />
+        )}
         <Cifra etiqueta="Horas ahorradas (estimado)" valor={horas(data.horasAhorradas)} />
       </div>
       <Card className="mt-3 p-3 text-sm">

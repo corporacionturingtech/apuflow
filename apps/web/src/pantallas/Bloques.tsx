@@ -140,7 +140,8 @@ export function Bloques() {
               <article aria-label={b.nombre} className="p-3">
                 <h2 className="font-semibold">{b.nombre}</h2>
                 <p className="text-xs text-slate-500">
-                  {b.disciplina ?? 'Sin disciplina'} · {b.lineas.length} rubros
+                  {b.disciplina && `${b.disciplina} · `}
+                  {b.lineas.length} rubros
                   {b.tamano && ` · para ${qty(Number(b.tamano))} ${b.unidadTamano ?? ''}`}
                 </p>
                 <p className="mt-2 text-lg tabular-nums">
