@@ -9,6 +9,8 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { LogoTuringApu } from '../ui/LogoTuringApu';
 
+const PAGINA_PRODUCTO = 'https://turingtech.com.ec/turing-apu';
+
 const VENTAJAS = [
   'Cambie un precio y vea al instante qué APUs y rubros se recalcularon.',
   'Arme una bahía completa con un clic usando sus bloques.',
@@ -61,7 +63,12 @@ export function Login() {
             ))}
           </ul>
         </div>
-        <p className="relative text-xs text-slate-500">Turing APU · Corporación Turingtech</p>
+        <p className="relative text-xs text-slate-500">
+          Turing APU ·{' '}
+          <a href={PAGINA_PRODUCTO} className="hover:text-slate-300 hover:underline">
+            Corporación Turingtech
+          </a>
+        </p>
       </section>
       <section className="flex flex-col items-center justify-center p-6">
         <form onSubmit={entrar} className="w-full max-w-sm">
@@ -97,7 +104,10 @@ export function Login() {
           </Button>
         </form>
         <p className="mt-10 text-xs text-slate-400 lg:hidden">
-          Turing APU · Corporación Turingtech
+          Turing APU ·{' '}
+          <a href={PAGINA_PRODUCTO} className="hover:text-slate-600 hover:underline">
+            Corporación Turingtech
+          </a>
         </p>
       </section>
     </main>
