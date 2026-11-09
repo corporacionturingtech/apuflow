@@ -9,7 +9,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { LogoTuringApu } from '../ui/LogoTuringApu';
 
-const PAGINA_PRODUCTO = 'https://turingtech.com.ec/turing-apu';
+const PAGINA_PRODUCTO = 'https://turingtech.com.ec/productos/turing-apu/';
 
 const VENTAJAS = [
   'Cambie un precio y vea al instante qué APUs y rubros se recalcularon.',
