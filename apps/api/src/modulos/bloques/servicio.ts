@@ -1,9 +1,11 @@
-import type { BloqueCrear } from 'tipos';
+import { D } from 'motor';
+import type { BloqueCrear, BloqueInsertar } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import * as repo from './repo';
 
 export class ConflictoVersion extends Error {}
 export class NoExiste extends Error {}
+export class SinTamano extends Error {}
 
 export async function crearDesdeCapitulo(db: Bd, usuarioId: string, d: BloqueCrear) {
   return db.transaction(async (tx) => {
@@ -13,6 +15,8 @@ export async function crearDesdeCapitulo(db: Bd, usuarioId: string, d: BloqueCre
     const b = await repo.crear(tx, {
       nombre: d.nombre,
       disciplina: cap.disciplina,
+      tamano: d.tamano ?? null,
+      unidadTamano: d.tamano ? (d.unidadTamano ?? null) : null,
       actualizadoPor: usuarioId,
     });
     const lineas = rubros.length
@@ -40,25 +44,33 @@ export async function crearDesdeCapitulo(db: Bd, usuarioId: string, d: BloqueCre
   });
 }
 
+const texto = (v: InstanceType<typeof D>) => v.toString().replace('.', ',');
+
 // Como en el prototipo: el segundo capítulo del mismo bloque se llama «Nombre (2)».
+// Con tamaño, las cantidades se escalan y el capítulo lo dice: «Nombre · 150 m²».
 export async function insertarEnOferta(
   db: Bd,
   usuarioId: string,
   ofertaId: string,
-  bloqueId: string,
+  { bloqueId, tamano, veces }: BloqueInsertar,
 ) {
   return db.transaction(async (tx) => {
     if (!(await repo.buscarOferta(tx, ofertaId))) throw new NoExiste();
     const b = await repo.buscar(tx, bloqueId);
     if (!b) throw new NoExiste();
+    if (tamano && !b.tamano) throw new SinTamano();
+    const factor = tamano ? new D(tamano).div(b.tamano!) : new D(veces ?? 1);
+    const base = tamano
+      ? `${b.nombre} · ${texto(new D(tamano))} ${b.unidadTamano ?? ''}`.trim()
+      : factor.eq(1)
+        ? b.nombre
+        : `${b.nombre} × ${texto(factor)}`;
     const lineas = await repo.lineasDe(tx, bloqueId);
     const caps = await repo.capitulos(tx, ofertaId);
-    const iguales = caps.filter(
-      (c) => c.nombre === b.nombre || c.nombre.startsWith(`${b.nombre} (`),
-    );
+    const iguales = caps.filter((c) => c.nombre === base || c.nombre.startsWith(`${base} (`));
     const cap = await repo.insertarCapitulo(tx, {
       ofertaId,
-      nombre: iguales.length ? `${b.nombre} (${iguales.length + 1})` : b.nombre,
+      nombre: iguales.length ? `${base} (${iguales.length + 1})` : base,
       disciplina: b.disciplina,
       orden: await repo.siguienteOrdenCapitulo(tx, ofertaId),
       actualizadoPor: usuarioId,
@@ -73,7 +85,7 @@ export async function insertarEnOferta(
           capituloId: cap.id,
           apuId: l.apuId,
           codigo: codigo.get(l.apuId)!,
-          cantidad: l.cantidad,
+          cantidad: new D(l.cantidad).times(factor).toDecimalPlaces(6).toString(),
           orden: l.orden,
           actualizadoPor: usuarioId,
         }),
@@ -86,7 +98,7 @@ export async function insertarEnOferta(
         entidadId: cap.id,
         campo: null,
         antes: null,
-        despues: { ...cap, bloqueId, rubros: rubros.length },
+        despues: { ...cap, bloqueId, factor: factor.toString(), rubros: rubros.length },
       },
     ]);
     return cap;

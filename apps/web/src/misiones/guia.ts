@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { MISIONES, RUTAS, type Mision, type Paso } from './misiones';
+import { MISIONES, RUTAS, misionesDe, type Mision, type Paso } from './misiones';
 
 export interface Estado {
   /** Misión en curso (id) y paso actual (índice). */
@@ -67,8 +67,8 @@ export function cerrarCumplida() {
   poner({ ...estado, cumplida: null });
 }
 
-export function siguienteMision(): Mision | undefined {
-  return MISIONES.find((m) => !estado.hechas.includes(m.id));
+export function siguienteMision(sencilla = false): Mision | undefined {
+  return misionesDe(sencilla).find((m) => !estado.hechas.includes(m.id));
 }
 
 function avanzar() {

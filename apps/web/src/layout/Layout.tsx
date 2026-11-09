@@ -34,6 +34,8 @@ interface Enlace {
   icono: LucideIcon;
   guia?: string;
   soloAdmin?: boolean;
+  /** No sale en la vista sencilla. */
+  completa?: boolean;
 }
 
 const GRUPOS: { titulo?: string; enlaces: Enlace[] }[] = [
@@ -56,7 +58,15 @@ const GRUPOS: { titulo?: string; enlaces: Enlace[] }[] = [
   },
   {
     titulo: 'Control',
-    enlaces: [{ to: '/historial', texto: 'Historial', icono: History, guia: 'nav-historial' }],
+    enlaces: [
+      {
+        to: '/historial',
+        texto: 'Historial',
+        icono: History,
+        guia: 'nav-historial',
+        completa: true,
+      },
+    ],
   },
   {
     titulo: 'Configuración',
@@ -150,7 +160,9 @@ export function Layout() {
         </div>
         <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
           {GRUPOS.map((g) => {
-            const enlaces = g.enlaces.filter((e) => !e.soloAdmin || admin);
+            const enlaces = g.enlaces.filter(
+              (e) => (!e.soloAdmin || admin) && !(e.completa && empresa?.vista === 'sencilla'),
+            );
             if (!enlaces.length) return null;
             return (
               <div key={g.titulo ?? 'principal'} className="flex flex-col gap-0.5">

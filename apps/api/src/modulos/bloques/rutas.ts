@@ -4,6 +4,7 @@ import type { Bd } from '../../db/conexion';
 import { apuDto, detalleOferta } from '../ofertas/rutas';
 import * as repo from './repo';
 import {
+  SinTamano,
   ConflictoVersion,
   NoExiste,
   borrar,
@@ -17,6 +18,8 @@ const esUuid = (s: string) => /^[0-9a-f-]{36}$/i.test(s);
 function responderError(e: unknown, res: FastifyReply) {
   if (e instanceof NoExiste)
     return res.code(404).send({ mensaje: 'Ese bloque u oferta ya no existe' });
+  if (e instanceof SinTamano)
+    return res.code(400).send({ mensaje: 'Ese bloque no tiene tamaño: use «veces».' });
   if (e instanceof ConflictoVersion) {
     return res
       .code(409)
@@ -32,6 +35,8 @@ const bloqueDto = (
   id: b.id,
   nombre: b.nombre,
   disciplina: b.disciplina,
+  tamano: b.tamano,
+  unidadTamano: b.unidadTamano,
   version: b.version,
   lineas: lineas
     .filter((l) => l.bloqueId === b.id)
@@ -75,7 +80,7 @@ export async function rutasBloques(app: FastifyInstance, { db }: { db: Bd }) {
       const d = esquemaBloqueInsertar.safeParse(req.body);
       if (!d.success || !esUuid(req.params.id)) return res.code(400).send(datosInvalidos);
       try {
-        const cap = await insertarEnOferta(db, req.usuario!.id, req.params.id, d.data.bloqueId);
+        const cap = await insertarEnOferta(db, req.usuario!.id, req.params.id, d.data);
         return res
           .code(201)
           .send({ capituloId: cap.id, oferta: await detalleOferta(db, req.params.id) });

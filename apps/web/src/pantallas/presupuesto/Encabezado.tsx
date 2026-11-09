@@ -3,6 +3,7 @@ import { ChevronLeft, GitCompareArrows, Percent, Table2, Target } from 'lucide-r
 import type { OfertaDetalle } from 'tipos';
 import type { Presente } from '../../lib/useEventosOferta';
 import { cn } from '../../lib/cn';
+import { useSencilla } from '../../lib/vista';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { TabsList, TabsTrigger } from '../../ui/tabs';
@@ -20,6 +21,7 @@ interface Props {
 // Nivel 1: qué oferta es y qué se hace con ella. Nivel 2: pestañas y cómo ver las cifras.
 export function Encabezado({ data, presentes, ofertado, alCambiarVista }: Props) {
   const publico = data.tipo === 'publico';
+  const sencilla = useSencilla();
   return (
     <header>
       <Button variant="link" size="sm" asChild className="text-slate-500">
@@ -34,14 +36,15 @@ export function Encabezado({ data, presentes, ofertado, alCambiarVista }: Props)
           {data.estado === 'emitida' ? 'Emitida' : 'Borrador'}
         </Badge>
         <span className="text-sm text-slate-500">
-          {data.cliente ?? 'Sin cliente'} · {publico ? 'Oferta pública (SERCOP)' : 'Oferta privada'}{' '}
-          · {data.rubros.length} rubros
+          {data.cliente ?? 'Sin cliente'} ·{' '}
+          {!sencilla && `${publico ? 'Oferta pública (SERCOP)' : 'Oferta privada'} · `}
+          {data.rubros.length} rubros
         </span>
         <div className="ml-auto">
           <BotonExportar ofertaId={data.id} nombre={data.nombre} />
         </div>
       </div>
-      {presentes.length > 0 && (
+      {!sencilla && presentes.length > 0 && (
         <ul aria-label="Quién más está en la oferta" className="mt-1.5 flex flex-wrap gap-1.5">
           {presentes.map((p) => (
             <li key={p.usuarioId}>
@@ -64,14 +67,18 @@ export function Encabezado({ data, presentes, ofertado, alCambiarVista }: Props)
             <Percent aria-hidden />
             Indirectos y utilidad
           </TabsTrigger>
-          <TabsTrigger value="objetivo" data-guia="btn-objetivo">
-            <Target aria-hidden />
-            Costo objetivo
-          </TabsTrigger>
-          <TabsTrigger value="versiones" data-guia="btn-versiones">
-            <GitCompareArrows aria-hidden />
-            Versiones
-          </TabsTrigger>
+          {!sencilla && (
+            <>
+              <TabsTrigger value="objetivo" data-guia="btn-objetivo">
+                <Target aria-hidden />
+                Costo objetivo
+              </TabsTrigger>
+              <TabsTrigger value="versiones" data-guia="btn-versiones">
+                <GitCompareArrows aria-hidden />
+                Versiones
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
         <div
           role="group"

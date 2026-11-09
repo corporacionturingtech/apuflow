@@ -18,7 +18,14 @@ const detalle: OfertaDetalle = {
   indirectos: [
     { id: uuid(2), nombre: 'Indirectos', porcentaje: '10', esUtilidad: false, version: 1 },
   ],
-  capitulos: [{ id: uuid(3), nombre: 'Bahía', disciplina: null, version: 1 }],
+  capitulos: [
+    {
+      id: uuid(3),
+      nombre: 'Bahía',
+      disciplina: null,
+      version: 1,
+    },
+  ],
   rubros: [
     {
       id: uuid(4),
@@ -76,6 +83,8 @@ it('costo directo de un bloque: cantidades × CU del APU', () => {
     id: uuid(9),
     nombre: 'Bahía',
     disciplina: null,
+    tamano: null,
+    unidadTamano: null,
     version: 1,
     lineas: [{ apuId: uuid(5), cantidad: '10' }],
   };

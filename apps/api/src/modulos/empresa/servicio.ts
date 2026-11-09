@@ -1,11 +1,11 @@
-import type { Empresa, EmpresaCambio } from 'tipos';
+import type { Empresa } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import { ConflictoVersion } from '../insumos/servicio';
 import { actualizarConfiguracion, configuracion, registrarBitacora } from '../insumos/repo';
 
 type Fila = Awaited<ReturnType<typeof configuracion>>;
 type AjustesEmpresa = Partial<
-  Pick<Empresa, 'formatoNumero' | 'acento' | 'logo' | 'tipoOfertaDefecto'>
+  Pick<Empresa, 'formatoNumero' | 'acento' | 'logo' | 'tipoOfertaDefecto' | 'vista'>
 >;
 
 export function empresaDe(c: Fila): Empresa & { version: number } {
@@ -19,12 +19,13 @@ export function empresaDe(c: Fila): Empresa & { version: number } {
     acento: a.acento ?? '#2563eb',
     logo: a.logo ?? null,
     tipoOfertaDefecto: a.tipoOfertaDefecto ?? 'privado',
+    vista: a.vista ?? 'completa',
   };
 }
 
 export const obtenerEmpresa = async (db: Bd) => empresaDe(await configuracion(db));
 
-export async function cambiarEmpresa(db: Bd, adminId: string, c: EmpresaCambio) {
+export async function cambiarEmpresa(db: Bd, adminId: string, c: Empresa) {
   await db.transaction(async (tx) => {
     const actual = await configuracion(tx);
     const { version, nombre, iva, moneda, ...resto } = c;

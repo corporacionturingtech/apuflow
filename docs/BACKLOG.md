@@ -288,7 +288,14 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 ## F6 · Crecer (no entra en la entrega a SEDEMI)
 
 - [ ] **F6-01** · Especificación base paramétrica (pedido de SEDEMI: potencia, tamaño).
-- [ ] **F6-02** · Biblioteca de APUs base por sector (para acortar la implementación de nuevos clientes).
+- [x] **F6-02a** · Biblioteca base de vivienda (primer sector) y vista sencilla · M
+  Primer cliente fuera del sector eléctrico: constructora de viviendas de una persona (prueba gratis).
+  **Hecho cuando:** Inicio ofrece «Vivienda y obra civil» y la vista sencilla esconde lo que no usa.
+  _Medido:_ `vivienda-demo.json` (44 materiales, 9 MO, 5 equipos, 1 transporte, 38 APUs, 8 bloques); con el motor cada bloque queda a ±10 % de su precio por unidad (obra gris $ 230,02/m², metálica $ 259,85, acabados 159,12 / 228,32 / 364,88, cerramiento $ 91,94/ml, pérgola $ 80,02/m², cubierta $ 68,11/m²). `POST /api/demo/cargar { sector }` (D18); vista sencilla en `ajustes.empresa.vista`. 2 pruebas de API nuevas (96 en total), 4 de web (42), e2e `vista-sencilla` verde (proyecto `al-final` de Playwright). El generador de la biblioteca no se versiona: el JSON es la fuente y el test de calibración la protege.
+- [x] **F6-02c** · Bloques con tamaño: «¿Para cuántos m²?» al añadirlos · S
+  **Hecho cuando:** añadir la obra gris (100 m²) para 150 m² multiplica cada cantidad por 1,5.
+  _Medido:_ migración `0005` (`bloque.tamano`, `unidad_tamano`); `POST /api/ofertas/:id/bloques { tamano | veces }` escala con decimal.js y nombra el capítulo «Nombre · 150 m²» o «Nombre × 2» (D18); los 8 bloques de vivienda traen su tamaño; «Guardar como bloque» acepta tamaño opcional. 2 aserciones de API nuevas, e2e `bloques` «2 veces» verde. `licencia/rutas.test.ts` falla intermitente también sin este cambio (cupo de usuarios leído antes de que otro archivo borre usuarios).
+- [ ] **F6-02b** · Bibliotecas de otros sectores (metalmecánica, redes eléctricas) con el mismo molde.
 - [ ] **F6-03** · Cotizaciones de proveedores: comparar y aplicar precios.
 - [ ] **F6-04** · Perfiles de importación para libros con otra estructura.
 

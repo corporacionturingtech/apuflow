@@ -18,6 +18,8 @@ export interface Mision {
   frase: string;
   gana: string;
   pasos: Paso[];
+  /** Usa pantallas que la vista sencilla esconde. */
+  completa?: boolean;
 }
 
 export const RUTAS: Record<Pantalla, RegExp> = {
@@ -72,7 +74,7 @@ export const MISIONES: Mision[] = [
         pantalla: 'materiales',
         objetivo: 'tabla-lista',
         texto:
-          'El cobre subió. Escriba el nuevo precio de un material (por ejemplo 10,40) y pulse Enter.',
+          'Un material subió (el cemento, el cobre…). Escriba su nuevo precio (por ejemplo 10,40) y pulse Enter.',
         fin: { api: /^PATCH \/api\/insumos\/[^/]+$/ },
       },
       {
@@ -87,9 +89,8 @@ export const MISIONES: Mision[] = [
   {
     id: 'm3',
     titulo: 'Ver todo el APU en una pantalla',
-    frase:
-      '«Revisar que se haya incluido una grúa, un ingeniero eléctrico, ayudantes, cuántos van a ser de cada uno.»',
-    gana: 'Cada APU muestra juntos equipos, mano de obra, materiales y transporte. Se revisa en segundos que estén la grúa, el ingeniero y los ayudantes, y cuántos de cada uno.',
+    frase: '«Revisar que se haya incluido el equipo y la gente, y cuántos van a ser de cada uno.»',
+    gana: 'Cada APU muestra juntos equipos, mano de obra, materiales y transporte. Se revisa en segundos que esté cada equipo y cada persona, y cuántos de cada uno.',
     pasos: [
       {
         pantalla: 'apus',
@@ -134,6 +135,7 @@ export const MISIONES: Mision[] = [
   },
   {
     id: 'm5',
+    completa: true,
     titulo: 'Llegar al costo objetivo',
     frase: '«Esto tengo yo, cuánto me ofreces. Entonces ese es nuestro costo objetivo.»',
     gana: 'Con el costo referencial del cliente a la vista, saben cuánto falta, qué rubros pesan más y cuánto cierra cada ajuste. Cada versión queda guardada para comparar.',
@@ -172,6 +174,7 @@ export const MISIONES: Mision[] = [
   },
   {
     id: 'm6',
+    completa: true,
     titulo: 'Quién cambió qué',
     frase: '«Que todo sea como en línea y que todos podamos usar al mismo tiempo.»',
     gana: 'Civil, eléctrico y mecánico arman la misma oferta al mismo tiempo, cada uno en sus rubros, y el historial dice quién cambió qué, cuándo y de cuánto a cuánto.',
@@ -205,3 +208,7 @@ export const MISIONES: Mision[] = [
     ],
   },
 ];
+
+/** Las misiones que se ven con la vista de la empresa. */
+export const misionesDe = (sencilla: boolean) =>
+  sencilla ? MISIONES.filter((m) => !m.completa) : MISIONES;

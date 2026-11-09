@@ -3,6 +3,10 @@ import { esquemaTipoOferta } from './ofertas';
 
 const MAX_LOGO = 200_000;
 
+/** «sencilla» esconde en la UI lo que no usa quien presupuesta solo; la API no cambia. */
+export const esquemaVista = z.enum(['completa', 'sencilla']);
+export type Vista = z.infer<typeof esquemaVista>;
+
 // Lo que cambia entre empresas y países se configura aquí, no se bifurca el código.
 export const esquemaEmpresaCambio = z.object({
   version: z.number().int().positive(),
@@ -24,7 +28,8 @@ export const esquemaEmpresaCambio = z.object({
     .max(MAX_LOGO, 'El logo pesa más de 200 KB')
     .nullable(),
   tipoOfertaDefecto: esquemaTipoOferta,
+  vista: esquemaVista.default('completa'),
 });
-export type EmpresaCambio = z.infer<typeof esquemaEmpresaCambio>;
+export type EmpresaCambio = z.input<typeof esquemaEmpresaCambio>;
 
-export type Empresa = EmpresaCambio;
+export type Empresa = z.infer<typeof esquemaEmpresaCambio>;

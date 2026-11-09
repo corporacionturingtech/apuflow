@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { FilePen, FileCheck2, ListOrdered, Sparkles } from 'lucide-react';
+import { FilePen, FileCheck2, Home, ListOrdered, Zap } from 'lucide-react';
 import { useState } from 'react';
-import type { Oferta } from 'tipos';
+import type { Oferta, SectorDemo } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
 import { qty } from '../lib/formato';
 import { iniciarMision, useGuia } from '../misiones/guia';
-import { MISIONES } from '../misiones/misiones';
+import { misionesDe } from '../misiones/misiones';
+import { useSencilla } from '../lib/vista';
 import { consultaYo } from '../sesion';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -23,13 +24,15 @@ export function Inicio() {
   const cliente = useQueryClient();
   const { data: yo } = useQuery(consultaYo);
   const guia = useGuia();
+  const misiones = misionesDe(useSencilla());
   const [error, setError] = useState('');
   const { data } = useQuery({
     queryKey: ['ofertas'],
     queryFn: () => api<{ items: Oferta[] }>('/api/ofertas'),
   });
   const cargar = useMutation({
-    mutationFn: () => api<{ ofertaId: string }>('/api/demo/cargar', { metodo: 'POST' }),
+    mutationFn: (sector: SectorDemo) =>
+      api<{ ofertaId: string }>('/api/demo/cargar', { metodo: 'POST', cuerpo: { sector } }),
     onSuccess: () => {
       setError('');
       return cliente.invalidateQueries();
@@ -88,14 +91,26 @@ export function Inicio() {
         <Card className="mt-4 max-w-2xl p-4">
           <h2 className="font-semibold">Empiece con una empresa de ejemplo</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Cargamos una subestación ficticia con sus listas de precios, APUs y bloques, para que
-            pruebe Turing APU sin tocar sus datos. Después puede importar su propio libro de Excel.
+            Elija el ejemplo más parecido a su trabajo. Trae listas de precios, APUs y bloques
+            ficticios para que pruebe Turing APU sin tocar sus datos. Después puede importar su
+            propio libro de Excel.
           </p>
           {yo?.rol === 'admin' ? (
-            <Button className="mt-3" disabled={cargar.isPending} onClick={() => cargar.mutate()}>
-              <Sparkles aria-hidden />
-              {cargar.isPending ? 'Cargando…' : 'Cargar empresa demo'}
-            </Button>
+            <div className="mt-3 flex flex-wrap gap-2" aria-label="Cargar empresa demo">
+              <Button disabled={cargar.isPending} onClick={() => cargar.mutate('vivienda')}>
+                <Home aria-hidden />
+                Vivienda y obra civil
+              </Button>
+              <Button
+                variant="outline"
+                disabled={cargar.isPending}
+                onClick={() => cargar.mutate('electrico')}
+              >
+                <Zap aria-hidden />
+                Subestación eléctrica
+              </Button>
+              {cargar.isPending && <span className="self-center text-sm">Cargando…</span>}
+            </div>
           ) : (
             <p className="mt-3 text-sm">Pídale a un administrador que cargue la empresa demo.</p>
           )}
@@ -116,11 +131,11 @@ export function Inicio() {
         <div className="mt-6 max-w-4xl">
           <h2 className="font-semibold">Misiones guiadas</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Siete tareas del día a día, paso a paso, sobre la oferta de ejemplo. Cada una le muestra
-            qué gana su empresa.
+            Tareas del día a día, paso a paso, sobre la oferta de ejemplo. Cada una le muestra qué
+            gana su empresa.
           </p>
           <ol aria-label="Misiones" className="mt-3 space-y-2">
-            {MISIONES.map((m, i) => {
+            {misiones.map((m, i) => {
               const hecha = guia.hechas.includes(m.id);
               return (
                 <Card asChild key={m.id}>

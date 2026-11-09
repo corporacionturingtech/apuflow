@@ -3,14 +3,21 @@ import { Link } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import type { BloquesRespuesta, OfertaDetalle } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
-import { money, qty } from '../lib/formato';
+import { money, parseNum, qty } from '../lib/formato';
 import { consultaYo } from '../sesion';
 import { calcularPresupuesto, costoDirectoBloque } from './presupuesto/calculo';
 import { Blocks, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { Input } from '../ui/input';
 import { Cargando, Vacio } from '../ui/estado';
 import { Select } from '../ui/select';
+
+interface Escala {
+  bloqueId: string;
+  valor: string;
+  conTamano: boolean;
+}
 
 interface Insertado {
   nombre: string;
@@ -33,6 +40,8 @@ export function Bloques() {
   const [ofertaId, setOfertaId] = useState('');
   const [insertado, setInsertado] = useState<Insertado | null>(null);
   const [error, setError] = useState('');
+  // Tamaño real (o veces) escrito en cada tarjeta; vacío = el del bloque.
+  const [tamanos, setTamanos] = useState<Record<string, string>>({});
   const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'cotizador';
   const borradores = (ofertas?.items ?? []).filter((o) => o.estado !== 'emitida');
   const destino = ofertaId || borradores[0]?.id || '';
@@ -40,10 +49,10 @@ export function Bloques() {
   const apus = useMemo(() => new Map((data?.apus ?? []).map((a) => [a.id, a])), [data]);
 
   const anadir = useMutation({
-    mutationFn: (bloqueId: string) =>
+    mutationFn: ({ bloqueId, valor, conTamano }: Escala) =>
       api<{ capituloId: string; oferta: OfertaDetalle }>(`/api/ofertas/${destino}/bloques`, {
         metodo: 'POST',
-        cuerpo: { bloqueId },
+        cuerpo: { bloqueId, ...(conTamano ? { tamano: valor } : { veces: valor }) },
       }),
     onSuccess: ({ capituloId, oferta }) => {
       setError('');
@@ -121,59 +130,83 @@ export function Bloques() {
         </Vacio>
       )}
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {(data?.items ?? []).map((b, i) => (
-          <Card asChild key={b.id}>
-            <article aria-label={b.nombre} className="p-3">
-              <h2 className="font-semibold">{b.nombre}</h2>
-              <p className="text-xs text-slate-500">
-                {b.disciplina ?? 'Sin disciplina'} · {b.lineas.length} rubros
-              </p>
-              <p className="mt-2 text-lg tabular-nums">
-                {money(costoDirectoBloque(data!, b))}{' '}
-                <small className="text-xs text-slate-500">costo directo del bloque</small>
-              </p>
-              <details className="mt-1 text-sm">
-                <summary className="cursor-pointer">Ver rubros y cantidades</summary>
-                <ul>
-                  {b.lineas.map((l, i) => (
-                    <li key={i} className="flex justify-between gap-2">
-                      <span>{apus.get(l.apuId)?.descripcion}</span>
-                      <b className="tabular-nums">
-                        {qty(Number(l.cantidad))} {apus.get(l.apuId)?.unidad}
-                      </b>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-              {puedeEscribir && (
-                <div className="mt-2 flex items-center gap-3 text-sm">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    data-guia={i === 0 ? 'bloque-anadir' : undefined}
-                    disabled={!destino || anadir.isPending}
-                    onClick={() => anadir.mutate(b.id)}
-                  >
-                    <Plus aria-hidden />
-                    Añadir a la oferta
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      if (window.confirm(`¿Borrar el bloque «${b.nombre}»?`))
-                        borrar.mutate({ id: b.id, version: b.version });
-                    }}
-                    className="ml-auto"
-                  >
-                    <Trash2 aria-hidden />
-                    Borrar
-                  </Button>
-                </div>
-              )}
-            </article>
-          </Card>
-        ))}
+        {(data?.items ?? []).map((b, i) => {
+          const base = b.tamano ? qty(Number(b.tamano)) : '1';
+          const escrito = tamanos[b.id] ?? base;
+          const valor = parseNum(escrito);
+          const valido = Number.isFinite(valor) && valor > 0;
+          return (
+            <Card asChild key={b.id}>
+              <article aria-label={b.nombre} className="p-3">
+                <h2 className="font-semibold">{b.nombre}</h2>
+                <p className="text-xs text-slate-500">
+                  {b.disciplina ?? 'Sin disciplina'} · {b.lineas.length} rubros
+                  {b.tamano && ` · para ${qty(Number(b.tamano))} ${b.unidadTamano ?? ''}`}
+                </p>
+                <p className="mt-2 text-lg tabular-nums">
+                  {money(costoDirectoBloque(data!, b))}{' '}
+                  <small className="text-xs text-slate-500">costo directo del bloque</small>
+                </p>
+                <details className="mt-1 text-sm">
+                  <summary className="cursor-pointer">Ver rubros y cantidades</summary>
+                  <ul>
+                    {b.lineas.map((l, i) => (
+                      <li key={i} className="flex justify-between gap-2">
+                        <span>{apus.get(l.apuId)?.descripcion}</span>
+                        <b className="tabular-nums">
+                          {qty(Number(l.cantidad))} {apus.get(l.apuId)?.unidad}
+                        </b>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                {puedeEscribir && (
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                    <label className="flex items-center gap-1.5 text-slate-600">
+                      {b.tamano ? '¿Para cuántos?' : 'Veces'}
+                      <Input
+                        aria-label={`Tamaño para añadir «${b.nombre}»`}
+                        inputMode="decimal"
+                        value={escrito}
+                        onChange={(e) => setTamanos((t) => ({ ...t, [b.id]: e.target.value }))}
+                        className="h-7 w-20 text-right tabular-nums"
+                      />
+                      {b.tamano && <span>{b.unidadTamano}</span>}
+                    </label>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-guia={i === 0 ? 'bloque-anadir' : undefined}
+                      disabled={!destino || anadir.isPending || !valido}
+                      onClick={() =>
+                        anadir.mutate({
+                          bloqueId: b.id,
+                          valor: String(valor),
+                          conTamano: Boolean(b.tamano),
+                        })
+                      }
+                    >
+                      <Plus aria-hidden />
+                      Añadir a la oferta
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        if (window.confirm(`¿Borrar el bloque «${b.nombre}»?`))
+                          borrar.mutate({ id: b.id, version: b.version });
+                      }}
+                      className="ml-auto"
+                    >
+                      <Trash2 aria-hidden />
+                      Borrar
+                    </Button>
+                  </div>
+                )}
+              </article>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

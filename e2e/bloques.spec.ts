@@ -39,3 +39,24 @@ test('añade un bloque a la oferta, ve el aviso con su subtotal y lo guarda de v
   await page.getByRole('button', { name: 'Guardar bloque' }).click();
   await expect(page.getByText('guardado con 1 rubros')).toBeVisible();
 });
+
+test('añadir un bloque «2 veces» duplica sus cantidades', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Usuario').fill(ADMIN.usuario);
+  await page.getByLabel('Clave').fill(ADMIN.clave);
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+  await page.getByRole('link', { name: 'Ofertas' }).click();
+  const nombre = `OFE-BLQ ${Date.now()} x2`;
+  await page.getByLabel('Nombre de la oferta').fill(nombre);
+  await page.getByRole('button', { name: 'Crear oferta' }).click();
+  await expect(page.getByRole('heading', { name: nombre })).toBeVisible();
+
+  await page.getByRole('link', { name: 'Bloques' }).click();
+  const tarjeta = page.getByRole('article', { name: 'Bahía de 230 kV' });
+  await page.getByLabel('Añadir a la oferta').selectOption({ label: nombre });
+  await tarjeta.getByLabel('Tamaño para añadir «Bahía de 230 kV»').fill('2');
+  await tarjeta.getByRole('button', { name: 'Añadir a la oferta' }).click();
+  await expect(page.getByRole('status')).toContainText(
+    'Se añadió «Bahía de 230 kV × 2» a ' + nombre + ': 1 rubros, subtotal $ 100,00',
+  );
+});

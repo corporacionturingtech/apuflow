@@ -11,3 +11,4 @@ export * from './bitacora';
 export * from './licencia';
 export * from './valor';
 export * from './empresa';
+export * from './demo';

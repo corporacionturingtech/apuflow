@@ -3,6 +3,7 @@ import { useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { Compass, PartyPopper } from 'lucide-react';
 import { api } from '../lib/api';
+import { useSencilla } from '../lib/vista';
 import { consultaYo } from '../sesion';
 import { variantesBoton } from '../ui/button';
 import {
@@ -17,7 +18,7 @@ import {
   siguienteMision,
   useGuia,
 } from './guia';
-import { MISIONES, NOMBRE_PANTALLA, RUTAS, type Paso } from './misiones';
+import { NOMBRE_PANTALLA, RUTAS, misionesDe, type Paso } from './misiones';
 
 const NAV = {
   bloques: 'nav-bloques',
@@ -95,8 +96,10 @@ export function BarraGuia() {
     };
   }, [objetivo, g.activa, g.paso]);
 
+  const sencilla = useSencilla();
+  const lista = misionesDe(sencilla);
   const cumplida = misionPorId(g.cumplida);
-  const siguiente = siguienteMision();
+  const siguiente = siguienteMision(sencilla);
   return (
     <>
       {mision && paso && vista && (
@@ -107,7 +110,7 @@ export function BarraGuia() {
         >
           <Compass className="size-4 shrink-0 text-amber-600" aria-hidden />
           <span className="whitespace-nowrap font-semibold">
-            Misión {MISIONES.indexOf(mision) + 1} · paso {g.paso + 1} de {mision.pasos.length}
+            Misión {lista.indexOf(mision) + 1} · paso {g.paso + 1} de {mision.pasos.length}
           </span>
           <span className="flex-1">
             {vista.texto} <small className="text-slate-500">{mision.titulo}</small>
@@ -129,7 +132,7 @@ export function BarraGuia() {
         >
           <p className="flex items-center gap-2 font-semibold text-emerald-800">
             <PartyPopper className="size-4" aria-hidden />
-            Misión {MISIONES.indexOf(cumplida) + 1} cumplida: {cumplida.titulo}
+            Misión {lista.indexOf(cumplida) + 1} cumplida: {cumplida.titulo}
           </p>
           <p className="mt-1">
             <b>Qué gana su empresa aquí.</b> {cumplida.gana}

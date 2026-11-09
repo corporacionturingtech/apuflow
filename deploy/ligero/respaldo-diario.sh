@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -e
-cd /opt/apuflow/respaldos
-sudo -u postgres pg_dump apuflow | gzip > apuflow-$(date +%F).sql.gz
-ls -1t apuflow-*.sql.gz | tail -n +15 | xargs -r rm
+# Uso: respaldo-diario.sh [base] [directorio]  (por defecto la instancia original)
+BD=${1:-apuflow}
+cd "${2:-/opt/apuflow/respaldos}"
+sudo -u postgres pg_dump "$BD" | gzip > "$BD-$(date +%F).sql.gz"
+ls -1t "$BD"-*.sql.gz | tail -n +15 | xargs -r rm

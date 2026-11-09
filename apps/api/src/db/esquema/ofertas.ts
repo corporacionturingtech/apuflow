@@ -16,6 +16,9 @@ export const bloque = pgTable('bloque', {
   id: pk(),
   nombre: text('nombre').notNull(),
   disciplina: text('disciplina'),
+  /** Para cuánto están las cantidades (p. ej. 100 m²); al añadirlo se escala al tamaño real. */
+  tamano: numeric('tamano', entrada),
+  unidadTamano: text('unidad_tamano'),
   ...auditoria(),
 });
 

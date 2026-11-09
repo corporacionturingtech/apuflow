@@ -1,0 +1,1199 @@
+{
+  "datosGenerales": {
+    "proyecto": "Vivienda ilustrativa de 100 m² en obra gris",
+    "cliente": "Cliente ilustrativo",
+    "ubicacion": "Pichincha",
+    "fecha": "2026-11-09",
+    "plazo": "150",
+    "tipo": "Privado"
+  },
+  "factor": 1,
+  "herramientaMenor": 5,
+  "iva": 15,
+  "indirectos": [
+    {
+      "id": "gg",
+      "n": "Gastos generales y administrativos",
+      "p": 12
+    },
+    {
+      "id": "imp",
+      "n": "Imprevistos",
+      "p": 3
+    },
+    {
+      "id": "util",
+      "n": "Utilidad",
+      "p": 10
+    }
+  ],
+  "materiales": [
+    {
+      "id": "cem",
+      "n": "Cemento Portland tipo GU (saco de 50 kg)",
+      "u": "saco",
+      "pu": 8.4,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "are",
+      "n": "Arena fina de río",
+      "u": "m³",
+      "pu": 18,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "rip",
+      "n": "Ripio triturado 3/4\"",
+      "u": "m³",
+      "pu": 20,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pie",
+      "n": "Piedra bola para contrapiso",
+      "u": "m³",
+      "pu": 16,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "lastre",
+      "n": "Lastre para mejoramiento de suelo",
+      "u": "m³",
+      "pu": 12,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "agua",
+      "n": "Agua para obra",
+      "u": "m³",
+      "pu": 1.2,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "var",
+      "n": "Varilla corrugada fy 4.200 kg/cm²",
+      "u": "kg",
+      "pu": 1.12,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "alam",
+      "n": "Alambre recocido #18",
+      "u": "kg",
+      "pu": 2.2,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "blq15",
+      "n": "Bloque de hormigón de 15 cm",
+      "u": "u",
+      "pu": 0.45,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "blql",
+      "n": "Bloque alivianado de losa 15 cm",
+      "u": "u",
+      "pu": 0.55,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "tabla",
+      "n": "Tabla de encofrado semidura",
+      "u": "u",
+      "pu": 2.8,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "punt",
+      "n": "Puntal de eucalipto",
+      "u": "u",
+      "pu": 2.2,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "clav",
+      "n": "Clavos de 2\" a 3\"",
+      "u": "kg",
+      "pu": 2.0,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "malla",
+      "n": "Malla electrosoldada R-84",
+      "u": "m²",
+      "pu": 3.2,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "deck",
+      "n": "Placa colaborante (steel deck) 0,65 mm",
+      "u": "m²",
+      "pu": 13.5,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "perfil",
+      "n": "Perfiles y tubos de acero estructural",
+      "u": "kg",
+      "pu": 1.55,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "elec",
+      "n": "Electrodo para soldadura E6011",
+      "u": "kg",
+      "pu": 3.5,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "anti",
+      "n": "Pintura anticorrosiva (galón)",
+      "u": "galón",
+      "pu": 16,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "teja",
+      "n": "Teja española de arcilla",
+      "u": "u",
+      "pu": 0.55,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "asf",
+      "n": "Lámina asfáltica bajo teja",
+      "u": "m²",
+      "pu": 5.5,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "poli",
+      "n": "Policarbonato alveolar 6 mm",
+      "u": "m²",
+      "pu": 9.5,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "melec",
+      "n": "Material eléctrico por punto (cable, tubería y caja)",
+      "u": "pto",
+      "pu": 14,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "msan",
+      "n": "Material sanitario por punto (tubería PVC y accesorios)",
+      "u": "pto",
+      "pu": 18,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "emp",
+      "n": "Empaste interior (saco de 20 kg)",
+      "u": "saco",
+      "pu": 9,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pint",
+      "n": "Pintura látex interior (galón)",
+      "u": "galón",
+      "pu": 14,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pega",
+      "n": "Pegamento para cerámica (saco de 25 kg)",
+      "u": "saco",
+      "pu": 7.5,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "cer",
+      "n": "Cerámica nacional para piso y pared",
+      "u": "m²",
+      "pu": 14,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "porc",
+      "n": "Porcelanato 60×60 nacional",
+      "u": "m²",
+      "pu": 29,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "porcp",
+      "n": "Porcelanato importado gran formato",
+      "u": "m²",
+      "pu": 49,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "gyp",
+      "n": "Cielo raso de gypsum (placa, perfilería y masilla)",
+      "u": "m²",
+      "pu": 14,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pue1",
+      "n": "Puerta tamborada con marco y cerradura",
+      "u": "u",
+      "pu": 143,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pue2",
+      "n": "Puerta de madera sólida con marco",
+      "u": "u",
+      "pu": 221,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pue3",
+      "n": "Puerta de madera sólida con herrajes de diseño",
+      "u": "u",
+      "pu": 377,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "ven1",
+      "n": "Ventana de aluminio y vidrio claro 4 mm",
+      "u": "m²",
+      "pu": 62,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "ven2",
+      "n": "Ventana de aluminio y vidrio templado 6 mm",
+      "u": "m²",
+      "pu": 110,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "san1",
+      "n": "Juego sanitario estándar (inodoro, lavamanos y grifería)",
+      "u": "jgo",
+      "pu": 169,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "san2",
+      "n": "Juego sanitario de línea media",
+      "u": "jgo",
+      "pu": 273,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "san3",
+      "n": "Juego sanitario de diseño",
+      "u": "jgo",
+      "pu": 468,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "coc1",
+      "n": "Mueble de cocina melamínico con mesón postformado",
+      "u": "ml",
+      "pu": 208,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "coc2",
+      "n": "Mueble de cocina MDF con mesón de granito",
+      "u": "ml",
+      "pu": 312,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "coc3",
+      "n": "Mueble de cocina lacado con mesón de cuarzo",
+      "u": "ml",
+      "pu": 546,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "pext",
+      "n": "Pintura elastomérica para exteriores (galón)",
+      "u": "galón",
+      "pu": 24,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "clo1",
+      "n": "Closet melamínico",
+      "u": "ml",
+      "pu": 169,
+      "sec": "VIVIENDA"
+    },
+    {
+      "id": "clo2",
+      "n": "Closet de MDF con puertas corredizas",
+      "u": "ml",
+      "pu": 247,
+      "sec": "VIVIENDA"
+    }
+  ],
+  "manoObra": [
+    {
+      "id": "peonv",
+      "n": "Peón (obra civil)",
+      "p": 4.3
+    },
+    {
+      "id": "albv",
+      "n": "Albañil (obra civil)",
+      "p": 4.35
+    },
+    {
+      "id": "fierv",
+      "n": "Fierrero (obra civil)",
+      "p": 4.35
+    },
+    {
+      "id": "carpv",
+      "n": "Carpintero de encofrados",
+      "p": 4.35
+    },
+    {
+      "id": "pintv",
+      "n": "Pintor de acabados",
+      "p": 4.35
+    },
+    {
+      "id": "soldv",
+      "n": "Soldador estructural",
+      "p": 4.55
+    },
+    {
+      "id": "cerv",
+      "n": "Ceramista",
+      "p": 4.35
+    },
+    {
+      "id": "instv",
+      "n": "Instalador eléctrico y sanitario",
+      "p": 4.35
+    },
+    {
+      "id": "maesv",
+      "n": "Maestro de obra",
+      "p": 4.8
+    }
+  ],
+  "equipos": [
+    {
+      "id": "concv",
+      "n": "Concretera de 1 saco (vivienda)",
+      "p": 3.5
+    },
+    {
+      "id": "vibv",
+      "n": "Vibrador de hormigón (vivienda)",
+      "p": 2.5
+    },
+    {
+      "id": "apis",
+      "n": "Vibroapisonador",
+      "p": 3.0
+    },
+    {
+      "id": "soldq",
+      "n": "Soldadora eléctrica (vivienda)",
+      "p": 2.0
+    },
+    {
+      "id": "cort",
+      "n": "Cortadora de cerámica",
+      "p": 1.0
+    }
+  ],
+  "transporte": [
+    {
+      "id": "volqv",
+      "n": "Volqueta para desalojo y material pétreo",
+      "u": "viaje",
+      "p": 45
+    }
+  ],
+  "apus": [
+    {
+      "id": "V01",
+      "n": "Limpieza y replanteo del terreno",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.08,
+      "eq": [],
+      "mo": [
+        ["peonv", 1],
+        ["maesv", 0.1]
+      ],
+      "ma": [
+        ["tabla", 0.02],
+        ["clav", 0.01]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V02",
+      "n": "Excavación manual de cimientos",
+      "d": "Civil",
+      "u": "m³",
+      "r": 2.5,
+      "eq": [],
+      "mo": [
+        ["peonv", 1],
+        ["maesv", 0.05]
+      ],
+      "ma": [],
+      "tr": [["volqv", 0.08]]
+    },
+    {
+      "id": "V03",
+      "n": "Relleno compactado con lastre",
+      "d": "Civil",
+      "u": "m³",
+      "r": 1.2,
+      "eq": [["apis", 1]],
+      "mo": [
+        ["peonv", 2],
+        ["maesv", 0.05]
+      ],
+      "ma": [
+        ["lastre", 1.25],
+        ["agua", 0.1]
+      ],
+      "tr": [["volqv", 0.15]]
+    },
+    {
+      "id": "V04",
+      "n": "Replantillo de hormigón simple f'c 140 kg/cm²",
+      "d": "Civil",
+      "u": "m³",
+      "r": 1.5,
+      "eq": [["concv", 1]],
+      "mo": [
+        ["peonv", 4],
+        ["albv", 1],
+        ["maesv", 0.1]
+      ],
+      "ma": [
+        ["cem", 6.5],
+        ["are", 0.65],
+        ["rip", 0.95],
+        ["agua", 0.2]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V05",
+      "n": "Hormigón en plintos y cimientos f'c 210 kg/cm²",
+      "d": "Civil",
+      "u": "m³",
+      "r": 1.6,
+      "eq": [
+        ["concv", 1],
+        ["vibv", 1]
+      ],
+      "mo": [
+        ["peonv", 5],
+        ["albv", 2],
+        ["maesv", 0.2]
+      ],
+      "ma": [
+        ["cem", 7.2],
+        ["are", 0.65],
+        ["rip", 0.95],
+        ["agua", 0.22],
+        ["tabla", 1.5]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V06",
+      "n": "Hormigón en columnas f'c 210 kg/cm² (con encofrado)",
+      "d": "Civil",
+      "u": "m³",
+      "r": 3.0,
+      "eq": [
+        ["concv", 1],
+        ["vibv", 1]
+      ],
+      "mo": [
+        ["peonv", 4],
+        ["albv", 2],
+        ["carpv", 2],
+        ["maesv", 0.2]
+      ],
+      "ma": [
+        ["cem", 7.2],
+        ["are", 0.65],
+        ["rip", 0.95],
+        ["agua", 0.22],
+        ["tabla", 6],
+        ["punt", 2],
+        ["clav", 0.6]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V07",
+      "n": "Hormigón en vigas y cadenas f'c 210 kg/cm² (con encofrado)",
+      "d": "Civil",
+      "u": "m³",
+      "r": 3.0,
+      "eq": [
+        ["concv", 1],
+        ["vibv", 1]
+      ],
+      "mo": [
+        ["peonv", 4],
+        ["albv", 2],
+        ["carpv", 2],
+        ["maesv", 0.2]
+      ],
+      "ma": [
+        ["cem", 7.2],
+        ["are", 0.65],
+        ["rip", 0.95],
+        ["agua", 0.22],
+        ["tabla", 7],
+        ["punt", 3],
+        ["clav", 0.7]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V08",
+      "n": "Losa alivianada f'c 210 kg/cm², e = 20 cm",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.12,
+      "eq": [
+        ["concv", 1],
+        ["vibv", 1]
+      ],
+      "mo": [
+        ["peonv", 6],
+        ["albv", 2],
+        ["carpv", 2],
+        ["maesv", 0.2]
+      ],
+      "ma": [
+        ["cem", 0.75],
+        ["are", 0.07],
+        ["rip", 0.09],
+        ["agua", 0.02],
+        ["blql", 8],
+        ["malla", 1.05],
+        ["tabla", 0.5],
+        ["punt", 0.6],
+        ["clav", 0.1]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V09",
+      "n": "Acero de refuerzo fy 4.200 kg/cm² (cortado, figurado y colocado)",
+      "d": "Civil",
+      "u": "kg",
+      "r": 0.04,
+      "eq": [],
+      "mo": [
+        ["fierv", 1],
+        ["peonv", 1],
+        ["maesv", 0.05]
+      ],
+      "ma": [
+        ["var", 1.05],
+        ["alam", 0.05]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V10",
+      "n": "Mampostería de bloque de 15 cm",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.7,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 1],
+        ["maesv", 0.05]
+      ],
+      "ma": [
+        ["blq15", 13],
+        ["cem", 0.2],
+        ["are", 0.02]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V11",
+      "n": "Enlucido vertical paleteado",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.5,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 1]
+      ],
+      "ma": [
+        ["cem", 0.2],
+        ["are", 0.025]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V12",
+      "n": "Contrapiso de hormigón f'c 180 kg/cm², e = 8 cm, con piedra bola",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.3,
+      "eq": [["concv", 1]],
+      "mo": [
+        ["peonv", 2],
+        ["albv", 1],
+        ["maesv", 0.05]
+      ],
+      "ma": [
+        ["cem", 0.5],
+        ["are", 0.045],
+        ["rip", 0.06],
+        ["pie", 0.12],
+        ["agua", 0.02]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V13",
+      "n": "Masillado de pisos",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.25,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 1]
+      ],
+      "ma": [
+        ["cem", 0.15],
+        ["are", 0.02]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V14",
+      "n": "Estructura metálica de perfiles y tubos (soldada y pintada)",
+      "d": "Civil",
+      "u": "kg",
+      "r": 0.05,
+      "eq": [["soldq", 1]],
+      "mo": [
+        ["soldv", 1],
+        ["peonv", 1],
+        ["maesv", 0.05]
+      ],
+      "ma": [
+        ["perfil", 1.05],
+        ["elec", 0.03],
+        ["anti", 0.004]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V15",
+      "n": "Losa sobre placa colaborante, e = 10 cm",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.1,
+      "eq": [
+        ["concv", 1],
+        ["vibv", 1]
+      ],
+      "mo": [
+        ["peonv", 5],
+        ["albv", 2],
+        ["maesv", 0.2]
+      ],
+      "ma": [
+        ["deck", 1.05],
+        ["malla", 1.05],
+        ["cem", 0.55],
+        ["are", 0.05],
+        ["rip", 0.07],
+        ["agua", 0.02]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V16",
+      "n": "Cubierta de teja española sobre estructura metálica liviana",
+      "d": "Civil",
+      "u": "m²",
+      "r": 1.0,
+      "eq": [["soldq", 0.5]],
+      "mo": [
+        ["soldv", 1],
+        ["albv", 1],
+        ["peonv", 1],
+        ["maesv", 0.1]
+      ],
+      "ma": [
+        ["teja", 17],
+        ["perfil", 14],
+        ["elec", 0.15],
+        ["anti", 0.03],
+        ["asf", 1.1],
+        ["cem", 0.1],
+        ["are", 0.01]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V17",
+      "n": "Cubierta de policarbonato alveolar 6 mm",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.25,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 1]
+      ],
+      "ma": [["poli", 1.1]],
+      "tr": []
+    },
+    {
+      "id": "V18",
+      "n": "Punto eléctrico (iluminación o tomacorriente)",
+      "d": "Civil",
+      "u": "pto",
+      "r": 1.5,
+      "eq": [],
+      "mo": [
+        ["instv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["melec", 1]],
+      "tr": []
+    },
+    {
+      "id": "V19",
+      "n": "Punto de agua potable o desagüe",
+      "d": "Civil",
+      "u": "pto",
+      "r": 2.0,
+      "eq": [],
+      "mo": [
+        ["instv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["msan", 1]],
+      "tr": []
+    },
+    {
+      "id": "V20",
+      "n": "Empastado y pintura de paredes interiores",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.3,
+      "eq": [],
+      "mo": [
+        ["pintv", 1],
+        ["peonv", 0.2]
+      ],
+      "ma": [
+        ["emp", 0.08],
+        ["pint", 0.07]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V21",
+      "n": "Piso y pared de cerámica nacional",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.5,
+      "eq": [["cort", 0.5]],
+      "mo": [
+        ["cerv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [
+        ["cer", 1.05],
+        ["pega", 0.2]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V22",
+      "n": "Piso de porcelanato 60×60",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.6,
+      "eq": [["cort", 0.5]],
+      "mo": [
+        ["cerv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [
+        ["porc", 1.05],
+        ["pega", 0.22]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V23",
+      "n": "Piso de porcelanato importado gran formato",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.7,
+      "eq": [["cort", 0.5]],
+      "mo": [
+        ["cerv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [
+        ["porcp", 1.05],
+        ["pega", 0.25]
+      ],
+      "tr": []
+    },
+    {
+      "id": "V24",
+      "n": "Cielo raso de gypsum",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.35,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["gyp", 1.05]],
+      "tr": []
+    },
+    {
+      "id": "V25",
+      "n": "Puerta interior tamborada (instalada)",
+      "d": "Civil",
+      "u": "u",
+      "r": 3.0,
+      "eq": [],
+      "mo": [
+        ["carpv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["pue1", 1]],
+      "tr": []
+    },
+    {
+      "id": "V26",
+      "n": "Puerta interior de madera sólida (instalada)",
+      "d": "Civil",
+      "u": "u",
+      "r": 3.0,
+      "eq": [],
+      "mo": [
+        ["carpv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["pue2", 1]],
+      "tr": []
+    },
+    {
+      "id": "V27",
+      "n": "Puerta de madera sólida con herrajes de diseño (instalada)",
+      "d": "Civil",
+      "u": "u",
+      "r": 3.5,
+      "eq": [],
+      "mo": [
+        ["carpv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["pue3", 1]],
+      "tr": []
+    },
+    {
+      "id": "V28",
+      "n": "Ventana de aluminio y vidrio claro",
+      "d": "Civil",
+      "u": "m²",
+      "r": 1.0,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["ven1", 1]],
+      "tr": []
+    },
+    {
+      "id": "V29",
+      "n": "Ventana de aluminio y vidrio templado",
+      "d": "Civil",
+      "u": "m²",
+      "r": 1.0,
+      "eq": [],
+      "mo": [
+        ["albv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["ven2", 1]],
+      "tr": []
+    },
+    {
+      "id": "V30",
+      "n": "Juego sanitario estándar (instalado)",
+      "d": "Civil",
+      "u": "jgo",
+      "r": 3.0,
+      "eq": [],
+      "mo": [
+        ["instv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["san1", 1]],
+      "tr": []
+    },
+    {
+      "id": "V31",
+      "n": "Juego sanitario de línea media (instalado)",
+      "d": "Civil",
+      "u": "jgo",
+      "r": 3.0,
+      "eq": [],
+      "mo": [
+        ["instv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["san2", 1]],
+      "tr": []
+    },
+    {
+      "id": "V32",
+      "n": "Juego sanitario de diseño (instalado)",
+      "d": "Civil",
+      "u": "jgo",
+      "r": 3.5,
+      "eq": [],
+      "mo": [
+        ["instv", 1],
+        ["peonv", 0.5]
+      ],
+      "ma": [["san3", 1]],
+      "tr": []
+    },
+    {
+      "id": "V33",
+      "n": "Mueble de cocina melamínico (instalado)",
+      "d": "Civil",
+      "u": "ml",
+      "r": 2.0,
+      "eq": [],
+      "mo": [["carpv", 1]],
+      "ma": [["coc1", 1]],
+      "tr": []
+    },
+    {
+      "id": "V34",
+      "n": "Mueble de cocina MDF con granito (instalado)",
+      "d": "Civil",
+      "u": "ml",
+      "r": 2.0,
+      "eq": [],
+      "mo": [["carpv", 1]],
+      "ma": [["coc2", 1]],
+      "tr": []
+    },
+    {
+      "id": "V35",
+      "n": "Mueble de cocina lacado con cuarzo (instalado)",
+      "d": "Civil",
+      "u": "ml",
+      "r": 2.5,
+      "eq": [],
+      "mo": [["carpv", 1]],
+      "ma": [["coc3", 1]],
+      "tr": []
+    },
+    {
+      "id": "V36",
+      "n": "Closet melamínico (instalado)",
+      "d": "Civil",
+      "u": "ml",
+      "r": 1.5,
+      "eq": [],
+      "mo": [["carpv", 1]],
+      "ma": [["clo1", 1]],
+      "tr": []
+    },
+    {
+      "id": "V37",
+      "n": "Closet de MDF con puertas corredizas (instalado)",
+      "d": "Civil",
+      "u": "ml",
+      "r": 1.5,
+      "eq": [],
+      "mo": [["carpv", 1]],
+      "ma": [["clo2", 1]],
+      "tr": []
+    },
+    {
+      "id": "V38",
+      "n": "Empastado y pintura de fachadas",
+      "d": "Civil",
+      "u": "m²",
+      "r": 0.4,
+      "eq": [],
+      "mo": [
+        ["pintv", 1],
+        ["peonv", 0.3]
+      ],
+      "ma": [
+        ["emp", 0.08],
+        ["pext", 0.08]
+      ],
+      "tr": []
+    }
+  ],
+  "bloques": [
+    {
+      "id": "og-ha",
+      "n": "Vivienda en obra gris · hormigón armado",
+      "r": [
+        ["V01", 50.0],
+        ["V02", 20.9],
+        ["V03", 12.5],
+        ["V04", 1.7],
+        ["V05", 8.3],
+        ["V10", 167.0],
+        ["V11", 317.0],
+        ["V12", 42.0],
+        ["V13", 83.0],
+        ["V18", 25.0],
+        ["V19", 10.0],
+        ["V06", 4.2],
+        ["V07", 6.7],
+        ["V08", 83.0],
+        ["V09", 2920.0]
+      ],
+      "t": [100, "m²"]
+    },
+    {
+      "id": "og-em",
+      "n": "Vivienda en obra gris · estructura metálica",
+      "r": [
+        ["V01", 54.0],
+        ["V02", 22.5],
+        ["V03", 13.5],
+        ["V04", 1.8],
+        ["V05", 9.0],
+        ["V10", 180.0],
+        ["V11", 343.0],
+        ["V12", 45.0],
+        ["V13", 90.0],
+        ["V18", 27.0],
+        ["V19", 11.0],
+        ["V14", 3157.0],
+        ["V15", 90.0],
+        ["V09", 812.0]
+      ],
+      "t": [100, "m²"]
+    },
+    {
+      "id": "ac-std",
+      "n": "Acabados Standard",
+      "r": [
+        ["V20", 358.0],
+        ["V38", 191.0],
+        ["V21", 167.0],
+        ["V18", 18.0],
+        ["V19", 7.0],
+        ["V25", 11.0],
+        ["V28", 21.0],
+        ["V30", 2.0],
+        ["V33", 6.0],
+        ["V36", 9.5]
+      ],
+      "t": [100, "m²"]
+    },
+    {
+      "id": "ac-com",
+      "n": "Acabados Comfort",
+      "r": [
+        ["V20", 336.0],
+        ["V38", 179.0],
+        ["V22", 112.0],
+        ["V21", 50.0],
+        ["V24", 112.0],
+        ["V18", 22.0],
+        ["V19", 9.0],
+        ["V26", 10.0],
+        ["V28", 20.0],
+        ["V31", 2.0],
+        ["V34", 5.5],
+        ["V37", 9.0]
+      ],
+      "t": [100, "m²"]
+    },
+    {
+      "id": "ac-pre",
+      "n": "Acabados Premium",
+      "r": [
+        ["V20", 350.0],
+        ["V38", 187.0],
+        ["V23", 117.0],
+        ["V21", 64.0],
+        ["V24", 117.0],
+        ["V18", 29.0],
+        ["V19", 12.0],
+        ["V27", 11.0],
+        ["V29", 23.0],
+        ["V32", 4.0],
+        ["V35", 7.0],
+        ["V37", 11.5]
+      ],
+      "t": [100, "m²"]
+    },
+    {
+      "id": "cerr",
+      "n": "Cerramiento de bloque",
+      "r": [
+        ["V02", 1.1],
+        ["V04", 0.3],
+        ["V05", 0.4],
+        ["V06", 0.3],
+        ["V07", 0.3],
+        ["V09", 54.0],
+        ["V10", 18.0],
+        ["V11", 18.0]
+      ],
+      "t": [10, "ml"]
+    },
+    {
+      "id": "perg",
+      "n": "Pérgola metálica con policarbonato",
+      "r": [
+        ["V05", 0.3],
+        ["V14", 233.0],
+        ["V17", 13.0]
+      ],
+      "t": [12, "m²"]
+    },
+    {
+      "id": "cub",
+      "n": "Cubierta de teja española",
+      "r": [["V16", 50.0]],
+      "t": [50, "m²"]
+    }
+  ],
+  "inicial": ["og-ha"]
+}

@@ -1,4 +1,5 @@
 # Despliegue ligero detrás del nginx del servidor: usa el Postgres del host y escucha solo para nginx.
+# Un directorio (y un .env) por cliente: PUERTO, BD_NOMBRE y BD_USUARIO distintos en cada uno.
 services:
   apuflow:
     image: apuflow:${VERSION:-demo}
@@ -6,6 +7,6 @@ services:
     network_mode: host
     mem_limit: 300m
     environment:
-      PORT: 3200
-      DATABASE_URL: postgres://apuflow:${BD_CLAVE}@127.0.0.1:5432/apuflow
+      PORT: ${PUERTO:-3200}
+      DATABASE_URL: postgres://${BD_USUARIO:-apuflow}:${BD_CLAVE}@127.0.0.1:5432/${BD_NOMBRE:-apuflow}
       LICENCIA_OBLIGATORIA: ${LICENCIA_OBLIGATORIA:-0}

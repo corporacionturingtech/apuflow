@@ -119,6 +119,21 @@ function Formulario({ inicial }: { inicial: Ficha }) {
             <option value="publico">Pública</option>
           </Select>
         </Label>
+        <Label className="col-span-2 block">
+          Vista del sistema
+          <Select
+            className="mt-1 block w-full"
+            value={f.vista}
+            onChange={(e) => poner('vista', e.target.value as 'completa' | 'sencilla')}
+          >
+            <option value="completa">Completa (equipo con varias personas)</option>
+            <option value="sencilla">Sencilla (para quien presupuesta solo)</option>
+          </Select>
+          <span className="mt-1 block text-xs font-normal text-slate-500">
+            La sencilla esconde Historial, Costo objetivo, Versiones y quién más está en la oferta.
+            No se borra nada: puede volver a la completa cuando quiera.
+          </span>
+        </Label>
         <Label className="block">
           Color de acento
           <input
