@@ -14,9 +14,10 @@ Ejemplo ARPECE (arpece.turingtech.com.ec, puerto 3201, base `apuflow_arpece`):
 1. DNS: registro A `arpece` → IP del VPS (Cloudflare, igual que `apu`).
 2. Postgres del host: rol y base propios (`apuflow_arpece`), clave generada.
 3. `/opt/apuflow-arpece/` con este `docker-compose.yml` y `.env`: `VERSION`, `PUERTO=3201`,
-   `BD_NOMBRE=apuflow_arpece`, `BD_USUARIO=apuflow_arpece`, `BD_CLAVE`.
+   `BD_NOMBRE=apuflow_arpece`, `BD_USUARIO=apuflow_arpece`, `BD_CLAVE`, `LIMITE_MEMORIA=220m`.
 4. `docker compose up -d`, migraciones y admin como arriba (pasos 4 y 5).
 5. vhost: copia de `nginx-apu.conf` con otro `server_name` y `proxy_pass` al 3201; `certbot --nginx -d <dominio>`.
 6. Cron: `respaldo-diario.sh apuflow_arpece /opt/apuflow-arpece/respaldos`.
 7. En la app (admin): Inicio › «Vivienda y obra civil» (o el sector del cliente) y Configuración › Empresa (nombre, logo, vista).
-Cada instancia usa hasta 300 MB: revisar `free -m` antes de sumar otra en un VPS de 1 GB.
+En reposo una instancia usa ~125 MB (`docker stats`); `LIMITE_MEMORIA` es su tope (300m por
+defecto, 220m en ARPECE). Antes de sumar otra, revisar la memoria disponible con `free -m`.

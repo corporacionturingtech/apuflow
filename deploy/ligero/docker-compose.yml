@@ -5,7 +5,8 @@ services:
     image: apuflow:${VERSION:-demo}
     restart: unless-stopped
     network_mode: host
-    mem_limit: 300m
+    # Tope por instancia: si una se pasa, se reinicia sola sin tumbar las demás del VPS.
+    mem_limit: ${LIMITE_MEMORIA:-300m}
     environment:
       PORT: ${PUERTO:-3200}
       DATABASE_URL: postgres://${BD_USUARIO:-apuflow}:${BD_CLAVE}@127.0.0.1:5432/${BD_NOMBRE:-apuflow}
