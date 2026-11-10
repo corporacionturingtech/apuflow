@@ -4,7 +4,7 @@ export type UsoDelDia = {
   nombre: string;
   /** Ingresos de hoy, en orden. */
   ingresos: Date[];
-  /** Último ingreso antes de hoy (null si nunca había entrado). */
+  /** Último ingreso antes de hoy (null si no hay ninguno desde que se activaron los avisos). */
   ultimoIngreso: Date | null;
   exportaciones: number;
   precios: number;
@@ -47,7 +47,7 @@ function bloqueUsuario(u: UsoDelDia, hoy: Date): string {
     ].join('\n');
   }
   if (!u.ultimoIngreso) {
-    return `⚪ ${u.nombre}: todavía no ha entrado nunca.\n⚠️ Conviene escribirle.`;
+    return `⚪ ${u.nombre}: no ha entrado desde que se activaron los avisos.`;
   }
   const dias = diasEntre(diaEc(u.ultimoIngreso), diaEc(hoy));
   const lineas = [

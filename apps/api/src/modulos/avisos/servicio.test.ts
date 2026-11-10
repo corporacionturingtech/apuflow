@@ -115,7 +115,7 @@ test('textoResumen: quien solo revisó, quien nunca entró y quien faltó un dí
   ]);
   expect(texto).toContain('📊 ARPECE · lun, 9 nov');
   expect(texto).toContain('✅ Ana: entró (08:05)\n• Solo revisó: no hizo cambios');
-  expect(texto).toContain('⚪ Beto: todavía no ha entrado nunca.');
+  expect(texto).toContain('⚪ Beto: no ha entrado desde que se activaron los avisos.');
   expect(texto).toContain('Último ingreso: dom, 8 nov (hace 1 día).');
   expect(texto).not.toContain('Lleva 1 días');
 });
