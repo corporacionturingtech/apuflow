@@ -1,4 +1,15 @@
-import { boolean, jsonb, pgTable, text, timestamp, uuid, numeric } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  date,
+  index,
+  jsonb,
+  numeric,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { auditoria, entrada, pk, porcentaje } from './comun';
 
 export const usuario = pgTable('usuario', {
@@ -52,3 +63,27 @@ export const sesion = pgTable('sesion', {
   expira: timestamp('expira', { withTimezone: true }).notNull(),
   creada: timestamp('creada', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Uso de la app (ingresos y exportaciones) para los avisos por Telegram; no es un dato del negocio.
+export const eventoUso = pgTable(
+  'evento_uso',
+  {
+    id: pk(),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuario.id, { onDelete: 'cascade' }),
+    tipo: text('tipo', { enum: ['ingreso', 'exportacion'] }).notNull(),
+    fecha: timestamp('fecha', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('evento_uso_fecha').on(t.fecha)],
+);
+
+// Un aviso por día y tipo: se reclama con ON CONFLICT DO NOTHING para no repetirlo tras un reinicio.
+export const avisoEnviado = pgTable(
+  'aviso_enviado',
+  {
+    dia: date('dia').notNull(),
+    tipo: text('tipo').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.dia, t.tipo] })],
+);

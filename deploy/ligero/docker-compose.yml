@@ -11,3 +11,8 @@ services:
       PORT: ${PUERTO:-3200}
       DATABASE_URL: postgres://${BD_USUARIO:-apuflow}:${BD_CLAVE}@127.0.0.1:5432/${BD_NOMBRE:-apuflow}
       LICENCIA_OBLIGATORIA: ${LICENCIA_OBLIGATORIA:-0}
+      # Avisos de uso por Telegram (D20): sin token ni chat no se envía nada.
+      AVISO_TELEGRAM_TOKEN: ${AVISO_TELEGRAM_TOKEN:-}
+      AVISO_TELEGRAM_CHAT: ${AVISO_TELEGRAM_CHAT:-}
+      AVISO_HORA: ${AVISO_HORA:-19}
+      AVISO_IGNORAR: ${AVISO_IGNORAR:-}

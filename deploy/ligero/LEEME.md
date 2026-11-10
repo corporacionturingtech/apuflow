@@ -21,3 +21,12 @@ Ejemplo ARPECE (arpece.turingtech.com.ec, puerto 3201, base `apuflow_arpece`):
 7. En la app (admin): Inicio › «Vivienda y obra civil» (o el sector del cliente), Configuración › Empresa (nombre, logo, vista) y, en el panel Indirectos de la oferta de ejemplo, «Usar estos porcentajes en las ofertas nuevas».
 En reposo una instancia usa ~125 MB (`docker stats`); `LIMITE_MEMORIA` es su tope (300m por
 defecto, 220m en ARPECE). Antes de sumar otra, revisar la memoria disponible con `free -m`.
+
+## Avisos de uso por Telegram (D20)
+
+Para seguir una prueba gratis: en el `.env` de la instancia, `AVISO_TELEGRAM_TOKEN` y
+`AVISO_TELEGRAM_CHAT` (ARPECE usa el bot y el grupo de leads del CRM: `TELEGRAM_BOT_TOKEN` y
+`TELEGRAM_CHAT_ID` de `/var/www/website/.env`), `AVISO_IGNORAR=<usuario de soporte>` y, si se
+quiere otra hora, `AVISO_HORA` (19 por defecto, hora de Ecuador). Luego `docker compose up -d`.
+Al arrancar, el log dice «Avisos de uso por Telegram activos». Llegan dos mensajes: el primer
+ingreso del día de cada usuario y un resumen diario de lo que hizo, o de cuántos días lleva sin entrar.

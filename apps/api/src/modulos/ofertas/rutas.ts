@@ -12,6 +12,7 @@ import {
 import { exportarLibro } from 'excel';
 import type { Bd } from '../../db/conexion';
 import { armarLibro } from './exportar';
+import { registrarExportacion } from '../avisos/servicio';
 import * as repo from './repo';
 import { totalesOfertas } from './totales';
 import {
@@ -172,6 +173,9 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
     async (req, res) => {
       const libro = esUuid(req.params.id) ? await armarLibro(db, req.params.id) : null;
       if (!libro) return res.code(404).send({ mensaje: 'Esa oferta ya no existe' });
+      await registrarExportacion(db, req.usuario!.id).catch((e) =>
+        console.warn('[avisos] No se registró la exportación:', (e as Error).message),
+      );
       const archivo = libro.datos.proyecto.replace(/[^\w.-]+/g, '_').slice(0, 60) || 'oferta';
       return res
         .header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

@@ -17,6 +17,7 @@
 
 == Antes de la reunión
 #casilla[La instancia del cliente abre con HTTPS y su usuario entra (probarlo con la cuenta de soporte, nunca con la del cliente).]
+#casilla[Avisos de uso activos: al entrar con el usuario del cliente debería llegar «… entró a Turing APU» al grupo de Telegram.]
 #casilla[Empresa en *vista sencilla*, ofertas privadas por defecto y biblioteca de vivienda cargada.]
 #casilla[Las ofertas nuevas nacen con indirectos (12 % · 3 % · 10 %). Si no, abrir la oferta de ejemplo › Indirectos › «Usar estos porcentajes en las ofertas nuevas».]
 #casilla[Pedirle por WhatsApp, un día antes: precio del cemento, varilla, bloque, arena y ripio con su proveedor, jornal del peón y del albañil, su % de utilidad y los m² de una obra que esté cotizando.]
@@ -50,6 +51,7 @@
 ]
 
 == Después de la reunión
+#casilla[Cada día, el grupo de Telegram de leads avisa cuando entra y, a las 19:00, resume lo que hizo. Si lleva 3 días sin entrar, escribirle ese mismo día.]
 #casilla[Día 3: «¿Ya cotizó la obra que acordamos? ¿Dónde se trabó?» Anotar lo que diga.]
 #casilla[Día 15: revisar en Inicio el panel de valor (ofertas, bloques usados, horas ahorradas) y comentárselo.]
 #casilla[Un mes antes de que venza la prueba: reunión corta con sus números y propuesta de plan.]

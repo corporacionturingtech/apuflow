@@ -44,6 +44,7 @@ const CUBIERTAS: Record<string, string> = {
   'PUT /api/licencia': 'licencia/rutas.test.ts',
   'PUT /api/valor/parametros': 'valor/rutas.test.ts',
   'PUT /api/empresa': 'empresa/rutas.test.ts',
+  'PUT /api/empresa/indirectos': 'ofertas/indirectos-nuevas.test.ts',
 };
 
 const CASOS: Record<string, (id: string, version: number) => { url: string; payload: object }> = {

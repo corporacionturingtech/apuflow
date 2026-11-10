@@ -66,6 +66,13 @@ test('ofertas nuevas: nacen con los indirectos por defecto de la empresa', async
         payload: { indirectos },
       });
       expect(ok.statusCode).toBe(200);
+      const { bitacora } = await import('../../db/esquema');
+      const { eq } = await import('drizzle-orm');
+      const rastro = await tx
+        .select()
+        .from(bitacora)
+        .where(eq(bitacora.campo, 'indirectosDefecto'));
+      expect(rastro.at(-1)?.despues).toEqual({ indirectosDefecto: indirectos });
       expect(await nueva('TIND-con')).toEqual([
         ['Gastos generales', 12, false],
         ['Utilidad', 10, true],

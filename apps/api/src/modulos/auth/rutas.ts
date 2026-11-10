@@ -1,6 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { esquemaLogin, type Rol, type UsuarioSesion } from 'tipos';
 import type { Bd } from '../../db/conexion';
+import { registrarIngreso } from '../avisos/servicio';
+import { configAvisos, enviarTelegram } from '../avisos/telegram';
 import { DURACION_SESION_MS, cerrarSesion, iniciarSesion, usuarioDeToken } from './servicio';
 
 declare module 'fastify' {
@@ -40,6 +42,7 @@ export function instalarAuth(app: FastifyInstance, db: Bd) {
       ? await iniciarSesion(db, entrada.data.nombreUsuario, entrada.data.clave)
       : null;
     if (!r) return res.code(401).send({ mensaje: 'Usuario o clave incorrectos' });
+    await avisarIngreso(db, r.usuario);
     res.setCookie(COOKIE, r.token, {
       httpOnly: true,
       sameSite: 'lax',
@@ -58,4 +61,15 @@ export function instalarAuth(app: FastifyInstance, db: Bd) {
   });
 
   app.get('/api/auth/yo', { preHandler: app.autenticar }, async (req) => req.usuario);
+}
+
+// El aviso nunca impide entrar: un fallo solo queda en el log y Telegram se llama sin esperar.
+async function avisarIngreso(db: Bd, u: UsuarioSesion) {
+  try {
+    const cfg = configAvisos();
+    const texto = await registrarIngreso(db, u, cfg);
+    if (texto && cfg) void enviarTelegram(cfg, texto);
+  } catch (e) {
+    console.warn('[avisos] No se registró el ingreso:', (e as Error).message);
+  }
 }

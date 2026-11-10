@@ -298,6 +298,9 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 - [x] **F6-02d** · Primer día de quien cotiza (recorrido con la instancia de vivienda) · S
   **Hecho cuando:** una oferta nueva trae sus indirectos, se le pone cliente y se le añade un bloque sin salir de ella.
   _Medido:_ indirectos por defecto de la empresa (D19, `GET/PUT /api/empresa/indirectos`, 2 pruebas de API); «Añadir bloque» en la barra de la oferta con «¿Para cuántos?» y precio por unidad con los indirectos de la oferta (motor, cantidades escaladas como en la API); «Poner cliente / Editar datos» en la cabecera; costo directo por m² en cada tarjeta de Bloques. e2e `oferta-nueva` verde.
+- [x] **F6-02e** · Avisos de uso por Telegram para seguir una prueba gratis · S
+  **Hecho cuando:** el primer ingreso del día de un usuario y un resumen diario de lo que hizo llegan a un grupo de Telegram configurado por instancia.
+  _Medido:_ tablas `evento_uso` (ingresos y exportaciones) y `aviso_enviado` (migración `0006`); módulo `avisos` (D20) con `AVISO_TELEGRAM_TOKEN/CHAT`, `AVISO_HORA` (19) y `AVISO_IGNORAR`; resumen con precios cambiados, ofertas nuevas, bloques, Excel exportados y días sin entrar (alerta desde 3). 5 pruebas de API nuevas (103 en total). De paso, `PUT /api/empresa/indirectos` (F6-02d) entra en la cobertura de bitácora con su aserción.
 - [ ] **F6-02b** · Bibliotecas de otros sectores (metalmecánica, redes eléctricas) con el mismo molde.
 - [ ] **F6-03** · Cotizaciones de proveedores: comparar y aplicar precios.
 - [ ] **F6-04** · Perfiles de importación para libros con otra estructura.
