@@ -8,6 +8,7 @@ import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { TabsList, TabsTrigger } from '../../ui/tabs';
 import { BotonExportar } from './BotonExportar';
+import { DatosOferta } from './DatosOferta';
 
 export type Pestana = 'rubros' | 'indirectos' | 'objetivo' | 'versiones';
 
@@ -16,10 +17,17 @@ interface Props {
   presentes: Presente[];
   ofertado: boolean;
   alCambiarVista: (ofertado: boolean) => void;
+  soloLectura?: boolean;
 }
 
 // Nivel 1: qué oferta es y qué se hace con ella. Nivel 2: pestañas y cómo ver las cifras.
-export function Encabezado({ data, presentes, ofertado, alCambiarVista }: Props) {
+export function Encabezado({
+  data,
+  presentes,
+  ofertado,
+  alCambiarVista,
+  soloLectura = false,
+}: Props) {
   const publico = data.tipo === 'publico';
   const sencilla = useSencilla();
   return (
@@ -40,6 +48,7 @@ export function Encabezado({ data, presentes, ofertado, alCambiarVista }: Props)
           {!sencilla && `${publico ? 'Oferta pública (SERCOP)' : 'Oferta privada'} · `}
           {data.rubros.length} rubros
         </span>
+        <DatosOferta key={data.version} data={data} soloLectura={soloLectura} />
         <div className="ml-auto">
           <BotonExportar ofertaId={data.id} nombre={data.nombre} />
         </div>

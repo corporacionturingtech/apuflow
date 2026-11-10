@@ -33,3 +33,21 @@ export const esquemaEmpresaCambio = z.object({
 export type EmpresaCambio = z.input<typeof esquemaEmpresaCambio>;
 
 export type Empresa = z.infer<typeof esquemaEmpresaCambio>;
+
+/** Indirectos con los que nace cada oferta nueva (Configuración de la empresa, D19). */
+export const esquemaIndirectosDefecto = z.object({
+  indirectos: z
+    .array(
+      z.object({
+        nombre: z.string().trim().min(1).max(120),
+        porcentaje: z
+          .string()
+          .regex(/^\d{1,3}(\.\d{1,4})?$/, 'Porcentaje no válido')
+          .refine((v) => Number(v) <= 100, 'Entre 0 y 100'),
+        esUtilidad: z.boolean(),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+export type IndirectosDefecto = z.infer<typeof esquemaIndirectosDefecto>['indirectos'];

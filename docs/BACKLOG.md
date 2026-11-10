@@ -295,6 +295,9 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado (c
 - [x] **F6-02c** · Bloques con tamaño: «¿Para cuántos m²?» al añadirlos · S
   **Hecho cuando:** añadir la obra gris (100 m²) para 150 m² multiplica cada cantidad por 1,5.
   _Medido:_ migración `0005` (`bloque.tamano`, `unidad_tamano`); `POST /api/ofertas/:id/bloques { tamano | veces }` escala con decimal.js y nombra el capítulo «Nombre · 150 m²» o «Nombre × 2» (D18); los 8 bloques de vivienda traen su tamaño; «Guardar como bloque» acepta tamaño opcional. 2 aserciones de API nuevas, e2e `bloques` «2 veces» verde. `licencia/rutas.test.ts` falla intermitente también sin este cambio (cupo de usuarios leído antes de que otro archivo borre usuarios).
+- [x] **F6-02d** · Primer día de quien cotiza (recorrido con la instancia de vivienda) · S
+  **Hecho cuando:** una oferta nueva trae sus indirectos, se le pone cliente y se le añade un bloque sin salir de ella.
+  _Medido:_ indirectos por defecto de la empresa (D19, `GET/PUT /api/empresa/indirectos`, 2 pruebas de API); «Añadir bloque» en la barra de la oferta con «¿Para cuántos?» y precio por unidad con los indirectos de la oferta (motor, cantidades escaladas como en la API); «Poner cliente / Editar datos» en la cabecera; costo directo por m² en cada tarjeta de Bloques. e2e `oferta-nueva` verde.
 - [ ] **F6-02b** · Bibliotecas de otros sectores (metalmecánica, redes eléctricas) con el mismo molde.
 - [ ] **F6-03** · Cotizaciones de proveedores: comparar y aplicar precios.
 - [ ] **F6-04** · Perfiles de importación para libros con otra estructura.

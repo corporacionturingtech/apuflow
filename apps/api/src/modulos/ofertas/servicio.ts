@@ -13,17 +13,40 @@ import * as repo from './repo';
 export class ConflictoVersion extends Error {}
 export class NoExiste extends Error {}
 
+// Sin indirectos por defecto, las filas existen igual para poder escribir los porcentajes.
+const INDIRECTOS_INICIALES = [
+  { nombre: 'Gastos generales y administrativos', porcentaje: '0', esUtilidad: false },
+  { nombre: 'Imprevistos', porcentaje: '0', esUtilidad: false },
+  { nombre: 'Utilidad', porcentaje: '0', esUtilidad: true },
+];
+
 export async function crear(db: Bd, usuarioId: string, d: OfertaCrear) {
   return db.transaction(async (tx) => {
-    const empresa = empresaDe(await repo.configuracion(tx));
+    const empresaFila = await repo.configuracion(tx);
+    const empresa = empresaDe(empresaFila);
     const o = await repo.crear(tx, {
       nombre: d.nombre,
       cliente: d.cliente ?? null,
       tipo: d.tipo ?? empresa.tipoOfertaDefecto,
       actualizadoPor: usuarioId,
     });
+    // Nace con los indirectos por defecto de la empresa (D19).
+    const base =
+      (empresaFila.ajustes as { indirectosDefecto?: typeof INDIRECTOS_INICIALES })
+        .indirectosDefecto ?? INDIRECTOS_INICIALES;
+    const ind = await repo.insertarIndirectos(
+      tx,
+      base.map((i, n) => ({ ...i, ofertaId: o.id, orden: n + 1, actualizadoPor: usuarioId })),
+    );
     await repo.registrarBitacora(tx, [
-      { usuarioId, entidad: 'oferta', entidadId: o.id, campo: null, antes: null, despues: o },
+      {
+        usuarioId,
+        entidad: 'oferta',
+        entidadId: o.id,
+        campo: null,
+        antes: null,
+        despues: { ...o, indirectos: ind.map((i) => `${i.nombre} ${i.porcentaje} %`) },
+      },
     ]);
     return o;
   });

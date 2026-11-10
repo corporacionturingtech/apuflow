@@ -9,6 +9,7 @@ import { money } from '../lib/formato';
 import { Tabs, TabsContent } from '../ui/tabs';
 import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
+import { AnadirBloque } from './presupuesto/AnadirBloque';
 import { BarraRubros } from './presupuesto/BarraRubros';
 import { calcularPresupuesto } from './presupuesto/calculo';
 import { Versiones } from './presupuesto/Versiones';
@@ -30,6 +31,7 @@ export function Presupuesto() {
   const [plegados, setPlegados] = useState<ReadonlySet<string>>(new Set());
   const [anadiendo, setAnadiendo] = useState(false);
   const [guardandoBloque, setGuardandoBloque] = useState(false);
+  const [anadiendoBloque, setAnadiendoBloque] = useState(false);
   const [editandoApu, setEditandoApu] = useState<string | null>(null);
   const [pestana, setPestana] = useState<Pestana>('rubros');
   const cambios = useCambiosOferta(id);
@@ -165,6 +167,7 @@ export function Presupuesto() {
         presentes={presentes}
         ofertado={ofertado}
         alCambiarVista={setOfertado}
+        soloLectura={soloLectura}
       />
       {aviso && (
         <p role="alert" className="mt-2 text-sm text-red-700">
@@ -190,6 +193,7 @@ export function Presupuesto() {
             sinCapitulos={data.capitulos.length === 0}
             sinRubros={data.rubros.length === 0}
             alAnadirRubro={() => setAnadiendo(true)}
+            alAnadirBloque={() => setAnadiendoBloque(true)}
             alGuardarBloque={() => setGuardandoBloque(true)}
             alAnadirCapitulo={(nombre) => anadirCapitulo.mutate(nombre)}
           />
@@ -201,6 +205,9 @@ export function Presupuesto() {
             alElegir={(apuId, capituloId) => anadir.mutate({ apuId, capituloId })}
           />
         )}
+        {anadiendoBloque && (
+          <AnadirBloque oferta={data} alCerrar={() => setAnadiendoBloque(false)} />
+        )}
         {guardandoBloque && (
           <GuardarBloque capitulos={data.capitulos} alCerrar={() => setGuardandoBloque(false)} />
         )}
@@ -210,8 +217,8 @@ export function Presupuesto() {
         {data.rubros.length === 0 ? (
           <p className="mt-4 text-slate-600">
             {data.capitulos.length === 0
-              ? 'La oferta está vacía. Cree un capítulo para empezar.'
-              : 'Este presupuesto no tiene rubros. Use «Añadir rubro» para traerlos de la biblioteca de APUs.'}
+              ? 'La oferta está vacía. Lo más rápido es «Añadir bloque»: trae un capítulo completo (por ejemplo, la obra gris) para el tamaño de su obra. También puede crear un capítulo y añadir rubros uno a uno.'
+              : 'Este presupuesto no tiene rubros. Use «Añadir bloque» o «Añadir rubro» para traerlos de la biblioteca.'}
           </p>
         ) : (
           <div className="mt-3">

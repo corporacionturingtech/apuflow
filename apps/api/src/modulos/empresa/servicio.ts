@@ -1,4 +1,4 @@
-import type { Empresa } from 'tipos';
+import type { Empresa, IndirectosDefecto } from 'tipos';
 import type { Bd } from '../../db/conexion';
 import { ConflictoVersion } from '../insumos/servicio';
 import { actualizarConfiguracion, configuracion, registrarBitacora } from '../insumos/repo';
@@ -51,5 +51,33 @@ export async function cambiarEmpresa(db: Bd, adminId: string, c: Empresa) {
         despues: k === 'logo' ? { logo: despues[k] ? 'definido' : null } : { [k]: despues[k] },
       }));
     if (cambios.length) await registrarBitacora(tx, cambios);
+  });
+}
+
+/** Indirectos por defecto de la empresa; sin configurar, `null`. */
+export async function indirectosDefecto(db: Bd): Promise<IndirectosDefecto | null> {
+  const c = await configuracion(db);
+  return (c.ajustes as { indirectosDefecto?: IndirectosDefecto }).indirectosDefecto ?? null;
+}
+
+export async function cambiarIndirectosDefecto(db: Bd, adminId: string, nuevos: IndirectosDefecto) {
+  await db.transaction(async (tx) => {
+    const actual = await configuracion(tx);
+    const antes = (actual.ajustes as { indirectosDefecto?: IndirectosDefecto }).indirectosDefecto;
+    const fila = await actualizarConfiguracion(tx, actual.id, actual.version, {
+      ajustes: { ...(actual.ajustes as object), indirectosDefecto: nuevos },
+      actualizadoPor: adminId,
+    });
+    if (!fila) throw new ConflictoVersion();
+    await registrarBitacora(tx, [
+      {
+        usuarioId: adminId,
+        entidad: 'config_empresa',
+        entidadId: actual.id,
+        campo: 'indirectosDefecto',
+        antes: { indirectosDefecto: antes ?? null },
+        despues: { indirectosDefecto: nuevos },
+      },
+    ]);
   });
 }

@@ -1,6 +1,10 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import type { OfertaDetalle } from 'tipos';
+import { ErrorApi, api } from '../../lib/api';
 import { money, pct } from '../../lib/formato';
+import { consultaYo } from '../../sesion';
+import { Button } from '../../ui/button';
 import { precioATexto } from '../precio';
 import type { calcularPresupuesto } from './calculo';
 import type { useCambiosOferta } from './mutaciones';
@@ -101,6 +105,42 @@ export function Indirectos({ data, calculo, cambios, soloLectura }: Props) {
         <dt className="font-semibold">Total de la oferta</dt>
         <dd className="text-right font-semibold">{money(t.total.toNumber())}</dd>
       </dl>
+      <UsarEnNuevas data={data} />
     </section>
+  );
+}
+
+// El administrador fija con qué indirectos nace cada oferta nueva (D19).
+function UsarEnNuevas({ data }: { data: OfertaDetalle }) {
+  const { data: yo } = useQuery(consultaYo);
+  const [mensaje, setMensaje] = useState('');
+  const fijar = useMutation({
+    mutationFn: () =>
+      api('/api/empresa/indirectos', {
+        metodo: 'PUT',
+        cuerpo: {
+          indirectos: data.indirectos.map((i) => ({
+            nombre: i.nombre,
+            porcentaje: String(Number(i.porcentaje)),
+            esUtilidad: i.esUtilidad,
+          })),
+        },
+      }),
+    onSuccess: () => setMensaje('Las ofertas nuevas nacerán con estos porcentajes.'),
+    onError: (e) =>
+      setMensaje(e instanceof ErrorApi ? e.message : 'No pudimos guardar los porcentajes.'),
+  });
+  if (yo?.rol !== 'admin' || !data.indirectos.length) return null;
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-borde pt-3">
+      <Button variant="outline" size="sm" disabled={fijar.isPending} onClick={() => fijar.mutate()}>
+        Usar estos porcentajes en las ofertas nuevas
+      </Button>
+      {mensaje && (
+        <span role="status" className="text-slate-600">
+          {mensaje}
+        </span>
+      )}
+    </div>
   );
 }

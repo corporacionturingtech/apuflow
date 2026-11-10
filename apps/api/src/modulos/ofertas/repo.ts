@@ -44,6 +44,9 @@ export const rubros = (db: Bd | Tx, ofertaId: string) =>
     .where(eq(rubro.ofertaId, ofertaId))
     .orderBy(asc(rubro.orden), asc(rubro.codigo));
 
+export const insertarIndirectos = (tx: Tx, d: (typeof indirecto.$inferInsert)[]) =>
+  tx.insert(indirecto).values(d).returning();
+
 export const indirectos = (db: Bd | Tx, ofertaId: string) =>
   db.select().from(indirecto).where(eq(indirecto.ofertaId, ofertaId)).orderBy(asc(indirecto.orden));
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FolderPlus, Plus, Save } from 'lucide-react';
+import { Blocks, FolderPlus, Plus, Save } from 'lucide-react';
 import { Atajos } from '../../componentes/Atajos';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -16,6 +16,7 @@ interface Props {
   sinCapitulos: boolean;
   sinRubros: boolean;
   alAnadirRubro: () => void;
+  alAnadirBloque: () => void;
   alGuardarBloque: () => void;
   alAnadirCapitulo: (nombre: string) => void;
 }
@@ -24,6 +25,7 @@ export function BarraRubros({
   sinCapitulos,
   sinRubros,
   alAnadirRubro,
+  alAnadirBloque,
   alGuardarBloque,
   alAnadirCapitulo,
 }: Props) {
@@ -36,7 +38,11 @@ export function BarraRubros({
   }
   return (
     <div className="mt-3 flex flex-wrap items-center gap-2">
-      <Button disabled={sinCapitulos} onClick={alAnadirRubro}>
+      <Button onClick={alAnadirBloque}>
+        <Blocks aria-hidden />
+        Añadir bloque
+      </Button>
+      <Button variant="outline" disabled={sinCapitulos} onClick={alAnadirRubro}>
         <Plus aria-hidden />
         Añadir rubro
       </Button>

@@ -5,7 +5,8 @@ import type { BloquesRespuesta, OfertaDetalle } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
 import { money, parseNum, qty } from '../lib/formato';
 import { consultaYo } from '../sesion';
-import { calcularPresupuesto, costoDirectoBloque } from './presupuesto/calculo';
+import { D } from 'motor';
+import { calcularPresupuesto, costoDirectoBloque, totalesBloque } from './presupuesto/calculo';
 import { Blocks, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -148,6 +149,13 @@ export function Bloques() {
                   {money(costoDirectoBloque(data!, b))}{' '}
                   <small className="text-xs text-slate-500">costo directo del bloque</small>
                 </p>
+                {b.tamano && (
+                  <p className="text-xs text-slate-600">
+                    ≈ {money(totalesBloque(data!, b, [], new D(1).div(b.tamano)).costoDirecto)} por{' '}
+                    {b.unidadTamano ?? 'unidad'} de costo directo; en la oferta se suman sus
+                    indirectos.
+                  </p>
+                )}
                 <details className="mt-1 text-sm">
                   <summary className="cursor-pointer">Ver rubros y cantidades</summary>
                   <ul>

@@ -18,6 +18,6 @@ Ejemplo ARPECE (arpece.turingtech.com.ec, puerto 3201, base `apuflow_arpece`):
 4. `docker compose up -d`, migraciones y admin como arriba (pasos 4 y 5).
 5. vhost: copia de `nginx-apu.conf` con otro `server_name` y `proxy_pass` al 3201; `certbot --nginx -d <dominio>`.
 6. Cron: `respaldo-diario.sh apuflow_arpece /opt/apuflow-arpece/respaldos`.
-7. En la app (admin): Inicio › «Vivienda y obra civil» (o el sector del cliente) y Configuración › Empresa (nombre, logo, vista).
+7. En la app (admin): Inicio › «Vivienda y obra civil» (o el sector del cliente), Configuración › Empresa (nombre, logo, vista) y, en el panel Indirectos de la oferta de ejemplo, «Usar estos porcentajes en las ofertas nuevas».
 En reposo una instancia usa ~125 MB (`docker stats`); `LIMITE_MEMORIA` es su tope (300m por
 defecto, 220m en ARPECE). Antes de sumar otra, revisar la memoria disponible con `free -m`.
