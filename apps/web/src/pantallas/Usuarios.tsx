@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Cargando } from '../ui/estado';
 import { Input } from '../ui/input';
+import { useSencilla } from '../lib/vista';
 import { FormularioUsuario, Insignia, mensaje, ROLES } from './UsuarioFormulario';
 
 const COLORES = ['#d97706', '#2563eb', '#16a34a', '#9333ea', '#dc2626', '#0891b2'];
@@ -99,6 +100,7 @@ function SeccionDisciplinas({ empresa }: { empresa: DisciplinasEmpresa }) {
 }
 
 export function Usuarios() {
+  const sencilla = useSencilla();
   const [editando, setEditando] = useState<UsuarioFila | 'nuevo' | null>(null);
   const usuarios = useQuery({
     queryKey: ['usuarios'],
@@ -139,7 +141,7 @@ export function Usuarios() {
               <th className="px-3 py-2 font-medium">Usuario</th>
               <th className="px-3 py-2 font-medium">Nombre</th>
               <th className="px-3 py-2 font-medium">Rol</th>
-              <th className="px-3 py-2 font-medium">Disciplinas</th>
+              {!sencilla && <th className="px-3 py-2 font-medium">Disciplinas</th>}
               <th className="px-3 py-2" />
             </tr>
           </thead>
@@ -152,11 +154,13 @@ export function Usuarios() {
                   {nombreRol(u.rol)}
                   {!u.activo && <Badge className="ml-2">Inactivo</Badge>}
                 </td>
-                <td className="px-3 py-1.5">
-                  {u.disciplinas.map((d) => (
-                    <Insignia key={d} nombre={d} disciplinas={empresa.data.disciplinas} />
-                  ))}
-                </td>
+                {!sencilla && (
+                  <td className="px-3 py-1.5">
+                    {u.disciplinas.map((d) => (
+                      <Insignia key={d} nombre={d} disciplinas={empresa.data.disciplinas} />
+                    ))}
+                  </td>
+                )}
                 <td className="px-3 py-1.5 text-right">
                   <Button
                     size="sm"
@@ -172,7 +176,7 @@ export function Usuarios() {
           </tbody>
         </table>
       </Card>
-      <SeccionDisciplinas empresa={empresa.data} />
+      {!sencilla && <SeccionDisciplinas empresa={empresa.data} />}
     </div>
   );
 }
