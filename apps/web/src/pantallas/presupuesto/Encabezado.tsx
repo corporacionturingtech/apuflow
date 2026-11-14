@@ -46,7 +46,7 @@ export function Encabezado({
         <span className="text-sm text-slate-500">
           {data.cliente ?? 'Sin cliente'} ·{' '}
           {!sencilla && `${publico ? 'Oferta pública (SERCOP)' : 'Oferta privada'} · `}
-          {data.rubros.length} rubros
+          {data.rubros.length} {data.rubros.length === 1 ? 'rubro' : 'rubros'}
         </span>
         <DatosOferta key={data.version} data={data} soloLectura={soloLectura} />
         <div className="ml-auto">

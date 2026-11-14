@@ -17,7 +17,7 @@ test('oferta nueva: cliente, bloque desde la oferta e indirectos copiados', asyn
   await page.getByLabel('Nombre de la oferta').fill(nombre);
   await page.getByRole('button', { name: 'Crear oferta' }).click();
   await expect(page.getByRole('heading', { name: nombre })).toBeVisible();
-  await expect(page.getByText(/Lo más rápido es «Añadir bloque»/)).toBeVisible();
+  await expect(page.getByText(/Lo más rápido es un bloque/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Poner cliente' }).click();
   await page.getByLabel('Cliente').fill('Familia Torres');

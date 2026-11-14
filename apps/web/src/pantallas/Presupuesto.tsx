@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
-import { useEffect, useMemo, useState, type SyntheticEvent } from 'react';
+import { Blocks, FolderPlus, ListPlus } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type SyntheticEvent } from 'react';
 import type { OfertaDetalle } from 'tipos';
 import { TablaEditable, type FilaTabla } from '../componentes/TablaEditable';
 import { fijarTotales } from '../layout/totales';
 import { api } from '../lib/api';
 import { money } from '../lib/formato';
+import { Button } from '../ui/button';
+import { Cargando, Vacio } from '../ui/estado';
 import { Tabs, TabsContent } from '../ui/tabs';
 import { consultaYo } from '../sesion';
 import { AnadirRubro } from './presupuesto/AnadirRubro';
@@ -34,6 +37,7 @@ export function Presupuesto() {
   const [anadiendoBloque, setAnadiendoBloque] = useState(false);
   const [editandoApu, setEditandoApu] = useState<string | null>(null);
   const [pestana, setPestana] = useState<Pestana>('rubros');
+  const campoCapitulo = useRef<HTMLInputElement>(null);
   const cambios = useCambiosOferta(id);
   const { aviso, editadas, guardar, anadir, quitarRubro, quitarCapitulo, anadirCapitulo } = cambios;
 
@@ -91,7 +95,7 @@ export function Presupuesto() {
       r.push({
         clave: `c-${c.id}`,
         seccion: `${ci + 1} · ${c.nombre}`,
-        detalle: `${rubros.length} rubros · Subtotal del capítulo: ${sub}`,
+        detalle: `${rubros.length} ${rubros.length === 1 ? 'rubro' : 'rubros'} · Subtotal del capítulo: ${sub}`,
         plegable: {
           plegado: plegados.has(c.id),
           alAlternar: () =>
@@ -143,7 +147,7 @@ export function Presupuesto() {
         No encontramos esa oferta.
       </p>
     );
-  if (!data) return <p className="text-slate-500">Cargando…</p>;
+  if (!data) return <Cargando texto="Cargando la oferta…" />;
 
   const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'cotizador';
 
@@ -192,6 +196,8 @@ export function Presupuesto() {
           <BarraRubros
             sinCapitulos={data.capitulos.length === 0}
             sinRubros={data.rubros.length === 0}
+            anadiendoCapitulo={anadirCapitulo.isPending}
+            campoCapitulo={campoCapitulo}
             alAnadirRubro={() => setAnadiendo(true)}
             alAnadirBloque={() => setAnadiendoBloque(true)}
             alGuardarBloque={() => setGuardandoBloque(true)}
@@ -215,11 +221,42 @@ export function Presupuesto() {
           <EditarApu ofertaId={id} rubroId={editandoApu} alCerrar={() => setEditandoApu(null)} />
         )}
         {data.rubros.length === 0 ? (
-          <p className="mt-4 text-slate-600">
-            {data.capitulos.length === 0
-              ? 'La oferta está vacía. Lo más rápido es «Añadir bloque»: trae un capítulo completo (por ejemplo, la obra gris) para el tamaño de su obra. También puede crear un capítulo y añadir rubros uno a uno.'
-              : 'Este presupuesto no tiene rubros. Use «Añadir bloque» o «Añadir rubro» para traerlos de la biblioteca.'}
-          </p>
+          <Vacio
+            icono={Blocks}
+            className="mt-4"
+            titulo={
+              data.capitulos.length === 0
+                ? 'La oferta está vacía'
+                : 'Sus capítulos aún no tienen rubros'
+            }
+            acciones={
+              !soloLectura && (
+                <>
+                  <Button onClick={() => setAnadiendoBloque(true)}>
+                    <Blocks aria-hidden />
+                    Elegir un bloque
+                  </Button>
+                  {data.capitulos.length === 0 ? (
+                    <Button variant="outline" onClick={() => campoCapitulo.current?.focus()}>
+                      <FolderPlus aria-hidden />
+                      Crear un capítulo
+                    </Button>
+                  ) : (
+                    <Button variant="outline" onClick={() => setAnadiendo(true)}>
+                      <ListPlus aria-hidden />
+                      Elegir un rubro
+                    </Button>
+                  )}
+                </>
+              )
+            }
+          >
+            {soloLectura
+              ? 'Esta oferta no tiene rubros.'
+              : data.capitulos.length === 0
+                ? 'Lo más rápido es un bloque: trae un capítulo completo (por ejemplo, la obra gris) para el tamaño de su obra. También puede crear un capítulo y añadir rubros uno a uno.'
+                : 'Traiga un bloque completo o elija los rubros uno a uno desde la biblioteca de APUs.'}
+          </Vacio>
         ) : (
           <div className="mt-3">
             <TablaEditable

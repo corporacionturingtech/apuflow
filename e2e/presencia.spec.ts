@@ -45,7 +45,7 @@ test('cada sesión ve quién más está en la oferta y en qué capítulo', async
   await a.getByLabel('Buscar APU para añadir').fill('RUB-E2E');
   await a.getByRole('button', { name: /Rubro ficticio para añadir/ }).click();
   await expect(
-    a.getByRole('row').filter({ hasText: 'Obra civil' }).filter({ hasText: '1 rubros' }),
+    a.getByRole('row').filter({ hasText: 'Obra civil' }).filter({ hasText: '1 rubro ·' }),
   ).toBeVisible();
 
   await b.goto(a.url());
@@ -56,7 +56,7 @@ test('cada sesión ve quién más está en la oferta y en qué capítulo', async
   await b
     .getByRole('row')
     .filter({ hasText: 'Obra civil' })
-    .filter({ hasText: '1 rubros' })
+    .filter({ hasText: '1 rubro ·' })
     .click();
   const listaA = a.getByRole('list', { name: 'Quién más está en la oferta' });
   await expect(listaA).toContainText('Ana Presencia está en el capítulo «Obra civil»');

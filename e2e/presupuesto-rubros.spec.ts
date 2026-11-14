@@ -19,15 +19,26 @@ test('añade un capítulo y un rubro desde la biblioteca, la barra sube; al quit
   await page.getByLabel('Nombre de la oferta').fill(nombre);
   await page.getByRole('button', { name: 'Crear oferta' }).click();
 
-  await page.getByLabel('Nombre del capítulo nuevo').fill('Bahía de prueba');
+  // Oferta vacía: guía con acciones; «Añadir rubro» espera a que haya un capítulo.
+  await expect(page.getByText('La oferta está vacía')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Añadir rubro' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Crear un capítulo' }).click();
+  await expect(page.getByLabel('Nombre del capítulo nuevo')).toBeFocused();
+
+  // Sin nombre no es un clic mudo.
   await page.getByRole('button', { name: 'Añadir capítulo' }).click();
+  await expect(page.getByText('Escriba el nombre del capítulo.')).toBeVisible();
+  await page.getByLabel('Nombre del capítulo nuevo').fill('Bahía de prueba');
+  await expect(page.getByText('Escriba el nombre del capítulo.')).toBeHidden();
+  await page.getByRole('button', { name: 'Añadir capítulo' }).click();
+  await expect(page.getByText('Sus capítulos aún no tienen rubros')).toBeVisible();
   await page.getByRole('button', { name: 'Añadir rubro' }).click();
   await page.getByLabel('Buscar APU para añadir').fill('RUB-E2E');
   await page.getByRole('button', { name: /Rubro ficticio para añadir/ }).click();
 
   const barra = page.getByRole('contentinfo');
   await expect(barra).toContainText('Subtotal$ 10,00');
-  await expect(page.getByText('· 1 rubros')).toBeVisible();
+  await expect(page.getByText('· 1 rubro', { exact: false })).toBeVisible();
 
   await page.reload();
   await expect(page.getByRole('contentinfo')).toContainText('Subtotal$ 10,00');
