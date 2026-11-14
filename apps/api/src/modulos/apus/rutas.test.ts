@@ -68,7 +68,8 @@ test('sin sesión: 401', async () => {
 test('lista y detalle con líneas, insumo, factor y herramienta menor', async () => {
   const lista = await get(galletaLector, '/api/apus?q=TAPU-1');
   expect(lista.json().items).toMatchObject([
-    { codigo: 'TAPU-1', lineas: 1, rendimiento: '2.000000' },
+    // MO 3 × 3 × R 2 = 18,00 + herramienta menor 5 % = 0,90.
+    { codigo: 'TAPU-1', lineas: 1, rendimiento: '2.000000', cu: '18.90' },
   ]);
 
   const d = (await get(galletaLector, `/api/apus/${apuId}`)).json();

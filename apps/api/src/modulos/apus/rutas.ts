@@ -8,7 +8,8 @@ import {
   type ApuDetalle,
 } from 'tipos';
 import type { Bd } from '../../db/conexion';
-import { usoApu } from '../ofertas/repo';
+import { apusConLineas, usoApu } from '../ofertas/repo';
+import { costosUnitarios } from './costo';
 import * as repo from './repo';
 import {
   ConflictoVersion,
@@ -71,6 +72,14 @@ export async function rutasApus(app: FastifyInstance, { db }: { db: Bd }) {
     const c = esquemaConsultaApus.safeParse(req.query);
     if (!c.success) return res.code(400).send(datosInvalidos);
     const filas = await repo.listar(db, c.data.q);
+    const [detalle, config] = await Promise.all([
+      apusConLineas(
+        db,
+        filas.map((f) => f.apu.id),
+      ),
+      repo.configuracion(db),
+    ]);
+    const cu = costosUnitarios(detalle, config.factorMateriales);
     return {
       items: filas.map(({ apu: a, lineas }) => ({
         id: a.id,
@@ -80,6 +89,7 @@ export async function rutasApus(app: FastifyInstance, { db }: { db: Bd }) {
         disciplina: a.disciplina,
         rendimiento: a.rendimiento,
         lineas,
+        cu: cu.get(a.id) ?? '0.00',
         version: a.version,
       })),
     };

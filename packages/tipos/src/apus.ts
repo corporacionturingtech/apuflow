@@ -12,6 +12,8 @@ export const esquemaApu = z.object({
   disciplina: z.string().nullable(),
   rendimiento: decimal,
   lineas: z.number().int(),
+  /** Costo unitario directo (sin indirectos), calculado por el motor. */
+  cu: decimal,
   version: z.number().int(),
 });
 export type Apu = z.infer<typeof esquemaApu>;
@@ -29,7 +31,7 @@ export const esquemaLineaApu = z.object({
 });
 export type LineaApu = z.infer<typeof esquemaLineaApu>;
 
-export const esquemaApuDetalle = esquemaApu.omit({ lineas: true }).extend({
+export const esquemaApuDetalle = esquemaApu.omit({ lineas: true, cu: true }).extend({
   lineasApu: z.array(esquemaLineaApu),
   factor: decimal,
   herramientaMenor: decimal,

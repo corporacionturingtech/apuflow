@@ -14,8 +14,12 @@ test('abre un APU, sube ayudantes de 3 a 4 y el CU cambia; persiste', async ({ p
   await page.getByLabel('Clave').fill(ADMIN.clave);
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await page.getByRole('link', { name: 'APUs' }).click();
+  // La lista ya muestra el costo unitario y busca sin tildes.
+  await page.getByLabel('Buscar APU').fill('montaje ficticio de prueba');
+  const fila = page.getByRole('link', { name: /Montaje ficticio de prueba/ });
+  await expect(fila).toContainText('$ 238,35');
   await page.getByLabel('Buscar APU').fill('APU-E2E');
-  await page.getByRole('link', { name: /Montaje ficticio de prueba/ }).click();
+  await fila.click();
 
   const calculo = page.getByLabel('Cálculo del APU');
   const ayudantes = page.getByLabel('Cantidad Ayudante ficticio');
