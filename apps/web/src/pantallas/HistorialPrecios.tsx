@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import type { HistorialPrecio } from 'tipos';
 import { api } from '../lib/api';
+import { X } from 'lucide-react';
 import { money } from '../lib/formato';
+import { Button } from '../ui/button';
 
 const fecha = (iso: string) =>
   new Date(iso).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' });
@@ -25,18 +27,13 @@ export function HistorialPrecios({
     <div
       role="region"
       aria-label="Historial de precios"
-      className="mb-2 rounded border bg-white p-3 text-sm"
+      className="mb-2 rounded-lg border border-borde bg-white p-3 text-sm shadow-xs"
     >
       <div className="flex items-start gap-3">
         <p className="flex-1 font-medium">Historial de precios · {descripcion}</p>
-        <button
-          type="button"
-          aria-label="Cerrar historial"
-          onClick={alCerrar}
-          className="text-slate-500"
-        >
-          ×
-        </button>
+        <Button variant="ghost" size="icon-sm" aria-label="Cerrar historial" onClick={alCerrar}>
+          <X aria-hidden />
+        </Button>
       </div>
       {error && <p>No pudimos cargar el historial.</p>}
       {!data && !error && <p>Cargando…</p>}

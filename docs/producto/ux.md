@@ -87,6 +87,8 @@ Configuración (empresa, disciplinas, usuarios, licencia).
   flota abajo a la derecha con «Deshacer» y borrar va a la papelera (sin `confirm`). Filtro: `componentes/FiltroDisciplina`.
 - Listas de precios (molde `ListaPrecios`): la lista llega entera y se filtra en el cliente sin tildes,
   contador «x de y», estado vacío con «Ver todos», «Papelera (n)» solo si hay algo y el aviso de borrado flota con «Deshacer».
+  La tabla se ajusta a sus filas (alto máximo, no fijo); cada fila trae al pasar el mouse los íconos
+  Historial y Papelera (`conAcciones`, además de Alt+H y Supr) y una columna que saldría toda en «—» no se muestra.
 - Avisos que no deben empujar la tabla (panel de impacto) flotan sobre la barra de totales.
 - Navegación agrupada (trabajo, listas de precios, control, configuración); la página activa
   se marca con una barra de acento. La barra de totales muestra el total en 18px y la variación

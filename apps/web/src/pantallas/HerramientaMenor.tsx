@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Check, Wrench } from 'lucide-react';
 import type { HerramientaMenor as Hm, ListaInsumos } from 'tipos';
 import { api, ErrorApi } from '../lib/api';
 import { fmt, parseNum } from '../lib/formato';
+import { Input } from '../ui/input';
 
 // % de la mano de obra que se suma a equipos (modelo-calculo.md); vive junto a la lista de Equipos.
 export function HerramientaMenor({
@@ -17,6 +19,12 @@ export function HerramientaMenor({
   const cliente = useQueryClient();
   const [texto, setTexto] = useState<string | null>(null);
   const [aviso, setAviso] = useState('');
+  const [guardado, setGuardado] = useState(false);
+  useEffect(() => {
+    if (!guardado) return;
+    const t = setTimeout(() => setGuardado(false), 2500);
+    return () => clearTimeout(t);
+  }, [guardado]);
   const mostrado = texto ?? fmt(Number(valor.pct), 0, 4);
 
   const guardar = useMutation({
@@ -28,6 +36,7 @@ export function HerramientaMenor({
     onSuccess: (hm) => {
       setAviso('');
       setTexto(null);
+      setGuardado(true);
       cliente.setQueriesData<ListaInsumos>(
         { queryKey: clave },
         (l) => l && { ...l, herramientaMenor: hm },
@@ -52,25 +61,45 @@ export function HerramientaMenor({
   }
 
   return (
-    <div className="mt-3 flex items-center gap-3 rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-      <label htmlFor="hm">Herramienta menor (% de la mano de obra)</label>
-      <input
-        id="hm"
-        inputMode="decimal"
-        value={mostrado}
-        disabled={!puedeEscribir}
-        onChange={(e) => setTexto(e.target.value)}
-        onBlur={confirmar}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') e.currentTarget.blur();
-          if (e.key === 'Escape') {
-            setTexto(null);
-            setAviso('');
-          }
-        }}
-        className="w-20 rounded border border-slate-300 px-2 py-1 text-right"
-      />
-      <span>%</span>
+    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-borde bg-white px-3 py-2.5 text-sm shadow-xs">
+      <Wrench className="size-4 shrink-0 text-slate-400" aria-hidden />
+      <label htmlFor="hm" className="font-medium text-slate-800">
+        Herramienta menor
+      </label>
+      <div className="flex items-center gap-1.5">
+        <Input
+          id="hm"
+          inputMode="decimal"
+          aria-describedby="hm-ayuda"
+          value={mostrado}
+          disabled={!puedeEscribir}
+          onChange={(e) => {
+            setTexto(e.target.value);
+            setGuardado(false);
+          }}
+          onBlur={confirmar}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+            if (e.key === 'Escape') {
+              setTexto(null);
+              setAviso('');
+            }
+          }}
+          className="w-16 text-right tabular-nums"
+        />
+        <span className="text-slate-500">%</span>
+      </div>
+      <span id="hm-ayuda" className="text-slate-500">
+        {puedeEscribir
+          ? 'de la mano de obra de cada APU, sumado a sus equipos.'
+          : 'de la mano de obra de cada APU. Solo un administrador o el rol Precios puede cambiarlo.'}
+      </span>
+      {guardado && (
+        <span role="status" className="flex items-center gap-1 text-emerald-700">
+          <Check className="size-4" aria-hidden />
+          Guardado: los APUs ya usan el nuevo %
+        </span>
+      )}
       {aviso && (
         <span role="alert" className="text-red-800">
           {aviso}

@@ -53,10 +53,13 @@ test('Equipos: edita la herramienta menor y persiste', async ({ page }) => {
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await page.getByRole('link', { name: 'Equipos' }).click();
   const hm = page.getByLabel(/Herramienta menor/);
-  await hm.fill('6,5');
+  // Otro valor que el actual: si no, no hay nada que guardar.
+  const nuevo = (await hm.inputValue()) === '6,5' ? '7' : '6,5';
+  await hm.fill(nuevo);
   await hm.press('Enter');
+  await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible();
   await page.reload();
-  await expect(page.getByLabel(/Herramienta menor/)).toHaveValue('6,5');
+  await expect(page.getByLabel(/Herramienta menor/)).toHaveValue(nuevo);
 });
 
 test('Equipos: busca sin tildes y, sin coincidencias, ofrece ver todos', async ({ page }) => {
@@ -74,4 +77,27 @@ test('Equipos: busca sin tildes y, sin coincidencias, ofrece ver todos', async (
   await page.getByRole('button', { name: 'Ver todos los equipos' }).click();
   await expect(grid.getByRole('row').filter({ hasText: 'LST-EQ-01' })).toHaveCount(1);
   await expect(page.getByLabel('Buscar equipo')).toHaveValue('');
+});
+
+test('Mano de obra: historial y papelera con el mouse desde la fila', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Usuario').fill(ADMIN.usuario);
+  await page.getByLabel('Clave').fill(ADMIN.clave);
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+  await page.getByRole('link', { name: 'Mano de obra' }).click();
+  const grid = page.getByRole('grid', { name: 'Lista de mano de obra' });
+  await page.getByLabel('Buscar cargo').fill('LST-MO-01');
+  const fila = grid.getByRole('row').filter({ hasText: 'LST-MO-01' });
+  await fila.hover();
+  await fila.getByRole('button', { name: 'Historial del precio' }).click();
+  const historial = page.getByRole('region', { name: 'Historial de precios' });
+  await expect(historial).toBeVisible();
+  await historial.getByRole('button', { name: 'Cerrar historial' }).click();
+  await expect(historial).toHaveCount(0);
+  await fila.hover();
+  await fila.getByRole('button', { name: 'Mandar a la papelera' }).click();
+  await expect(fila).toHaveCount(0);
+  const aviso = page.getByRole('status').filter({ hasText: 'papelera' });
+  await aviso.getByRole('button', { name: 'Deshacer' }).click();
+  await expect(fila).toHaveCount(1);
 });

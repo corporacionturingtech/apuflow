@@ -118,9 +118,11 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
   }
 
   const factor = Number(data?.factor ?? 1);
+  const conReferencial = !!data?.items.some((i) => i.precioAnterior !== null);
+  const conSecciones = !!data?.items.some((i) => i.seccion);
   const columnas = useMemo(
-    () => columnasLista(factor, !!config.conFactor),
-    [factor, config.conFactor],
+    () => columnasLista(factor, !!config.conFactor, conReferencial),
+    [factor, config.conFactor, conReferencial],
   );
   const total = data?.items.length ?? 0;
   const { filas, cuantos } = useMemo(
@@ -152,6 +154,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
         alBuscar={setBusqueda}
         alIrATabla={irATabla}
         conteo={data ? { total, cuantos, factor } : null}
+        conSecciones={conSecciones}
         verPapelera={verPapelera}
         nBorrados={nBorrados}
         alAlternarPapelera={() => setVerPapelera((v) => !v)}
@@ -225,7 +228,9 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
             </Button>
           }
         >
-          Busque por código, parte de la descripción o sección; las tildes no importan.
+          Busque por código
+          {conSecciones ? ', parte de la descripción o sección' : ' o parte de la descripción'}; las
+          tildes no importan.
         </Vacio>
       )}
       {!verPapelera && data && cuantos > 0 && (
@@ -239,6 +244,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           alGuardar={alGuardar}
           alEliminar={eliminar}
           alHistorial={setHistorial}
+          conAcciones
         />
       )}
       {config.herramientaMenor && data && !verPapelera && (

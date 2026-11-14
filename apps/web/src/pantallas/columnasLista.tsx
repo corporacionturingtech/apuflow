@@ -37,7 +37,12 @@ function Variacion({ i }: { i: Insumo }) {
   );
 }
 
-export function columnasLista(factor: number, conFactor: boolean): Columna<Insumo>[] {
+/** «Precio referencial» solo aparece si algún insumo tiene precio anterior: una columna de «—» es ruido. */
+export function columnasLista(
+  factor: number,
+  conFactor: boolean,
+  conReferencial = true,
+): Columna<Insumo>[] {
   return [
     { id: 'codigo', titulo: 'Código', ancho: 110, ver: (i) => i.codigo, editar: (i) => i.codigo },
     {
@@ -68,14 +73,18 @@ export function columnasLista(factor: number, conFactor: boolean): Columna<Insum
           },
         ]
       : []),
-    {
-      id: 'anterior',
-      titulo: 'Precio referencial',
-      ancho: 190,
-      alinear: 'der',
-      ver: textoVariacion,
-      pintar: (i) => <Variacion i={i} />,
-    },
+    ...(conReferencial
+      ? [
+          {
+            id: 'anterior',
+            titulo: 'Precio referencial',
+            ancho: 190,
+            alinear: 'der' as const,
+            ver: textoVariacion,
+            pintar: (i: Insumo) => <Variacion i={i} />,
+          },
+        ]
+      : []),
   ];
 }
 

@@ -7,8 +7,9 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, History, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '../lib/cn';
 import { EditorCelda } from './EditorCelda';
 
@@ -55,9 +56,12 @@ type Props<T> = {
   alAbrir?: (fila: T) => void;
   /** Marca para la barra guía de las misiones (`data-guia`). */
   guia?: string;
+  /** Botones de historial y papelera al final de la fila, para quien usa el mouse. */
+  conAcciones?: boolean;
 };
 
 const ALTO_FILA = 28;
+const ANCHO_ACCIONES = 64;
 
 const anchoColumna = (c: { ancho: number; flexible?: true }): CSSProperties =>
   c.flexible ? { flex: `1 0 ${c.ancho}px`, minWidth: c.ancho } : { width: c.ancho };
@@ -74,6 +78,7 @@ export function TablaEditable<T>({
   alHistorial,
   alAbrir,
   guia,
+  conAcciones,
 }: Props<T>) {
   const contenedor = useRef<HTMLDivElement>(null);
   const [foco, setFoco] = useState({ f: 0, c: 0 });
@@ -104,7 +109,8 @@ export function TablaEditable<T>({
     if (!esDato(foco.f)) mover(1, 0);
   }, [filas.length]);
 
-  const anchoMinimo = columnas.reduce((s, c) => s + c.ancho, 0);
+  const anchoMinimo =
+    columnas.reduce((s, c) => s + c.ancho, 0) + (conAcciones ? ANCHO_ACCIONES : 0);
   const actual = filas[foco.f]?.dato;
   const col = columnas[foco.c]!;
   const puedeEditar = !soloLectura && !!col.editar && !!actual;
@@ -164,7 +170,7 @@ export function TablaEditable<T>({
         tabIndex={0}
         ref={contenedor}
         onKeyDown={alTeclear}
-        className="h-[calc(100vh-15rem)] overflow-auto rounded-lg border border-borde bg-white text-[13px] shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-primario/30"
+        className="max-h-[calc(100vh-15rem)] overflow-auto rounded-lg border border-borde bg-white text-[13px] shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-primario/30"
       >
         <div style={{ minWidth: anchoMinimo }}>
           <div
@@ -184,6 +190,14 @@ export function TablaEditable<T>({
                 {c.titulo}
               </div>
             ))}
+            {conAcciones && (
+              <div
+                role="columnheader"
+                aria-label="Acciones"
+                style={{ width: ANCHO_ACCIONES }}
+                className="shrink-0"
+              />
+            )}
           </div>
           <div style={{ height: virtual.getTotalSize(), position: 'relative' }}>
             {virtual.getVirtualItems().map((v) => {
@@ -242,7 +256,7 @@ export function TablaEditable<T>({
                   role="row"
                   aria-rowindex={v.index + 1}
                   style={estilo}
-                  className="absolute flex w-full border-b border-slate-100 hover:bg-slate-50"
+                  className="group absolute flex w-full border-b border-slate-100 hover:bg-slate-50"
                 >
                   {columnas.map((c, ci) => {
                     const activa = foco.f === v.index && foco.c === ci;
@@ -285,6 +299,36 @@ export function TablaEditable<T>({
                       </div>
                     );
                   })}
+                  {conAcciones && (
+                    <div
+                      role="gridcell"
+                      style={{ width: ANCHO_ACCIONES }}
+                      className={cn(
+                        'flex shrink-0 items-center justify-end gap-0.5 px-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100',
+                        foco.f === v.index && 'opacity-100',
+                      )}
+                    >
+                      {alHistorial && (
+                        <AccionFila
+                          texto="Historial del precio"
+                          atajo="Alt+H"
+                          alClic={() => alHistorial(fila.dato!)}
+                        >
+                          <History aria-hidden />
+                        </AccionFila>
+                      )}
+                      {alEliminar && !soloLectura && (
+                        <AccionFila
+                          texto="Mandar a la papelera"
+                          atajo="Supr"
+                          peligro
+                          alClic={() => alEliminar(fila.dato!)}
+                        >
+                          <Trash2 aria-hidden />
+                        </AccionFila>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -295,5 +339,40 @@ export function TablaEditable<T>({
         {aviso}
       </p>
     </div>
+  );
+}
+
+function AccionFila({
+  texto,
+  atajo,
+  peligro,
+  alClic,
+  children,
+}: {
+  texto: string;
+  atajo: string;
+  peligro?: boolean;
+  alClic: () => void;
+  children: ReactNode;
+}) {
+  // Fuera del orden de tabulación: con teclado la fila ya responde a su atajo.
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          tabIndex={-1}
+          aria-label={texto}
+          onClick={alClic}
+          className={cn('size-6', peligro && 'hover:bg-red-50 hover:text-red-700')}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        {texto} <kbd className="ml-1 text-slate-400">{atajo}</kbd>
+      </TooltipContent>
+    </Tooltip>
   );
 }

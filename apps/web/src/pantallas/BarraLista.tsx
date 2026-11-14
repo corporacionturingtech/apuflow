@@ -47,6 +47,8 @@ interface Props {
   alIrATabla: () => void;
   /** null mientras carga: no se muestra el contador. */
   conteo: { total: number; cuantos: number; factor: number } | null;
+  /** Si ningún insumo tiene sección, el buscador no la ofrece. */
+  conSecciones: boolean;
   verPapelera: boolean;
   nBorrados: number;
   alAlternarPapelera: () => void;
@@ -75,7 +77,9 @@ export function BarraLista(p: Props) {
               <Input
                 type="search"
                 aria-label={config.buscar}
-                placeholder="Código, descripción o sección"
+                placeholder={
+                  p.conSecciones ? 'Código, descripción o sección' : 'Código o descripción'
+                }
                 value={p.busqueda}
                 onChange={(e) => p.alBuscar(e.target.value)}
                 onKeyDown={(e) => {
@@ -128,7 +132,9 @@ export function BarraLista(p: Props) {
       <p className="mb-3 text-sm text-slate-600">
         {p.verPapelera
           ? 'Lo que mande a la papelera queda aquí: puede restaurarlo con su precio.'
-          : 'Cambie un P.U. y los APUs y ofertas que lo usan se recalculan solos.'}
+          : p.puedeEscribir
+            ? 'Doble clic en una celda para cambiarla: los APUs y ofertas que usan ese P.U. se recalculan solos.'
+            : 'Los APUs y ofertas toman sus precios de esta lista.'}
         {!p.verPapelera &&
           config.conFactor &&
           conteo &&
