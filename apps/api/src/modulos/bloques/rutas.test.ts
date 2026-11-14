@@ -151,13 +151,31 @@ test('el lector no escribe; bloque u oferta inexistente da 404', async () => {
   ).toBe(404);
 });
 
-test('borrar un bloque pide la versión (409 si es vieja) y deja bitácora', async () => {
+test('borrar manda el bloque a la papelera (409 si la versión es vieja) y restaurar lo devuelve', async () => {
   const b = (await guardarBloque()).json();
   const viejo = await pedir('DELETE', `/api/bloques/${b.id}?version=9`, galletaCotizador);
   expect(viejo.statusCode).toBe(409);
   const ok = await pedir('DELETE', `/api/bloques/${b.id}?version=${b.version}`, galletaCotizador);
-  expect(ok.statusCode).toBe(204);
+  expect(ok.statusCode).toBe(200);
+  const borrado = ok.json();
+  expect(borrado.eliminadoEn).not.toBeNull();
   const lista = (await pedir('GET', '/api/bloques', galletaLector)).json();
   expect(lista.items.find((x: { id: string }) => x.id === b.id)).toBeUndefined();
-  expect(await db.select().from(bitacora).where(eq(bitacora.entidadId, b.id))).toHaveLength(2);
+  const papelera = (await pedir('GET', '/api/bloques?papelera=1', galletaLector)).json();
+  expect(papelera.items.find((x: { id: string }) => x.id === b.id)?.lineas).toHaveLength(2);
+  const anadir = await pedir('POST', `/api/ofertas/${ofertaId}/bloques`, galletaCotizador, {
+    bloqueId: b.id,
+  });
+  expect(anadir.statusCode).toBe(404);
+
+  const restaurar = (version: number) =>
+    pedir('POST', `/api/bloques/${b.id}/restaurar`, galletaCotizador, { version });
+  expect((await restaurar(b.version)).statusCode).toBe(409);
+  const vuelto = await restaurar(borrado.version);
+  expect(vuelto.statusCode).toBe(200);
+  expect(vuelto.json()).toMatchObject({ eliminadoEn: null });
+  expect(vuelto.json().lineas).toHaveLength(2);
+  const despues = (await pedir('GET', '/api/bloques', galletaLector)).json();
+  expect(despues.items.find((x: { id: string }) => x.id === b.id)).toBeDefined();
+  expect(await db.select().from(bitacora).where(eq(bitacora.entidadId, b.id))).toHaveLength(3);
 });

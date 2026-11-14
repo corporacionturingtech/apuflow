@@ -31,6 +31,8 @@ export interface BloqueLista {
   tamano: string | null;
   unidadTamano: string | null;
   version: number;
+  /** ISO; solo los bloques de la papelera lo traen. */
+  eliminadoEn: string | null;
   lineas: { apuId: string; cantidad: string }[];
 }
 

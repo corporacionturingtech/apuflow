@@ -51,6 +51,12 @@ export function totalesBloque(
     })),
     apus: r.apus.filter((a) => usados.has(a.id)),
   };
-  const c = calcularPresupuesto(detalle).capitulos[b.id]!;
-  return { costoDirecto: c.cuTotal.toNumber(), ofertado: c.totalOfertado.toNumber() };
+  const calc = calcularPresupuesto(detalle);
+  const c = calc.capitulos[b.id]!;
+  return {
+    costoDirecto: c.cuTotal.toNumber(),
+    ofertado: c.totalOfertado.toNumber(),
+    // Costo directo de cada línea, en el orden de `b.lineas`.
+    lineas: calc.rubros.map((x) => x.cuTotal.toNumber()),
+  };
 }

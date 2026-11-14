@@ -83,6 +83,8 @@ Configuración (empresa, disciplinas, usuarios, licencia).
   `ui/select` y cifras destacadas (KPI) con `ui/cifra`; nunca un «Cargando…» suelto ni una lista en blanco.
 - Listas de consulta (p. ej. APUs): filas densas con la cifra que importa (costo unitario) a la
   derecha, búsqueda en el cliente sin tildes, filtro por disciplina con su color y Enter abre el primero.
+- Bloques sigue ese patrón: la cifra de la fila se recalcula mientras se escribe la cantidad, el aviso
+  flota abajo a la derecha con «Deshacer» y borrar va a la papelera (sin `confirm`). Filtro: `componentes/FiltroDisciplina`.
 - Avisos que no deben empujar la tabla (panel de impacto) flotan sobre la barra de totales.
 - Navegación agrupada (trabajo, listas de precios, control, configuración); la página activa
   se marca con una barra de acento. La barra de totales muestra el total en 18px y la variación

@@ -86,6 +86,7 @@ it('costo directo de un bloque: cantidades × CU del APU', () => {
     tamano: null,
     unidadTamano: null,
     version: 1,
+    eliminadoEn: null,
     lineas: [{ apuId: uuid(5), cantidad: '10' }],
   };
   expect(costoDirectoBloque({ iva: '15', factor: '1', items: [b], apus: detalle.apus }, b)).toBe(

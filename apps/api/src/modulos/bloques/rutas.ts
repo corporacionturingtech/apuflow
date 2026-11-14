@@ -10,6 +10,7 @@ import {
   borrar,
   crearDesdeCapitulo,
   insertarEnOferta,
+  restaurar,
 } from './servicio';
 
 const datosInvalidos = { mensaje: 'Revise los datos: hay un valor que no es válido' };
@@ -38,6 +39,7 @@ const bloqueDto = (
   tamano: b.tamano,
   unidadTamano: b.unidadTamano,
   version: b.version,
+  eliminadoEn: b.eliminadoEn?.toISOString() ?? null,
   lineas: lineas
     .filter((l) => l.bloqueId === b.id)
     .map((l) => ({ apuId: l.apuId, cantidad: l.cantidad })),
@@ -47,9 +49,10 @@ export async function rutasBloques(app: FastifyInstance, { db }: { db: Bd }) {
   const puedeEscribir = app.exigirRol('admin', 'cotizador');
 
   // Trae los APUs de todos los bloques una sola vez: la web calcula cada tarjeta con el motor.
-  app.get('/api/bloques', { preHandler: app.autenticar }, async () => {
+  app.get('/api/bloques', { preHandler: app.autenticar }, async (req) => {
+    const papelera = (req.query as { papelera?: string }).papelera === '1';
     const [bs, ls, config] = await Promise.all([
-      repo.listar(db),
+      repo.listar(db, papelera),
       repo.lineas(db),
       repo.configuracion(db),
     ]);
@@ -98,8 +101,24 @@ export async function rutasBloques(app: FastifyInstance, { db }: { db: Bd }) {
       if (!Number.isInteger(version) || !esUuid(req.params.id))
         return res.code(400).send(datosInvalidos);
       try {
-        await borrar(db, req.usuario!.id, req.params.id, version);
-        return res.code(204).send();
+        const b = await borrar(db, req.usuario!.id, req.params.id, version);
+        return bloqueDto(b, []);
+      } catch (e) {
+        return responderError(e, res);
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/api/bloques/:id/restaurar',
+    { preHandler: puedeEscribir },
+    async (req, res) => {
+      const version = Number((req.body as { version?: unknown } | undefined)?.version);
+      if (!Number.isInteger(version) || !esUuid(req.params.id))
+        return res.code(400).send(datosInvalidos);
+      try {
+        const b = await restaurar(db, req.usuario!.id, req.params.id, version);
+        return bloqueDto(b, await repo.lineasDe(db, b.id));
       } catch (e) {
         return responderError(e, res);
       }

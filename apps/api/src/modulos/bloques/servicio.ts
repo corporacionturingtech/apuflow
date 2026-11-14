@@ -57,7 +57,7 @@ export async function insertarEnOferta(
   return db.transaction(async (tx) => {
     if (!(await repo.buscarOferta(tx, ofertaId))) throw new NoExiste();
     const b = await repo.buscar(tx, bloqueId);
-    if (!b) throw new NoExiste();
+    if (!b || b.eliminadoEn) throw new NoExiste();
     if (tamano && !b.tamano) throw new SinTamano();
     const factor = tamano ? new D(tamano).div(b.tamano!) : new D(veces ?? 1);
     const base = tamano
@@ -105,21 +105,35 @@ export async function insertarEnOferta(
   });
 }
 
-export async function borrar(db: Bd, usuarioId: string, id: string, version: number) {
+// Papelera: borrar y restaurar solo cambian `eliminado_en`, con versión y bitácora.
+async function cambiarPapelera(
+  db: Bd,
+  usuarioId: string,
+  id: string,
+  version: number,
+  eliminar: boolean,
+) {
   return db.transaction(async (tx) => {
-    const lineas = await repo.lineasDe(tx, id);
-    if (!(await repo.buscar(tx, id))) throw new NoExiste();
-    const b = await repo.eliminar(tx, id, version);
+    const antes = await repo.buscar(tx, id);
+    if (!antes) throw new NoExiste();
+    const b = await repo.marcarEliminado(tx, id, version, eliminar, usuarioId);
     if (!b) throw new ConflictoVersion();
     await repo.registrarBitacora(tx, [
       {
         usuarioId,
         entidad: 'bloque',
         entidadId: id,
-        campo: null,
-        antes: { ...b, lineas },
-        despues: null,
+        campo: 'eliminado_en',
+        antes: antes.eliminadoEn,
+        despues: b.eliminadoEn,
       },
     ]);
+    return b;
   });
 }
+
+export const borrar = (db: Bd, usuarioId: string, id: string, version: number) =>
+  cambiarPapelera(db, usuarioId, id, version, true);
+
+export const restaurar = (db: Bd, usuarioId: string, id: string, version: number) =>
+  cambiarPapelera(db, usuarioId, id, version, false);

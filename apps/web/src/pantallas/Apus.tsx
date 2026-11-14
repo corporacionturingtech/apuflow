@@ -3,8 +3,10 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { ChevronRight, Layers, Search, SearchX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { Apu } from 'tipos';
+import { FiltroDisciplina } from '../componentes/FiltroDisciplina';
 import { api } from '../lib/api';
 import { cn } from '../lib/cn';
+import { colorDe, normalizar, plural } from '../lib/disciplina';
 import { money } from '../lib/formato';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -14,22 +16,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const SIN_DISCIPLINA = 'Sin disciplina';
 const TODAS = '';
-
-/** Sin tildes ni mayúsculas: «excavacion» encuentra «Excavación». */
-const normalizar = (s: string) =>
-  s
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase();
-
-const COLOR: Record<string, string> = {
-  civil: 'var(--color-civil)',
-  electrico: 'var(--color-electrico)',
-  mecanico: 'var(--color-mecanico)',
-};
-const colorDe = (d: string) => COLOR[normalizar(d)] ?? '#94a3b8';
-
-const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
 
 const COLUMNAS =
   'grid grid-cols-[4.5rem_minmax(0,1fr)_7rem_1rem] items-center gap-x-4 px-4 md:grid-cols-[4.5rem_minmax(0,1fr)_4rem_5.5rem_8rem_1rem]';
@@ -112,34 +98,12 @@ export function Apus() {
             className="pl-8"
           />
         </div>
-        {conteo.size > 1 && (
-          <div role="group" aria-label="Filtrar por disciplina" className="flex flex-wrap gap-1.5">
-            {[[TODAS, todos.length] as const, ...conteo].map(([d, n]) => (
-              <button
-                key={d || 'todas'}
-                type="button"
-                aria-pressed={disciplina === d}
-                onClick={() => setDisciplina(d)}
-                className={cn(
-                  'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primario/40',
-                  disciplina === d
-                    ? 'border-primario bg-primario/10 font-medium text-primario'
-                    : 'border-borde bg-white text-slate-600 hover:bg-slate-50',
-                )}
-              >
-                {d && (
-                  <span
-                    aria-hidden
-                    className="size-2 rounded-full"
-                    style={{ background: colorDe(d) }}
-                  />
-                )}
-                {d || 'Todas'}
-                <span className="tabular-nums text-slate-400">{n}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        <FiltroDisciplina
+          conteo={conteo}
+          total={todos.length}
+          valor={disciplina}
+          alCambiar={setDisciplina}
+        />
       </div>
 
       {error && (

@@ -19,6 +19,8 @@ export const bloque = pgTable('bloque', {
   /** Para cuánto están las cantidades (p. ej. 100 m²); al añadirlo se escala al tamaño real. */
   tamano: numeric('tamano', entrada),
   unidadTamano: text('unidad_tamano'),
+  /** Papelera: el bloque borrado se oculta y se puede restaurar. */
+  eliminadoEn: timestamp('eliminado_en', { withTimezone: true }),
   ...auditoria(),
 });
 

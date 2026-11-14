@@ -1,222 +1,293 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
+import { Blocks, Search, SearchX, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import type { BloquesRespuesta, OfertaDetalle } from 'tipos';
-import { ErrorApi, api } from '../lib/api';
-import { money, parseNum, qty } from '../lib/formato';
+import type { BloquesRespuesta } from 'tipos';
+import { api } from '../lib/api';
+import { cn } from '../lib/cn';
+import { normalizar, plural } from '../lib/disciplina';
 import { consultaYo } from '../sesion';
-import { D } from 'motor';
-import { calcularPresupuesto, costoDirectoBloque, totalesBloque } from './presupuesto/calculo';
-import { Blocks, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { Cargando, Vacio } from '../ui/estado';
+import { Input } from '../ui/input';
 import { Select } from '../ui/select';
+import { AvisoBloque } from './bloques/AvisoBloque';
+import { useAccionesBloque } from './bloques/useAccionesBloque';
+import { COLUMNAS_BLOQUE, FilaBloque } from './bloques/FilaBloque';
+import { FiltroDisciplina } from '../componentes/FiltroDisciplina';
 
-interface Escala {
-  bloqueId: string;
-  valor: string;
-  conTamano: boolean;
-}
-
-interface Insertado {
-  nombre: string;
-  oferta: { id: string; nombre: string };
-  rubros: number;
-  subtotal: number;
-}
+const SIN_DISCIPLINA = 'Sin disciplina';
 
 export function Bloques() {
-  const cliente = useQueryClient();
   const { data: yo } = useQuery(consultaYo);
-  const { data } = useQuery({
+  const [papelera, setPapelera] = useState(false);
+  const activos = useQuery({
     queryKey: ['bloques'],
     queryFn: () => api<BloquesRespuesta>('/api/bloques'),
+  });
+  const borrados = useQuery({
+    queryKey: ['bloques', 'papelera'],
+    queryFn: () => api<BloquesRespuesta>('/api/bloques?papelera=1'),
   });
   const { data: ofertas } = useQuery({
     queryKey: ['ofertas'],
     queryFn: () => api<{ items: { id: string; nombre: string; estado: string }[] }>('/api/ofertas'),
   });
   const [ofertaId, setOfertaId] = useState('');
-  const [insertado, setInsertado] = useState<Insertado | null>(null);
-  const [error, setError] = useState('');
-  // Tamaño real (o veces) escrito en cada tarjeta; vacío = el del bloque.
-  const [tamanos, setTamanos] = useState<Record<string, string>>({});
-  const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'cotizador';
-  const borradores = (ofertas?.items ?? []).filter((o) => o.estado !== 'emitida');
-  const destino = ofertaId || borradores[0]?.id || '';
+  const [q, setQ] = useState('');
+  const [disciplina, setDisciplina] = useState('');
 
+  const consulta = papelera ? borrados : activos;
+  const data = consulta.data;
+  const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'cotizador';
+  // La API las ordena por última modificación: la primera es la oferta en la que se trabaja.
+  const borradores = (ofertas?.items ?? []).filter((o) => o.estado !== 'emitida');
+  const destino = borradores.some((o) => o.id === ofertaId) ? ofertaId : (borradores[0]?.id ?? '');
+  const todos = useMemo(() => data?.items ?? [], [data]);
   const apus = useMemo(() => new Map((data?.apus ?? []).map((a) => [a.id, a])), [data]);
 
-  const anadir = useMutation({
-    mutationFn: ({ bloqueId, valor, conTamano }: Escala) =>
-      api<{ capituloId: string; oferta: OfertaDetalle }>(`/api/ofertas/${destino}/bloques`, {
-        metodo: 'POST',
-        cuerpo: { bloqueId, ...(conTamano ? { tamano: valor } : { veces: valor }) },
-      }),
-    onSuccess: ({ capituloId, oferta }) => {
-      setError('');
-      cliente.setQueryData(['oferta', oferta.id], oferta);
-      const cap = oferta.capitulos.find((c) => c.id === capituloId)!;
-      setInsertado({
-        nombre: cap.nombre,
-        oferta: { id: oferta.id, nombre: oferta.nombre },
-        rubros: oferta.rubros.filter((r) => r.capituloId === capituloId).length,
-        subtotal: calcularPresupuesto(oferta).capitulos[capituloId]!.totalOfertado.toNumber(),
-      });
-    },
-    onError: (e) => setError(e instanceof ErrorApi ? e.message : 'No pudimos añadir el bloque.'),
-  });
+  const conteo = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const b of todos) {
+      const d = b.disciplina ?? SIN_DISCIPLINA;
+      m.set(d, (m.get(d) ?? 0) + 1);
+    }
+    return m;
+  }, [todos]);
+  const visibles = useMemo(() => {
+    const t = normalizar(q.trim());
+    return todos.filter(
+      (b) =>
+        (!disciplina || (b.disciplina ?? SIN_DISCIPLINA) === disciplina) &&
+        (!t || normalizar(b.nombre).includes(t)),
+    );
+  }, [todos, q, disciplina]);
+  const filtrando = q.trim() !== '' || disciplina !== '';
+  const limpiar = () => {
+    setQ('');
+    setDisciplina('');
+  };
+  const { anadir, quitarCapitulo, borrar, restaurar, aviso, setAviso, error } =
+    useAccionesBloque(destino);
 
-  const borrar = useMutation({
-    mutationFn: ({ id, version }: { id: string; version: number }) =>
-      api<void>(`/api/bloques/${id}?version=${version}`, { metodo: 'DELETE' }),
-    onSettled: () => cliente.invalidateQueries({ queryKey: ['bloques'] }),
-    onError: (e) => setError(e instanceof ErrorApi ? e.message : 'No pudimos borrar el bloque.'),
-  });
+  const bloqueo = !destino
+    ? 'Primero cree una oferta en borrador.'
+    : anadir.isPending
+      ? 'Añadiendo…'
+      : '';
+  const nBorrados = borrados.data?.items.length ?? 0;
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold">Bloques de rubros</h1>
-      <p className="mt-1 max-w-3xl text-sm text-slate-600">
-        Cada bloque es un listado de rubros con sus cantidades. Entra completo a la oferta como un
-        capítulo y después se ajusta cualquier cantidad en el presupuesto. Para crear uno use
-        «Guardar como bloque» en el presupuesto.
+    <div className="max-w-6xl">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-xl font-semibold tracking-tight">
+          {papelera ? 'Papelera de bloques' : 'Bloques de rubros'}
+        </h1>
+        <div className="flex items-center gap-3 text-sm text-slate-500">
+          {todos.length > 0 && (
+            <span aria-live="polite">
+              {filtrando
+                ? `${visibles.length} de ${plural(todos.length, 'bloque', 'bloques')}`
+                : plural(todos.length, 'bloque', 'bloques')}
+            </span>
+          )}
+          {(papelera || nBorrados > 0) && (
+            <Button
+              size="sm"
+              variant={papelera ? 'outline' : 'ghost'}
+              aria-pressed={papelera}
+              onClick={() => {
+                setPapelera((v) => !v);
+                limpiar();
+              }}
+            >
+              {papelera ? (
+                'Volver a los bloques'
+              ) : (
+                <>
+                  <Trash2 aria-hidden />
+                  Papelera ({nBorrados})
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+      <p className="mt-1 text-sm text-slate-600">
+        {papelera
+          ? 'Los bloques borrados se pueden restaurar con sus rubros y cantidades.'
+          : 'Un bloque entra completo a la oferta como capítulo. Escriba cuántas veces (o el tamaño real) y vea el costo antes de añadirlo.'}
       </p>
-      {puedeEscribir && (
-        <label className="mt-3 block text-sm">
-          Añadir a la oferta{' '}
-          <Select value={destino} onChange={(e) => setOfertaId(e.target.value)} className="ml-1">
-            {borradores.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.nombre}
-              </option>
-            ))}
-          </Select>
-        </label>
+
+      {puedeEscribir && !papelera && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-borde bg-white px-3 py-2 text-sm shadow-xs">
+          {borradores.length > 0 ? (
+            <>
+              <label htmlFor="oferta-destino" className="font-medium text-slate-700">
+                Oferta destino
+              </label>
+              <Select
+                id="oferta-destino"
+                value={destino}
+                onChange={(e) => setOfertaId(e.target.value)}
+                className="max-w-full sm:w-96"
+              >
+                {borradores.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.nombre}
+                  </option>
+                ))}
+              </Select>
+              <span className="text-xs text-slate-500">
+                {ofertaId ? 'Elegida por usted.' : 'La oferta en borrador que modificó al último.'}
+              </span>
+            </>
+          ) : !ofertas ? (
+            <span className="text-slate-500">Cargando sus ofertas…</span>
+          ) : (
+            <>
+              <span className="text-slate-700">
+                Para añadir un bloque necesita una oferta en borrador.
+              </span>
+              <Button size="sm" asChild>
+                <Link to="/ofertas">Crear una oferta</Link>
+              </Button>
+            </>
+          )}
+        </div>
       )}
-      {insertado && (
-        <p
-          role="status"
-          className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 p-2 text-sm text-emerald-900"
-        >
-          Se añadió «{insertado.nombre}» a {insertado.oferta.nombre}: {insertado.rubros} rubros,
-          subtotal {money(insertado.subtotal)}.{' '}
-          <Button variant="link" asChild>
-            <Link to="/ofertas/$id" params={{ id: insertado.oferta.id }}>
-              Ver en el presupuesto
-            </Link>
-          </Button>
-        </p>
+
+      {todos.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-80">
+            <Search
+              aria-hidden
+              className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+            />
+            <Input
+              type="search"
+              aria-label="Buscar bloque"
+              placeholder="Buscar por nombre"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => e.key === 'Escape' && setQ('')}
+              className="pl-8"
+            />
+          </div>
+          <FiltroDisciplina
+            conteo={conteo}
+            total={todos.length}
+            valor={disciplina}
+            alCambiar={setDisciplina}
+          />
+        </div>
       )}
+
       {error && (
-        <p role="alert" className="mt-2 text-sm text-red-700">
+        <p role="alert" className="mt-3 text-sm text-red-700">
           {error}
         </p>
       )}
-      {!data && <Cargando />}
-      {data && data.items.length === 0 && (
+      {consulta.isPending && <Cargando texto="Cargando bloques…" />}
+      {consulta.isError && (
+        <Vacio
+          titulo="No pudimos cargar los bloques"
+          className="mt-4"
+          acciones={
+            <Button size="sm" variant="outline" onClick={() => void consulta.refetch()}>
+              Reintentar
+            </Button>
+          }
+        >
+          Revise su conexión e intente de nuevo.
+        </Vacio>
+      )}
+      {data && todos.length === 0 && !papelera && (
         <Vacio
           icono={Blocks}
           titulo="Aún no hay bloques"
-          className="mt-4 max-w-2xl"
+          className="mt-4"
           acciones={
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link to="/ofertas">Ir a las ofertas</Link>
             </Button>
           }
         >
-          Abra un presupuesto y use «Guardar como bloque» en un capítulo.
+          Abra un presupuesto y use «Guardar como bloque» en un capítulo: la próxima vez entra
+          completo con un clic.
         </Vacio>
       )}
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {(data?.items ?? []).map((b, i) => {
-          const base = b.tamano ? qty(Number(b.tamano)) : '1';
-          const escrito = tamanos[b.id] ?? base;
-          const valor = parseNum(escrito);
-          const valido = Number.isFinite(valor) && valor > 0;
-          return (
-            <Card asChild key={b.id}>
-              <article aria-label={b.nombre} className="p-3">
-                <h2 className="font-semibold">{b.nombre}</h2>
-                <p className="text-xs text-slate-500">
-                  {b.disciplina && `${b.disciplina} · `}
-                  {b.lineas.length} rubros
-                  {b.tamano && ` · para ${qty(Number(b.tamano))} ${b.unidadTamano ?? ''}`}
-                </p>
-                <p className="mt-2 text-lg tabular-nums">
-                  {money(costoDirectoBloque(data!, b))}{' '}
-                  <small className="text-xs text-slate-500">costo directo del bloque</small>
-                </p>
-                {b.tamano && (
-                  <p className="text-xs text-slate-600">
-                    ≈ {money(totalesBloque(data!, b, [], new D(1).div(b.tamano)).costoDirecto)} por{' '}
-                    {b.unidadTamano ?? 'unidad'} de costo directo; en la oferta se suman sus
-                    indirectos.
-                  </p>
-                )}
-                <details className="mt-1 text-sm">
-                  <summary className="cursor-pointer">Ver rubros y cantidades</summary>
-                  <ul>
-                    {b.lineas.map((l, i) => (
-                      <li key={i} className="flex justify-between gap-2">
-                        <span>{apus.get(l.apuId)?.descripcion}</span>
-                        <b className="tabular-nums">
-                          {qty(Number(l.cantidad))} {apus.get(l.apuId)?.unidad}
-                        </b>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-                {puedeEscribir && (
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                    <label className="flex items-center gap-1.5 text-slate-600">
-                      {b.tamano ? '¿Para cuántos?' : 'Veces'}
-                      <Input
-                        aria-label={`Tamaño para añadir «${b.nombre}»`}
-                        inputMode="decimal"
-                        value={escrito}
-                        onChange={(e) => setTamanos((t) => ({ ...t, [b.id]: e.target.value }))}
-                        className="h-7 w-20 text-right tabular-nums"
-                      />
-                      {b.tamano && <span>{b.unidadTamano}</span>}
-                    </label>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      data-guia={i === 0 ? 'bloque-anadir' : undefined}
-                      disabled={!destino || anadir.isPending || !valido}
-                      onClick={() =>
-                        anadir.mutate({
-                          bloqueId: b.id,
-                          valor: String(valor),
-                          conTamano: Boolean(b.tamano),
-                        })
-                      }
-                    >
-                      <Plus aria-hidden />
-                      Añadir a la oferta
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        if (window.confirm(`¿Borrar el bloque «${b.nombre}»?`))
-                          borrar.mutate({ id: b.id, version: b.version });
-                      }}
-                      className="ml-auto"
-                    >
-                      <Trash2 aria-hidden />
-                      Borrar
-                    </Button>
-                  </div>
-                )}
-              </article>
-            </Card>
-          );
-        })}
-      </div>
+      {data && todos.length === 0 && papelera && (
+        <Vacio icono={Trash2} titulo="La papelera está vacía" className="mt-4" />
+      )}
+      {data && todos.length > 0 && visibles.length === 0 && (
+        <Vacio
+          icono={SearchX}
+          titulo={
+            q.trim() ? `Ningún bloque coincide con «${q.trim()}»` : 'Ningún bloque en ese filtro'
+          }
+          className="mt-4"
+          acciones={
+            <Button variant="outline" size="sm" onClick={limpiar}>
+              Ver todos los bloques
+            </Button>
+          }
+        />
+      )}
+
+      {data && visibles.length > 0 && (
+        <Card className="mt-4 overflow-hidden">
+          <div
+            aria-hidden
+            className={cn(
+              COLUMNAS_BLOQUE,
+              'border-b border-borde bg-slate-50/70 py-1.5 text-[11px] font-medium uppercase tracking-wider text-slate-500',
+            )}
+          >
+            <span />
+            <span>Bloque</span>
+            <span className="hidden md:block">{papelera ? '' : 'Cantidad'}</span>
+            <span className="hidden text-right md:block">Costo directo</span>
+            <span />
+          </div>
+          <ul className="divide-y divide-borde">
+            {visibles.map((b, i) => (
+              <FilaBloque
+                key={b.id}
+                b={b}
+                data={data}
+                apus={apus}
+                guia={i === 0}
+                puedeEscribir={puedeEscribir}
+                bloqueo={bloqueo}
+                alAnadir={(valor) => anadir.mutate({ b, valor })}
+                alBorrar={() => borrar.mutate(b)}
+                alRestaurar={() => restaurar.mutate(b)}
+              />
+            ))}
+          </ul>
+          {!papelera && (
+            <p className="border-t border-borde bg-slate-50/70 px-3 py-1.5 text-xs text-slate-500">
+              Costo directo, sin indirectos ni IVA: la oferta suma sus propios indirectos al
+              añadirlo.
+            </p>
+          )}
+        </Card>
+      )}
+
+      {aviso && (
+        <AvisoBloque
+          aviso={aviso}
+          deshaciendo={quitarCapitulo.isPending || restaurar.isPending}
+          alDeshacer={() =>
+            aviso.tipo === 'anadido'
+              ? quitarCapitulo.mutate(aviso)
+              : aviso.tipo === 'borrado' && restaurar.mutate(aviso.bloque)
+          }
+          alCerrar={() => setAviso(null)}
+        />
+      )}
     </div>
   );
 }
