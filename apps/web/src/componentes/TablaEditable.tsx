@@ -1,5 +1,12 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../lib/cn';
@@ -15,6 +22,8 @@ export type Columna<T> = {
   alinear?: 'der';
   /** Texto que se ve en la celda. */
   ver: (fila: T) => string;
+  /** Si existe, reemplaza al texto en pantalla (p. ej. una cifra con color); `ver` sigue siendo el texto. */
+  pintar?: (fila: T) => ReactNode;
   /** Si existe, la celda se edita y esto es el texto inicial del editor. */
   editar?: (fila: T) => string;
 };
@@ -268,6 +277,8 @@ export function TablaEditable<T>({
                             }}
                             alConfirmar={confirmar}
                           />
+                        ) : c.pintar ? (
+                          c.pintar(fila.dato!)
                         ) : (
                           c.ver(fila.dato!)
                         )}

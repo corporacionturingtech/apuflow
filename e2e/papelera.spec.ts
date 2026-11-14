@@ -9,7 +9,7 @@ test('agrega, edita, elimina con Supr, restaura y persiste', async ({ page }) =>
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await page.getByRole('link', { name: 'Transporte' }).click();
 
-  await page.getByRole('button', { name: 'Agregar' }).click();
+  await page.getByRole('button', { name: 'Agregar tarifa' }).click();
   const form = page.getByRole('form', { name: 'Agregar' });
   await form.getByLabel('Código').fill(codigo);
   await form.getByLabel('Descripción').fill('Flete de papelera ficticio');
@@ -49,7 +49,7 @@ test('agrega, edita, elimina con Supr, restaura y persiste', async ({ page }) =>
   await grid.focus();
   await page.keyboard.press('Delete');
   await expect(fila).toHaveCount(0);
-  await page.getByRole('button', { name: 'Ver papelera' }).click();
+  await page.getByRole('button', { name: /^Papelera \(/ }).click();
   const papelera = page.getByRole('region', { name: 'Papelera' });
   await expect(papelera).toContainText(codigo);
   await papelera

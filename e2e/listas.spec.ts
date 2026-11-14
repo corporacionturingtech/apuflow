@@ -58,3 +58,20 @@ test('Equipos: edita la herramienta menor y persiste', async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel(/Herramienta menor/)).toHaveValue('6,5');
 });
+
+test('Equipos: busca sin tildes y, sin coincidencias, ofrece ver todos', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Usuario').fill(ADMIN.usuario);
+  await page.getByLabel('Clave').fill(ADMIN.clave);
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+  await page.getByRole('link', { name: 'Equipos' }).click();
+  const grid = page.getByRole('grid', { name: 'Lista de equipos' });
+  await page.getByLabel('Buscar equipo').fill('grua ficticia');
+  await expect(grid.getByRole('row').filter({ hasText: 'LST-EQ-01' })).toHaveCount(1);
+  await expect(page.getByText(/^\d+ de [\d.]+ equipos$/)).toBeVisible();
+  await page.getByLabel('Buscar equipo').fill('zzz-no-existe');
+  await expect(page.getByText('Sin resultados para «zzz-no-existe»')).toBeVisible();
+  await page.getByRole('button', { name: 'Ver todos los equipos' }).click();
+  await expect(grid.getByRole('row').filter({ hasText: 'LST-EQ-01' })).toHaveCount(1);
+  await expect(page.getByLabel('Buscar equipo')).toHaveValue('');
+});

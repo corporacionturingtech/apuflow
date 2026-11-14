@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { ArrowLeft, Plus, Search, Trash2 } from 'lucide-react';
-import { precioMaterial } from 'motor';
+import { useMemo, useRef, useState } from 'react';
+import { SearchX, Tags } from 'lucide-react';
 import type { Insumo, InsumoCambio, ListaInsumos } from 'tipos';
+import { AvisoPapelera } from './AvisoPapelera';
+import { BarraLista, BotonAgregar, BotonImportar } from './BarraLista';
+import { columnasLista, filasLista } from './columnasLista';
 import { FormularioInsumo } from './FormularioInsumo';
 import { HistorialPrecios } from './HistorialPrecios';
 import { HerramientaMenor } from './HerramientaMenor';
@@ -10,36 +12,15 @@ import { clavePapelera, PapeleraInsumos } from './PapeleraInsumos';
 import { PanelImpacto, type CambioPrecio } from './PanelImpacto';
 import { precioATexto } from './precio';
 import { useDeshacerPrecio } from './useDeshacerPrecio';
-import { Atajos } from '../componentes/Atajos';
-import { TablaEditable, type Columna, type FilaTabla } from '../componentes/TablaEditable';
+import { TablaEditable } from '../componentes/TablaEditable';
 import { api, ErrorApi } from '../lib/api';
-import { money, n2 } from '../lib/formato';
 import { consultaYo } from '../sesion';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { Cargando, Vacio } from '../ui/estado';
 
 import { type ConfigLista } from './configListas';
 
 export { LISTAS, type ConfigLista } from './configListas';
-
-const variacion = (i: Insumo) => {
-  if (i.precioAnterior === null) return '';
-  const d = Number(i.pu) - Number(i.precioAnterior);
-  return `${money(Number(i.precioAnterior))} ${d > 0 ? '↑' : d < 0 ? '↓' : ''}`.trim();
-};
-
-const ATAJOS_LECTURA: [string, string][] = [
-  ['Flechas', 'Moverse por la tabla'],
-  ['Alt+H', 'Historial del precio'],
-];
-const ATAJOS: [string, string][] = [
-  ['F2 / Enter', 'Editar la celda'],
-  ['Esc', 'Cancelar la edición'],
-  ['Supr', 'Mandar a la papelera'],
-  ['Ctrl+Z', 'Deshacer el último precio'],
-  ...ATAJOS_LECTURA,
-];
 
 export function ListaPrecios({ config }: { config: ConfigLista }) {
   const CLAVE = ['insumos', config.tipo] as const;
@@ -60,12 +41,18 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
     setAviso,
   );
 
-  const { data, isPending, error } = useQuery({
-    queryKey: [...CLAVE, busqueda],
-    queryFn: () =>
-      api<ListaInsumos>(`/api/insumos?tipo=${config.tipo}&q=${encodeURIComponent(busqueda)}`),
-    placeholderData: (previo) => previo,
+  // La lista entera llega una vez y se filtra aquí: sin tildes y sin esperar al servidor.
+  const consulta = useQuery({
+    queryKey: [...CLAVE, ''],
+    queryFn: () => api<ListaInsumos>(`/api/insumos?tipo=${config.tipo}`),
   });
+  const { data } = consulta;
+  const { data: borrados } = useQuery({
+    queryKey: clavePapelera(config.tipo),
+    queryFn: () => api<ListaInsumos>(`/api/insumos?tipo=${config.tipo}&papelera=true`),
+  });
+  const nBorrados = borrados?.items.length ?? 0;
+  const seccion = useRef<HTMLElement>(null);
 
   const guardar = useMutation({
     mutationFn: ({ id, cambio }: { id: string; cambio: InsumoCambio }) =>
@@ -84,13 +71,15 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
     },
     onSuccess: (fila, { cambio }) => {
       setAviso('');
-      if (cambio.pu !== undefined && fila.precioAnterior !== null)
+      if (cambio.pu !== undefined && fila.precioAnterior !== null) {
+        setDeshacer(null);
         setImpacto({
           insumoId: fila.id,
           descripcion: fila.descripcion,
           puAnterior: fila.precioAnterior,
           puNuevo: fila.pu,
         });
+      }
       cliente.setQueriesData<ListaInsumos>(
         { queryKey: CLAVE },
         (l) => l && { ...l, items: l.items.map((i) => (i.id === fila.id ? fila : i)) },
@@ -116,6 +105,7 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
     onSuccess: (fila, { accion }) => {
       setAviso('');
       setDeshacer(accion === 'eliminar' ? fila : null);
+      if (accion === 'eliminar') setImpacto(null);
     },
     onError: (e) => setAviso(e instanceof ErrorApi ? e.message : 'No pudimos completar la acción.'),
     onSettled: refrescar,
@@ -128,53 +118,15 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
   }
 
   const factor = Number(data?.factor ?? 1);
-  const columnas: Columna<Insumo>[] = useMemo(
-    () => [
-      { id: 'codigo', titulo: 'Código', ancho: 110, ver: (i) => i.codigo, editar: (i) => i.codigo },
-      {
-        id: 'descripcion',
-        titulo: 'Descripción',
-        ancho: 320,
-        flexible: true,
-        ver: (i) => i.descripcion,
-        editar: (i) => i.descripcion,
-      },
-      { id: 'unidad', titulo: 'Unidad', ancho: 80, ver: (i) => i.unidad, editar: (i) => i.unidad },
-      {
-        id: 'pu',
-        titulo: 'P.U.',
-        ancho: 120,
-        alinear: 'der',
-        ver: (i) => money(Number(i.pu)),
-        editar: (i) => n2(Number(i.pu)).replace(/\./g, ''),
-      },
-      ...(config.conFactor
-        ? [
-            {
-              id: 'puFactor',
-              titulo: `P.U. × FACTOR (${factor})`,
-              ancho: 170,
-              alinear: 'der' as const,
-              ver: (i: Insumo) => money(precioMaterial(i.pu, factor).toNumber()),
-            },
-          ]
-        : []),
-      { id: 'anterior', titulo: 'Precio referencial', ancho: 160, alinear: 'der', ver: variacion },
-    ],
+  const columnas = useMemo(
+    () => columnasLista(factor, !!config.conFactor),
     [factor, config.conFactor],
   );
-
-  const filas: FilaTabla<Insumo>[] = useMemo(() => {
-    const r: FilaTabla<Insumo>[] = [];
-    let seccion: string | null | undefined;
-    for (const i of data?.items ?? []) {
-      if (i.seccion !== seccion && i.seccion)
-        r.push({ clave: `s-${i.seccion}`, seccion: i.seccion });
-      seccion = i.seccion;
-      r.push({ clave: i.id, dato: i });
-    }
-    return r;
-  }, [data]);
+  const total = data?.items.length ?? 0;
+  const { filas, cuantos } = useMemo(
+    () => filasLista(data?.items ?? [], busqueda),
+    [data, busqueda],
+  );
 
   const puedeEscribir = yo?.rol === 'admin' || yo?.rol === 'precios';
 
@@ -189,62 +141,29 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
     guardar.mutate({ id: fila.id, cambio: { version: fila.version, [columna]: valor } });
   }
 
+  const irATabla = () => seccion.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
+  const abrirAlta = () => setAgregando(true);
+
   return (
-    <section>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <h1 className="mr-2 text-xl font-semibold tracking-tight">{config.titulo}</h1>
-        <div className="relative">
-          <Search
-            className="pointer-events-none absolute left-2 top-2 size-4 text-slate-400"
-            aria-hidden
-          />
-          <Input
-            type="search"
-            aria-label={config.buscar}
-            placeholder="Buscar por código o descripción"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="w-80 pl-8"
-          />
-        </div>
-        <Badge className="tabular-nums">
-          {data?.items.length ?? 0} {config.plural}
-        </Badge>
-        <div className="ml-auto flex items-center gap-1">
-          <Button
-            variant="ghost"
-            aria-pressed={verPapelera}
-            onClick={() => setVerPapelera((v) => !v)}
-          >
-            {verPapelera ? <ArrowLeft aria-hidden /> : <Trash2 aria-hidden />}
-            {verPapelera ? 'Volver a la lista' : 'Ver papelera'}
-          </Button>
-          <Atajos atajos={puedeEscribir ? ATAJOS : ATAJOS_LECTURA} />
-          {puedeEscribir && (
-            <Button onClick={() => setAgregando(true)}>
-              <Plus aria-hidden />
-              Agregar
-            </Button>
-          )}
-        </div>
-      </div>
-      {agregando && puedeEscribir && (
-        <FormularioInsumo tipo={config.tipo} alCerrar={() => setAgregando(false)} />
-      )}
-      {deshacer && (
-        <p
-          role="status"
-          className="mb-2 flex items-center gap-2 rounded-md bg-slate-100 px-3 py-1 text-sm"
-        >
-          «{deshacer.descripcion}» pasó a la papelera ·
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => moverPapelera.mutate({ i: deshacer, accion: 'restaurar' })}
-          >
-            Deshacer
-          </Button>
-        </p>
+    <section ref={seccion}>
+      <BarraLista
+        config={config}
+        busqueda={busqueda}
+        alBuscar={setBusqueda}
+        alIrATabla={irATabla}
+        conteo={data ? { total, cuantos, factor } : null}
+        verPapelera={verPapelera}
+        nBorrados={nBorrados}
+        alAlternarPapelera={() => setVerPapelera((v) => !v)}
+        puedeEscribir={puedeEscribir}
+        alAgregar={abrirAlta}
+      />
+      {agregando && puedeEscribir && !verPapelera && (
+        <FormularioInsumo
+          tipo={config.tipo}
+          singular={config.singular}
+          alCerrar={() => setAgregando(false)}
+        />
       )}
       {impacto && (
         <PanelImpacto
@@ -262,14 +181,54 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
         />
       )}
       {aviso && (
-        <p role="alert" className="mb-2 rounded bg-red-50 px-3 py-1 text-sm text-red-800">
+        <p role="alert" className="mb-2 rounded-md bg-red-50 px-3 py-1.5 text-sm text-red-800">
           {aviso}
         </p>
       )}
-      {isPending && <p>Cargando {config.plural}…</p>}
-      {error && <p role="alert">No pudimos cargar {config.plural}. Intente de nuevo.</p>}
       {verPapelera && <PapeleraInsumos tipo={config.tipo} puedeEscribir={puedeEscribir} />}
-      {data && !verPapelera && (
+      {!verPapelera && consulta.isPending && <Cargando texto={`Cargando ${config.plural}…`} />}
+      {!verPapelera && consulta.isError && (
+        <Vacio
+          titulo={`No pudimos cargar los ${config.plural}`}
+          acciones={
+            <Button size="sm" variant="outline" onClick={() => void consulta.refetch()}>
+              Reintentar
+            </Button>
+          }
+        >
+          Revise su conexión e intente de nuevo.
+        </Vacio>
+      )}
+      {!verPapelera && data && total === 0 && (
+        <Vacio
+          icono={Tags}
+          titulo={`Aún no hay ${config.plural}`}
+          acciones={
+            puedeEscribir && (
+              <>
+                <BotonAgregar config={config} alAgregar={abrirAlta} />
+                <BotonImportar />
+              </>
+            )
+          }
+        >
+          Agréguelos uno por uno o suba su lista de precios en Excel: los APUs los toman de aquí.
+        </Vacio>
+      )}
+      {!verPapelera && data && total > 0 && cuantos === 0 && (
+        <Vacio
+          icono={SearchX}
+          titulo={`Sin resultados para «${busqueda.trim()}»`}
+          acciones={
+            <Button size="sm" variant="outline" onClick={() => setBusqueda('')}>
+              Ver todos los {config.plural}
+            </Button>
+          }
+        >
+          Busque por código, parte de la descripción o sección; las tildes no importan.
+        </Vacio>
+      )}
+      {!verPapelera && data && cuantos > 0 && (
         <TablaEditable
           nombre={config.tabla}
           guia="tabla-lista"
@@ -287,6 +246,14 @@ export function ListaPrecios({ config }: { config: ConfigLista }) {
           valor={data.herramientaMenor}
           puedeEscribir={puedeEscribir}
           clave={CLAVE}
+        />
+      )}
+      {deshacer && (
+        <AvisoPapelera
+          descripcion={deshacer.descripcion}
+          deshaciendo={moverPapelera.isPending}
+          alDeshacer={() => moverPapelera.mutate({ i: deshacer, accion: 'restaurar' })}
+          alCerrar={() => setDeshacer(null)}
         />
       )}
     </section>

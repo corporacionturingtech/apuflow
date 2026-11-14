@@ -3,6 +3,7 @@ import type { TipoInsumo } from 'tipos';
 export interface ConfigLista {
   tipo: TipoInsumo;
   titulo: string;
+  singular: string; // para «Agregar material» y «Ningún material coincide»
   plural: string; // para el contador y los mensajes: "materiales"
   buscar: string; // aria-label del buscador
   tabla: string; // aria-label de la tabla
@@ -14,6 +15,7 @@ export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte'
   materiales: {
     tipo: 'MA',
     titulo: 'Materiales',
+    singular: 'material',
     plural: 'materiales',
     buscar: 'Buscar material',
     tabla: 'Lista de materiales',
@@ -22,6 +24,7 @@ export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte'
   equipos: {
     tipo: 'EQ',
     titulo: 'Equipos',
+    singular: 'equipo',
     plural: 'equipos',
     buscar: 'Buscar equipo',
     tabla: 'Lista de equipos',
@@ -30,6 +33,7 @@ export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte'
   manoObra: {
     tipo: 'MO',
     titulo: 'Mano de obra',
+    singular: 'cargo',
     plural: 'cargos',
     buscar: 'Buscar cargo',
     tabla: 'Lista de mano de obra',
@@ -37,6 +41,7 @@ export const LISTAS: Record<'materiales' | 'equipos' | 'manoObra' | 'transporte'
   transporte: {
     tipo: 'TR',
     titulo: 'Transporte',
+    singular: 'tarifa',
     plural: 'tarifas',
     buscar: 'Buscar tarifa',
     tabla: 'Lista de transporte',

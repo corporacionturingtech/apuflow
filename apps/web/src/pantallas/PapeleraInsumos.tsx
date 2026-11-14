@@ -6,7 +6,7 @@ import { money } from '../lib/formato';
 import { RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Cargando } from '../ui/estado';
+import { Cargando, Vacio } from '../ui/estado';
 
 export const clavePapelera = (tipo: TipoInsumo) => ['papelera', tipo] as const;
 
@@ -47,16 +47,14 @@ export function PapeleraInsumos({
       )}
       {!data && <Cargando className="px-3 py-3" />}
       {data && !items.length && (
-        <p className="flex items-center gap-2 p-3 text-sm text-slate-500">
-          <Trash2 aria-hidden className="size-4" />
-          <span>La papelera está vacía.</span>
-          <span className="text-slate-400">Lo que borre llega aquí y puede restaurarlo.</span>
-        </p>
+        <Vacio icono={Trash2} titulo="La papelera está vacía." className="border-0">
+          Lo que mande a la papelera llega aquí y puede restaurarlo.
+        </Vacio>
       )}
       <ul className="divide-y divide-slate-200 text-sm">
         {items.map((i) => (
           <li key={i.id} className="flex items-center gap-4 px-3 py-1.5">
-            <span className="w-28 font-mono">{i.codigo}</span>
+            <span className="w-28 font-mono text-slate-600">{i.codigo}</span>
             <span className="flex-1">{i.descripcion}</span>
             <span className="w-24 text-right tabular-nums">{money(Number(i.pu))}</span>
             {puedeEscribir && (
