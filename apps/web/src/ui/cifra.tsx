@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import { cn } from '../lib/cn';
 import { Card } from './card';
 
 /** Cifra destacada (KPI) del Inicio y del panel de valor. */
@@ -7,20 +8,34 @@ export function Cifra({
   valor,
   nota,
   icono: Icono,
+  destacada,
+  className,
 }: {
   etiqueta: string;
   valor: string;
   nota?: string;
   icono?: LucideIcon;
+  /** La cifra que justifica la licencia: más grande y en color de acento. */
+  destacada?: boolean;
+  className?: string;
 }) {
   return (
-    <Card className="px-4 py-3">
+    <Card
+      className={cn(
+        'min-w-0 px-3 py-3 sm:px-4',
+        destacada && 'border-primario/40 bg-primario/5 ring-1 ring-primario/15',
+        className,
+      )}
+    >
       <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-        {Icono && <Icono aria-hidden className="size-4 text-primario" />}
-        {etiqueta}
+        {Icono && <Icono aria-hidden className="hidden size-4 shrink-0 text-primario sm:block" />}
+        <span className="min-w-0">{etiqueta}</span>
       </div>
       <div
-        className="mt-1 text-2xl font-semibold tabular-nums text-slate-900"
+        className={cn(
+          'mt-1 font-semibold tabular-nums',
+          destacada ? 'text-3xl text-primario' : 'text-2xl text-slate-900',
+        )}
         data-cifra={etiqueta}
       >
         {valor}

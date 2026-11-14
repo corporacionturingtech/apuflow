@@ -52,6 +52,8 @@ Pantalla Inicio para el rol admin, con datos reales del uso del mes:
 - **Horas ahorradas estimadas**, con la fórmula visible y editable por el cliente
   (p. ej. minutos por rubro copiado a mano × rubros que entraron por bloque). Nunca inflar:
   si el cliente no cree la cifra, se pierde la confianza.
+- En pantalla, las horas ahorradas van primero y destacadas; la fórmula queda visible debajo
+  y los minutos se ajustan en un desplegable («¿Cómo calculamos las horas?»).
 - Un resumen mensual exportable en PDF de una página, para que el comprador lo muestre a
   su gerencia.
 

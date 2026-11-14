@@ -37,6 +37,7 @@ test('el panel de valor muestra cifras tras usar la demo y las horas siguen a lo
   await expect(cifra('Bloques reutilizados')).not.toHaveText('0');
   await expect(cifra('Horas ahorradas (estimado)')).not.toHaveText(/^0 h$/);
 
+  await panel.getByText('¿Cómo calculamos las horas?').click();
   await panel.getByLabel('Minutos por rubro copiado a mano').fill('0');
   await panel.getByLabel('Minutos por rubro recalculado').fill('0');
   await panel.getByRole('button', { name: 'Aplicar minutos' }).click();
@@ -49,6 +50,7 @@ test('el panel de valor muestra cifras tras usar la demo y las horas siguen a lo
 
   // Se restauran los minutos de la empresa
   await page.goto('/');
+  await page.getByText('¿Cómo calculamos las horas?').click();
   await page.getByLabel('Minutos por rubro copiado a mano').fill('3');
   await page.getByLabel('Minutos por rubro recalculado').fill('2');
   await page.getByRole('button', { name: 'Aplicar minutos' }).click();

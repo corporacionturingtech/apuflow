@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { FilePen, FileCheck2, Home, ListOrdered, Zap } from 'lucide-react';
+import { FileCheck2, FilePen, FileSpreadsheet, Home, ListOrdered, Plus, Zap } from 'lucide-react';
 import { useState } from 'react';
 import type { Oferta, SectorDemo } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
@@ -45,19 +45,97 @@ export function Inicio() {
   const hayOfertas = ofertas.length > 0;
   const emitidas = ofertas.filter((o) => o.estado === 'emitida').length;
   const rubros = ofertas.reduce((n, o) => n + o.rubros, 0);
+  const cumplidas = misiones.filter((m) => guia.hechas.includes(m.id)).length;
+  const siguiente = misiones.find((m) => !guia.hechas.includes(m.id))?.id;
+  const misionesPendientes = cumplidas < misiones.length;
+  const panelValor = yo?.rol === 'admin' && <PanelValor />;
+
+  const bloqueMisiones = (
+    <section className="mt-8 max-w-4xl" aria-label="Misiones guiadas">
+      <div className="flex flex-wrap items-baseline gap-x-3">
+        <h2 className="font-semibold">Misiones guiadas</h2>
+        <span className="text-sm text-slate-500" data-testid="progreso-misiones">
+          {cumplidas} de {misiones.length} cumplidas
+        </span>
+      </div>
+      <div
+        className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200"
+        role="progressbar"
+        aria-label="Avance de las misiones"
+        aria-valuemin={0}
+        aria-valuemax={misiones.length}
+        aria-valuenow={cumplidas}
+      >
+        <div
+          className="h-full rounded-full bg-primario transition-all"
+          style={{ width: `${(cumplidas / Math.max(misiones.length, 1)) * 100}%` }}
+        />
+      </div>
+      <p className="mt-2 text-sm text-slate-600">
+        Tareas del día a día, paso a paso, sobre la oferta de ejemplo. Cada una le muestra qué gana
+        su empresa.
+      </p>
+      <ol aria-label="Misiones" className="mt-3 grid grid-cols-1 gap-2 lg:grid-cols-2">
+        {misiones.map((m, i) => {
+          const hecha = guia.hechas.includes(m.id);
+          return (
+            <Card asChild key={m.id}>
+              <li className="flex items-center gap-3 px-3 py-2 text-sm">
+                <span className="w-5 text-slate-500">{i + 1}</span>
+                <span className="min-w-0 flex-1">
+                  <b>{m.titulo}</b>
+                  <span className="block text-xs text-slate-500">{m.frase}</span>
+                </span>
+                {hecha && <Badge variant="exito">Cumplida</Badge>}
+                <Button
+                  size="sm"
+                  variant={hecha ? 'ghost' : m.id === siguiente ? 'default' : 'outline'}
+                  onClick={() => iniciarMision(m.id)}
+                >
+                  {hecha ? 'Repetir' : 'Empezar'}
+                </Button>
+              </li>
+            </Card>
+          );
+        })}
+      </ol>
+    </section>
+  );
+
   return (
     <section>
-      <h1 className="text-xl font-semibold">Inicio</h1>
+      <div className="flex max-w-4xl flex-wrap items-center gap-2">
+        <h1 className="mr-auto text-xl font-semibold">Inicio</h1>
+        {hayOfertas && (
+          <>
+            <Button variant="outline" asChild>
+              <Link to="/importar">
+                <FileSpreadsheet aria-hidden />
+                Importar Excel
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="/ofertas">
+                <Plus aria-hidden />
+                Nueva oferta
+              </Link>
+            </Button>
+          </>
+        )}
+      </div>
       {!data && <Cargando />}
       {hayOfertas && (
-        <div aria-label="Cifras de sus ofertas" className="mt-4 grid max-w-4xl grid-cols-3 gap-3">
+        <div
+          aria-label="Cifras de sus ofertas"
+          className="mt-4 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3"
+        >
           <Cifra
             icono={FilePen}
             etiqueta="Ofertas en borrador"
             valor={String(ofertas.length - emitidas)}
           />
-          <Cifra icono={FileCheck2} etiqueta="Ofertas emitidas (todas)" valor={String(emitidas)} />
-          <Cifra icono={ListOrdered} etiqueta="Rubros presupuestados" valor={qty(rubros)} />
+          <Cifra icono={FileCheck2} etiqueta="Ofertas emitidas" valor={String(emitidas)} />
+          <Cifra icono={ListOrdered} etiqueta="Rubros cotizados" valor={qty(rubros)} />
         </div>
       )}
       {hayOfertas && (
@@ -78,15 +156,18 @@ export function Inicio() {
                 >
                   {o.nombre}
                 </Link>
-                <span className="text-xs text-slate-500">{o.cliente ?? 'Sin cliente'}</span>
-                <span className="w-32 text-right font-medium tabular-nums">{dinero(o.total)}</span>
+                <span className="hidden w-40 truncate text-xs text-slate-500 sm:block">
+                  {o.cliente ?? 'Sin cliente'}
+                </span>
+                <span className="w-28 text-right font-medium tabular-nums">{dinero(o.total)}</span>
                 <EstadoOferta estado={o.estado} />
               </li>
             ))}
           </ul>
         </Card>
       )}
-      {yo?.rol === 'admin' && <PanelValor />}
+      {hayOfertas && misionesPendientes && bloqueMisiones}
+      {panelValor}
       {data && !hayOfertas && (
         <Card className="mt-4 max-w-2xl p-4">
           <h2 className="font-semibold">Empiece con una empresa de ejemplo</h2>
@@ -127,39 +208,7 @@ export function Inicio() {
           )}
         </Card>
       )}
-      {hayOfertas && (
-        <div className="mt-6 max-w-4xl">
-          <h2 className="font-semibold">Misiones guiadas</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Tareas del día a día, paso a paso, sobre la oferta de ejemplo. Cada una le muestra qué
-            gana su empresa.
-          </p>
-          <ol aria-label="Misiones" className="mt-3 space-y-2">
-            {misiones.map((m, i) => {
-              const hecha = guia.hechas.includes(m.id);
-              return (
-                <Card asChild key={m.id}>
-                  <li className="flex items-center gap-3 px-3 py-2 text-sm">
-                    <span className="w-5 text-slate-500">{i + 1}</span>
-                    <span className="flex-1">
-                      <b>{m.titulo}</b>
-                      <span className="block text-xs text-slate-500">{m.frase}</span>
-                    </span>
-                    {hecha && <Badge variant="exito">Cumplida</Badge>}
-                    <Button
-                      size="sm"
-                      variant={hecha ? 'ghost' : 'outline'}
-                      onClick={() => iniciarMision(m.id)}
-                    >
-                      {hecha ? 'Repetir' : 'Empezar'}
-                    </Button>
-                  </li>
-                </Card>
-              );
-            })}
-          </ol>
-        </div>
-      )}
+      {hayOfertas && !misionesPendientes && bloqueMisiones}
     </section>
   );
 }

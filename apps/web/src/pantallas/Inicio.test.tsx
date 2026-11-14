@@ -39,3 +39,25 @@ it('sin ofertas ofrece dos empresas demo y carga la de vivienda', async () => {
     }),
   );
 });
+
+it('con ofertas muestra la acción principal y el avance de las misiones', async () => {
+  vi.mocked(api).mockImplementation(async (ruta: string) => {
+    if (ruta === '/api/auth/yo') return { id: 'u', nombre: 'Byron', rol: 'admin' };
+    if (ruta === '/api/ofertas')
+      return {
+        items: [
+          { id: 'o1', nombre: 'Casa', cliente: null, total: '10', estado: 'borrador', rubros: 3 },
+        ],
+      };
+    if (ruta === '/api/empresa') return { nombre: 'Demo', vista: 'sencilla' };
+    return {};
+  });
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <Inicio />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByText('Nueva oferta')).toBeTruthy();
+  expect(screen.getByText('Importar Excel')).toBeTruthy();
+  expect(screen.getByTestId('progreso-misiones').textContent).toMatch(/^0 de \d+ cumplidas$/);
+});
