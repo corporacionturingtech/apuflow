@@ -15,7 +15,7 @@ test('clave incorrecta muestra mensaje en español', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveText('Usuario o clave incorrectos');
 });
 
-test('entra y ve el layout con la barra de totales', async ({ page }) => {
+test('entra y ve el layout; la barra de totales solo con una oferta abierta', async ({ page }) => {
   await page.goto('/login');
   await page.getByLabel('Usuario').fill(ADMIN.usuario);
   await page.getByLabel('Clave').fill(ADMIN.clave);
@@ -23,8 +23,7 @@ test('entra y ve el layout con la barra de totales', async ({ page }) => {
   await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toContainText(
     'Listas de precios',
   );
-  await expect(page.getByRole('contentinfo')).toContainText('Total');
-  await expect(page.getByRole('contentinfo')).toContainText('$ 0,00');
+  await expect(page.getByRole('contentinfo')).toHaveCount(0);
   await page.getByRole('button', { name: 'Salir' }).click();
   await expect(page).toHaveURL(/\/login$/);
 });

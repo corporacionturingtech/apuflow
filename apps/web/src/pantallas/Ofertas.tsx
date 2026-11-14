@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { FileSpreadsheet, FolderOpen, Plus, Search } from 'lucide-react';
-import { useState } from 'react';
+import { FileSpreadsheet, FolderOpen, Loader2, Plus, Search } from 'lucide-react';
+import { useRef, useState } from 'react';
 import type { Oferta, OfertaDetalle } from 'tipos';
 import { ErrorApi, api } from '../lib/api';
 import { consultaYo } from '../sesion';
@@ -18,6 +18,13 @@ const normal = (t: string) =>
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase();
 
+const cuantas = (n: number) => `${n} ${n === 1 ? 'oferta' : 'ofertas'}`;
+
+const fechaCorta = (iso: string) =>
+  new Date(iso).toLocaleDateString('es-EC', { day: 'numeric', month: 'short', year: 'numeric' });
+const fechaHora = (iso: string) =>
+  new Date(iso).toLocaleString('es-EC', { dateStyle: 'long', timeStyle: 'short' });
+
 export function Ofertas() {
   const cliente = useQueryClient();
   const navegar = useNavigate();
@@ -25,6 +32,8 @@ export function Ofertas() {
   const [nombre, setNombre] = useState('');
   const [buscar, setBuscar] = useState('');
   const [aviso, setAviso] = useState('');
+  const [faltaNombre, setFaltaNombre] = useState(false);
+  const campoNombre = useRef<HTMLInputElement>(null);
   const { data, isPending, error } = useQuery({
     queryKey: ['ofertas'],
     queryFn: () => api<{ items: Oferta[] }>('/api/ofertas'),
@@ -52,22 +61,50 @@ export function Ofertas() {
       </p>
       {puedeEscribir && (
         <form
-          className="mt-3 flex flex-wrap gap-2"
+          className="mt-3 flex flex-wrap items-start gap-2"
+          noValidate
           onSubmit={(e) => {
             e.preventDefault();
-            if (nombre.trim()) crear.mutate();
+            setAviso('');
+            if (!nombre.trim()) {
+              setFaltaNombre(true);
+              campoNombre.current?.focus();
+              return;
+            }
+            crear.mutate();
           }}
         >
-          <Input
-            aria-label="Nombre de la oferta"
-            placeholder="Nombre de la nueva oferta"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className="w-80"
-          />
-          <Button disabled={crear.isPending}>
-            <Plus aria-hidden />
-            Crear oferta
+          <div className="w-full sm:w-80">
+            <Input
+              ref={campoNombre}
+              aria-label="Nombre de la oferta"
+              aria-invalid={faltaNombre || undefined}
+              aria-describedby={faltaNombre ? 'oferta-falta-nombre' : undefined}
+              placeholder="Nombre de la nueva oferta"
+              value={nombre}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                if (e.target.value.trim()) setFaltaNombre(false);
+              }}
+              className={
+                faltaNombre
+                  ? 'border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/20'
+                  : undefined
+              }
+            />
+            {faltaNombre && (
+              <p id="oferta-falta-nombre" role="alert" className="mt-1 text-xs text-red-700">
+                Escriba el nombre de la oferta.
+              </p>
+            )}
+          </div>
+          <Button type="submit" disabled={crear.isPending}>
+            {crear.isPending ? (
+              <Loader2 aria-hidden className="animate-spin" />
+            ) : (
+              <Plus aria-hidden />
+            )}
+            {crear.isPending ? 'Creando…' : 'Crear oferta'}
           </Button>
           <Button variant="outline" asChild>
             <Link to="/importar">
@@ -98,7 +135,7 @@ export function Ofertas() {
       {data && data.items.length > 0 && (
         <Card className="mt-4 overflow-hidden">
           <div className="flex items-center gap-3 border-b border-borde px-3 py-2">
-            <div className="relative w-72">
+            <div className="relative w-full max-w-72">
               <Search
                 aria-hidden
                 className="pointer-events-none absolute top-2 left-2 size-4 text-slate-400"
@@ -114,8 +151,8 @@ export function Ofertas() {
             </div>
             <span className="ml-auto text-xs text-slate-500 tabular-nums">
               {items.length === data.items.length
-                ? `${data.items.length} ofertas`
-                : `${items.length} de ${data.items.length} ofertas`}
+                ? cuantas(data.items.length)
+                : `${items.length} de ${cuantas(data.items.length)}`}
             </span>
           </div>
           {items.length === 0 ? (
@@ -127,16 +164,27 @@ export function Ofertas() {
               <thead className="bg-slate-50 text-left text-xs text-slate-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Oferta</th>
-                  <th className="px-3 py-2 font-medium">Cliente</th>
-                  <th className="px-3 py-2 font-medium">Tipo</th>
-                  <th className="px-3 py-2 text-right font-medium">Rubros</th>
-                  <th className="px-3 py-2 text-right font-medium">Total</th>
+                  <th className="hidden px-3 py-2 font-medium sm:table-cell">Cliente</th>
+                  <th className="hidden px-3 py-2 font-medium md:table-cell">Tipo</th>
+                  <th className="hidden px-3 py-2 text-right font-medium sm:table-cell">Rubros</th>
+                  <th className="px-3 py-2 text-right font-medium whitespace-nowrap">
+                    Total con IVA
+                  </th>
                   <th className="px-3 py-2 font-medium">Estado</th>
+                  <th className="hidden px-3 py-2 font-medium md:table-cell">Modificada</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-borde">
                 {items.map((o) => (
-                  <tr key={o.id} className="hover:bg-slate-50">
+                  <tr
+                    key={o.id}
+                    className="cursor-pointer hover:bg-slate-50"
+                    onClick={(e) => {
+                      // El enlace del nombre ya navega; el resto de la fila hace lo mismo.
+                      if ((e.target as HTMLElement).closest('a')) return;
+                      void navegar({ to: '/ofertas/$id', params: { id: o.id } });
+                    }}
+                  >
                     <td className="px-3 py-1.5">
                       <Link
                         to="/ofertas/$id"
@@ -147,16 +195,25 @@ export function Ofertas() {
                         {o.nombre}
                       </Link>
                     </td>
-                    <td className="px-3 py-1.5 text-slate-600">{o.cliente ?? 'Sin cliente'}</td>
-                    <td className="px-3 py-1.5 text-slate-600">
+                    <td className="hidden px-3 py-1.5 sm:table-cell">
+                      {o.cliente ?? <span className="text-slate-400">Sin cliente</span>}
+                    </td>
+                    <td className="hidden px-3 py-1.5 text-slate-600 md:table-cell">
                       {o.tipo === 'publico' ? 'Pública' : 'Privada'}
                     </td>
-                    <td className="px-3 py-1.5 text-right tabular-nums">{o.rubros}</td>
-                    <td className="px-3 py-1.5 text-right font-medium tabular-nums">
+                    <td className="hidden px-3 py-1.5 text-right tabular-nums sm:table-cell">
+                      {o.rubros}
+                    </td>
+                    <td className="px-3 py-1.5 text-right font-medium whitespace-nowrap tabular-nums">
                       {dinero(o.total)}
                     </td>
                     <td className="px-3 py-1.5">
                       <EstadoOferta estado={o.estado} />
+                    </td>
+                    <td className="hidden px-3 py-1.5 whitespace-nowrap text-slate-500 md:table-cell">
+                      <time dateTime={o.actualizadoEn} title={fechaHora(o.actualizadoEn)}>
+                        {fechaCorta(o.actualizadoEn)}
+                      </time>
                     </td>
                   </tr>
                 ))}

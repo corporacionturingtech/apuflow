@@ -12,11 +12,15 @@ interface Props {
 
 const DURACION_VARIACION = 4000;
 
-/** Regla UX 1: el total siempre a la vista. Muestra la oferta abierta; en cero si no hay. */
+/**
+ * Regla UX 1: el total siempre a la vista mientras hay una oferta abierta. Sin oferta (listas,
+ * Inicio) no se dibuja: un «Total $ 0,00» junto a ofertas de miles confunde (D21).
+ */
 export function BarraTotales(props: Props) {
   const abierta = useTotales();
   const { subtotal = 0, iva = 0, total = 0, brecha } = { ...abierta, ...props } as Totales;
   const variacion = useVariacion(abierta ? total : null);
+  if (!abierta && props.total === undefined) return null;
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-10 flex h-12 items-center justify-end gap-3 border-t border-borde bg-white/95 px-3 md:left-56 md:gap-6 md:px-6 shadow-[0_-4px_12px_-6px_rgb(15_23_42/0.08)] backdrop-blur">
       {brecha && (

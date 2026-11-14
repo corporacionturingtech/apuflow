@@ -5,8 +5,13 @@ import { BarraTotales } from './BarraTotales';
 
 afterEach(cleanup);
 
-it('vacía muestra totales en cero', () => {
+it('sin oferta abierta no se dibuja', () => {
   render(<BarraTotales />);
+  expect(screen.queryByRole('contentinfo')).toBeNull();
+});
+
+it('con totales en cero muestra las tres cifras', () => {
+  render(<BarraTotales subtotal={0} iva={0} total={0} />);
   expect(screen.getByText('Subtotal')).toBeTruthy();
   expect(screen.getByText('IVA')).toBeTruthy();
   expect(screen.getByText('Total')).toBeTruthy();

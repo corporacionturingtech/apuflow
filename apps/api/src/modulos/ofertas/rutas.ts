@@ -143,6 +143,7 @@ export async function rutasOfertas(app: FastifyInstance, { db }: { db: Bd }) {
         estado: o.estado,
         rubros,
         total: totales.get(o.id) ?? '0.00',
+        actualizadoEn: o.actualizadoEn.toISOString(),
         version: o.version,
       })),
     };

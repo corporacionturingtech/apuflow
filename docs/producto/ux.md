@@ -7,7 +7,7 @@ si el valor existe. Cada pantalla tiene que hacer visible lo que el sistema hizo
 
 1. **El total siempre a la vista.** Barra fija con subtotal, IVA, total y, si hay costo
    objetivo, la brecha en verde/rojo. Tras cada cambio muestra la variación (`+$ 1.240,00`)
-   durante unos segundos.
+   durante unos segundos. Solo con una oferta abierta: en listas e Inicio no se dibuja (D21).
 2. **Panel de impacto en cada cambio de precio o APU.** "El cable 2/0 AWG pasó de $ 9,60 a
    $ 10,40. Afectó 4 APUs y 12 rubros. La oferta subió $ 1.240,00. Recalculado en 18 ms."
    Con botones **Ver qué cambió** y **Deshacer**. Es la prueba diaria de que el Excel quedó atrás.

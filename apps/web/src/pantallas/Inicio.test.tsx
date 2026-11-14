@@ -46,7 +46,15 @@ it('con ofertas muestra la acción principal y el avance de las misiones', async
     if (ruta === '/api/ofertas')
       return {
         items: [
-          { id: 'o1', nombre: 'Casa', cliente: null, total: '10', estado: 'borrador', rubros: 3 },
+          {
+            id: 'o1',
+            nombre: 'Casa',
+            cliente: null,
+            total: '10',
+            estado: 'borrador',
+            rubros: 3,
+            actualizadoEn: '2026-11-01T10:00:00Z',
+          },
         ],
       };
     if (ruta === '/api/empresa') return { nombre: 'Demo', vista: 'sencilla' };

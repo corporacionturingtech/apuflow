@@ -16,6 +16,8 @@ export const esquemaOferta = z.object({
   rubros: z.number().int(),
   /** Total con IVA, calculado por el motor. */
   total: z.string(),
+  /** Última modificación (ISO): la lista se ordena por ella. */
+  actualizadoEn: z.string(),
   version: z.number().int(),
 });
 export type Oferta = z.infer<typeof esquemaOferta>;
@@ -112,30 +114,32 @@ const esquemaApuDeOferta = z.object({
 });
 export type ApuDeOferta = z.infer<typeof esquemaApuDeOferta>;
 
-export const esquemaOfertaDetalle = esquemaOferta.omit({ rubros: true, total: true }).extend({
-  iva: decimal,
-  factor: decimal,
-  costoObjetivo: z.string().nullable(),
-  indirectos: z.array(
-    z.object({
-      id: idUuid,
-      nombre: z.string(),
-      porcentaje: decimal,
-      esUtilidad: z.boolean(),
-      version: z.number().int(),
-    }),
-  ),
-  capitulos: z.array(
-    z.object({
-      id: idUuid,
-      nombre: z.string(),
-      disciplina: z.string().nullable(),
-      version: z.number().int(),
-    }),
-  ),
-  rubros: z.array(esquemaRubro),
-  apus: z.array(esquemaApuDeOferta),
-});
+export const esquemaOfertaDetalle = esquemaOferta
+  .omit({ rubros: true, total: true, actualizadoEn: true })
+  .extend({
+    iva: decimal,
+    factor: decimal,
+    costoObjetivo: z.string().nullable(),
+    indirectos: z.array(
+      z.object({
+        id: idUuid,
+        nombre: z.string(),
+        porcentaje: decimal,
+        esUtilidad: z.boolean(),
+        version: z.number().int(),
+      }),
+    ),
+    capitulos: z.array(
+      z.object({
+        id: idUuid,
+        nombre: z.string(),
+        disciplina: z.string().nullable(),
+        version: z.number().int(),
+      }),
+    ),
+    rubros: z.array(esquemaRubro),
+    apus: z.array(esquemaApuDeOferta),
+  });
 export type OfertaDetalle = z.infer<typeof esquemaOfertaDetalle>;
 
 export const esquemaVersionOfertaCrear = z.object({
