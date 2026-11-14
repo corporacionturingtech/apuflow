@@ -102,12 +102,16 @@ export function PanelValor() {
       )}
       <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3">
         <Cifra
-          destacada
+          destacada={data.horasAhorradas > 0}
           className="col-span-2 md:col-span-1"
           icono={Clock}
           etiqueta="Horas ahorradas (estimado)"
           valor={horas(data.horasAhorradas)}
-          nota="Tiempo que no se pasó copiando ni recalculando"
+          nota={
+            data.horasAhorradas > 0
+              ? 'Tiempo que no se pasó copiando ni recalculando'
+              : 'Aparecen al usar bloques o cambiar precios'
+          }
         />
         <Cifra
           etiqueta="Ofertas emitidas"

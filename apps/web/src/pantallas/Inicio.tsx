@@ -47,7 +47,8 @@ export function Inicio() {
   const rubros = ofertas.reduce((n, o) => n + o.rubros, 0);
   const cumplidas = misiones.filter((m) => guia.hechas.includes(m.id)).length;
   const siguiente = misiones.find((m) => !guia.hechas.includes(m.id))?.id;
-  const misionesPendientes = cumplidas < misiones.length;
+  // Mientras no haya cumplido ninguna, las misiones van primero; luego sube el panel de valor.
+  const misionesPrimero = cumplidas === 0;
   const panelValor = yo?.rol === 'admin' && <PanelValor />;
 
   const bloqueMisiones = (
@@ -59,17 +60,25 @@ export function Inicio() {
         </span>
       </div>
       <div
-        className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200"
+        className="mt-2 flex gap-1"
         role="progressbar"
         aria-label="Avance de las misiones"
         aria-valuemin={0}
         aria-valuemax={misiones.length}
         aria-valuenow={cumplidas}
       >
-        <div
-          className="h-full rounded-full bg-primario transition-all"
-          style={{ width: `${(cumplidas / Math.max(misiones.length, 1)) * 100}%` }}
-        />
+        {misiones.map((m) => (
+          <span
+            key={m.id}
+            className={`h-1.5 flex-1 rounded-full ${
+              guia.hechas.includes(m.id)
+                ? 'bg-primario'
+                : m.id === siguiente
+                  ? 'bg-primario/30'
+                  : 'bg-slate-200'
+            }`}
+          />
+        ))}
       </div>
       <p className="mt-2 text-sm text-slate-600">
         Tareas del día a día, paso a paso, sobre la oferta de ejemplo. Cada una le muestra qué gana
@@ -166,7 +175,7 @@ export function Inicio() {
           </ul>
         </Card>
       )}
-      {hayOfertas && misionesPendientes && bloqueMisiones}
+      {hayOfertas && misionesPrimero && bloqueMisiones}
       {panelValor}
       {data && !hayOfertas && (
         <Card className="mt-4 max-w-2xl p-4">
@@ -208,7 +217,7 @@ export function Inicio() {
           )}
         </Card>
       )}
-      {hayOfertas && !misionesPendientes && bloqueMisiones}
+      {hayOfertas && !misionesPrimero && bloqueMisiones}
     </section>
   );
 }
