@@ -12,5 +12,21 @@ test('el administrador ve el estado de la licencia y su ID de instalación', asy
   await expect(page.getByRole('heading', { name: 'Configuración › Licencia' })).toBeVisible();
   await expect(page.getByText('Sin licencia (modo desarrollo)')).toBeVisible();
   await expect(page.getByText(/^apf-[0-9a-f]{16}$/)).toBeVisible();
-  await expect(page.getByLabel('Cargar archivo de licencia')).toBeVisible();
+  await expect(
+    page.getByText('Todas las funciones están habilitadas', { exact: false }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Copiar' })).toBeVisible();
+  const id = (await page.locator('code').first().textContent()) ?? '';
+  await expect(page.getByRole('link', { name: 'Enviar por correo' })).toHaveAttribute(
+    'href',
+    new RegExp(id),
+  );
+  await expect(page.getByRole('button', { name: 'Seleccionar archivo' })).toBeVisible();
+
+  await page.getByLabel('Cargar archivo de licencia').setInputFiles({
+    name: 'licencia.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('esto no es json'),
+  });
+  await expect(page.getByRole('alert')).toContainText('no es una licencia válida');
 });
