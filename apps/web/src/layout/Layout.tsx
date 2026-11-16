@@ -94,7 +94,7 @@ const iniciales = (nombre = '') =>
 
 // La barra de acento a la izquierda marca la página actual sin teñir todo el enlace.
 const ENLACE =
-  'flex h-8 items-center gap-2.5 whitespace-nowrap rounded-md px-2.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100 [&.active]:bg-white/10 [&.active]:font-medium [&.active]:text-white [&.active]:shadow-[inset_3px_0_0_var(--acento)] [&_svg]:size-4 [&_svg]:shrink-0';
+  'flex h-8 items-center gap-2.5 whitespace-nowrap rounded-md px-2.5 text-[#94a3b8] transition-colors hover:bg-white/5 hover:text-[#f1f5f9][&.active]:bg-white/10 [&.active]:font-medium [&.active]:text-white [&.active]:shadow-[inset_3px_0_0_var(--acento)] [&_svg]:size-4 [&_svg]:shrink-0';
 
 export function Layout() {
   const cliente = useQueryClient();
@@ -149,7 +149,7 @@ export function Layout() {
       <nav
         aria-label="Navegación principal"
         onClick={(e) => (e.target as HTMLElement).closest('a') && setMenu(false)}
-        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-56 shrink-0 flex-col bg-slate-950 px-3 pb-14 pt-4 text-[13px] transition-transform md:sticky md:top-0 md:z-auto md:translate-x-0 ${menu ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-56 shrink-0 flex-col bg-slate-950 px-3 pb-14 pt-4 text-[13px] text-[#94a3b8] [color-scheme:dark] transition-transform md:sticky md:top-0 md:z-auto md:translate-x-0 ${menu ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="mb-5 flex h-9 items-center px-2.5">
           {empresa?.logo ? (
@@ -167,7 +167,7 @@ export function Layout() {
             return (
               <div key={g.titulo ?? 'principal'} className="flex flex-col gap-0.5">
                 {g.titulo && (
-                  <span className="mb-1 px-2.5 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                  <span className="mb-1 px-2.5 text-[11px] font-medium uppercase tracking-wider text-[#64748b]">
                     {g.titulo}
                   </span>
                 )}
