@@ -11,6 +11,9 @@ export function fijarFormato(moneda: string, formato: 'es' | 'en') {
   simbolo = SIMBOLOS[moneda] ?? moneda;
 }
 
+/** Símbolo con el que se escribe una moneda (USD → $); si no se conoce, el código mismo. */
+export const simboloDe = (moneda: string) => SIMBOLOS[moneda] ?? moneda;
+
 export function fmt(v: number, min: number, max: number): string {
   const neg = v < 0;
   const s = Math.abs(v).toFixed(max);

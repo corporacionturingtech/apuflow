@@ -89,6 +89,9 @@ Configuración (empresa, disciplinas, usuarios, licencia).
   contador «x de y», estado vacío con «Ver todos», «Papelera (n)» solo si hay algo y el aviso de borrado flota con «Deshacer».
   La tabla se ajusta a sus filas (alto máximo, no fijo); cada fila trae al pasar el mouse los íconos
   Historial y Papelera (`conAcciones`, además de Alt+H y Supr) y una columna que saldría toda en «—» no se muestra.
+- Formularios de configuración (molde `Empresa`): secciones con título a la izquierda (`pantallas/empresa/Seccion`),
+  ayuda bajo cada campo, error junto al campo (`aria-invalid`, foco al primero) y barra fija con «Guardar cambios»
+  activo solo si hay cambios, «Descartar» y «Hay cambios sin guardar». Archivos con botón + arrastrar, nunca el `<input type=file>` nativo.
 - Avisos que no deben empujar la tabla (panel de impacto) flotan sobre la barra de totales.
 - Navegación agrupada (trabajo, listas de precios, control, configuración); la página activa
   se marca con una barra de acento. La barra de totales muestra el total en 18px y la variación

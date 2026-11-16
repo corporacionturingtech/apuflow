@@ -15,8 +15,11 @@ async function ponerVista(page: Page, vista: keyof typeof OPCION) {
   await page.getByRole('navigation').getByRole('link', { name: 'Empresa', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Configuración › Empresa' })).toBeVisible();
   await page.getByLabel('Vista del sistema').selectOption({ label: OPCION[vista] });
-  await page.getByRole('button', { name: 'Guardar cambios' }).click();
-  await expect(page.getByRole('status')).toHaveText('Cambios guardados');
+  const guardar = page.getByRole('button', { name: 'Guardar cambios' });
+  if (await guardar.isEnabled()) {
+    await guardar.click();
+    await expect(page.getByRole('status')).toHaveText('Cambios guardados');
+  }
 }
 
 test('la vista sencilla esconde historial, costo objetivo y versiones, y deja exportar', async ({
